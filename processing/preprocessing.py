@@ -21,7 +21,7 @@ fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: "
 root = get_project_root()
 log_path = root / "data/logs"
 
-#logging.basicConfig(level=logging.DEBUG, filename=log_path / "debug.log", format=fmt)
+logging.basicConfig(level=logging.DEBUG, filename=log_path / "debug.log", format=fmt)
 
 
 ########################################################################################################################

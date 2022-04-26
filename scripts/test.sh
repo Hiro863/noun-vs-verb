@@ -8,4 +8,4 @@
 
 #SBATCH --chdir=logs
 
-python3 script/data/home/hiroyoshi/scripts/meg-mvpa/scripts/test_script.py
+python3 test_script.py

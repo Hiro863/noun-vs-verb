@@ -3,11 +3,11 @@ from pathlib import Path
 from processing.preprocessing import process_single_subject
 
 if __name__ == "__main__":
-    src_dir = "/data/home/hiroyoshi/test-dir/test-src/sub-V1010"
+    src_dir = "/data/home/hiroyoshi/test-dir/test-src/sub-V1001"
     dst_dir = "/data/home/hiroyoshi/test-dir/test-dst"
     events_dir = "/data/home/hiroyoshi/test-dir/events_dir"
     param_dir = "/data/home/hiroyoshi/test-dir/param_dir"
-    subject_name = "sub-V1010"
+    subject_name = "sub-V1001"
 
     params = read_json(Path(param_dir), "preprocess_params.json")
     process_single_subject(Path(src_dir), Path(dst_dir), Path(events_dir), subject_name,

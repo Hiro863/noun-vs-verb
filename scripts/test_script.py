@@ -3,7 +3,7 @@ from pathlib import Path
 from processing.preprocessing import process_single_subject
 
 if __name__ == "__main__":
-    src_dir = "/data/home/hiroyoshi/test-dir/test-src"
+    src_dir = "/data/home/hiroyoshi/test-dir/test-src/sub-V1010"
     dst_dir = "/data/home/hiroyoshi/test-dir/test-dst"
     events_dir = "/data/home/hiroyoshi/test-dir/events_dir"
     param_dir = "/data/home/hiroyoshi/test-dir/param_dir"

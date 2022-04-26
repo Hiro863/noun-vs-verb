@@ -8,4 +8,4 @@
 
 #SBATCH --chdir=logs
 
-python3 test_script.py
+python3 scripts/test_script.py

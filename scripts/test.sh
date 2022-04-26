@@ -8,4 +8,5 @@
 
 #SBATCH --chdir=logs
 
-python3 scripts/test_script.py
+export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
+python scripts/meg-mvpa/scriptstest_script.py

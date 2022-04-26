@@ -97,7 +97,7 @@ def read_mous_subject(subject_dir: Path):
     ctf_dir = None
 
     for file_name in os.listdir(meg_dir):
-        logging.debug(f"Parsing {meg_dir}")
+        logging.debug(f"Parsing {meg_dir} {file_name}")
 
         if re.match(r"^sub-[AV]\d+_task-visual_meg\.ds$", file_name):
             ctf_dir = meg_dir / file_name

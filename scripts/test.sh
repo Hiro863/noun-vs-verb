@@ -9,4 +9,4 @@
 #SBATCH --chdir=logs
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-python scripts/meg-mvpa/scriptstest_script.py
+python scripts/meg-mvpa/scripts/test_script.py

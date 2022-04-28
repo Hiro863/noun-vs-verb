@@ -7,11 +7,11 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 
-#SBATCH --chdir=logs
+#SBATCH --chdir=/data/home/hiroyoshi/logs
 
 #SBATCH --mem=15gb
 #SBATCH --ntasks=10
 
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/test_preprocessing.py 1 2 #$SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE
+python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/test_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE

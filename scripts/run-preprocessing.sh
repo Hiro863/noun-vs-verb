@@ -9,7 +9,7 @@
 
 #SBATCH --chdir=logs
 
-#SBATCH --mem=15gb
+#SBATCH --mem=1gb
 #SBATCH --ntasks=10
 
 echo "Running test_preprocessing"

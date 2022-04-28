@@ -9,10 +9,8 @@
 
 #SBATCH --chdir=logs
 
-#SBATCH --mem=1gb
+#SBATCH --mem=15gb
 #SBATCH --ntasks=10
 
-echo "Running test_preprocessing"
-
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-python scripts/meg-mvpa/scripts/test_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE
+python scripts/test_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE

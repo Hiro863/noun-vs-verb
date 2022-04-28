@@ -13,5 +13,7 @@
 #SBATCH --ntasks=10
 
 echo $SLURM_ARRAY_TASK_ID
+echo $SLURM_NTASKS_PER_NODE
+echo "--"
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/test_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE

@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=10
 
 #SBATCH --job-name=test_preprocessing
-#SBATCH --mail-type=BEGIN,END, FAIL
+#SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 
 #SBATCH --chdir=logs

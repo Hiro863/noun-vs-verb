@@ -12,6 +12,6 @@
 #SBATCH --mem=15gb
 #SBATCH --ntasks=10
 
-cd /data/home/hiroyoshi/scripts/meg-mvpa
+
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-python scripts/run_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE
+python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/test_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE

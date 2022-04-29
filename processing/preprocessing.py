@@ -19,6 +19,9 @@ from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
+root = get_project_root()
+log_path = root / "data/logs"
+
 logging.basicConfig(level=logging.DEBUG,
                     format=fmt,
                     handlers=[logging.StreamHandler(sys.stdout)])

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=test_preprocessing
-#SBATCH --array=1,2,3          ## subject IDs
+#SBATCH --array=1          ## subject IDs
 #SBATCH --ntasks-per-node=10   ## number of cores per subject
 
 #SBATCH --mail-type=BEGIN,END

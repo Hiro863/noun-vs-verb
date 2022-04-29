@@ -1,14 +1,16 @@
 import logging
 from math import isnan
 import re
+import sys
 import numpy as np
-import mne
 import pandas as pd
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
-logging.basicConfig(level=logging.DEBUG, filename="../../data/logs/debug.log", format=fmt)
+logging.basicConfig(level=logging.DEBUG,
+                    format=fmt,
+                    handlers=[logging.StreamHandler(sys.stdout)])
 
 id_to_name = {1: "word",
               2: "word",

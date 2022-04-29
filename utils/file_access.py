@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 import re
 from typing import Union, Callable
 from pathlib import Path
@@ -14,10 +15,9 @@ def get_project_root() -> Path:
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
-root = get_project_root()
-print(root)
-
-logging.basicConfig(level=logging.DEBUG, filename=root / "meg-mvpa/data/logs/debug.log", format=fmt)
+logging.basicConfig(level=logging.DEBUG,
+                    format=fmt,
+                    handlers=[logging.StreamHandler(sys.stdout)])
 
 
 def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None, Raw]:

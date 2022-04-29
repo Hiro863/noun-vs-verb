@@ -21,7 +21,7 @@ fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: "
 root = get_project_root()
 log_path = root / "meg-mvpa/data/logs"
 
-logging.basicConfig(level=logging.DEBUG, format=fmt)
+#logging.basicConfig(level=logging.DEBUG, format=fmt)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 

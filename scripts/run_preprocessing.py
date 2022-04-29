@@ -7,10 +7,8 @@ from processing.preprocessing import process_single_subject
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
-log_path = Path("../../data/logs")
-
-logging.basicConfig(level=logging.DEBUG, filename=log_path / "debug.log", format=fmt)
-
+logging.basicConfig(level=logging.DEBUG, format=fmt)
+logging.getLogger().addHandler(logging.StreamHandler())
 
 ########################################################################################################################
 # RUN PREPROCESSING ON A SINGLE SUBJECT DATA                                                                           #
@@ -21,6 +19,7 @@ logging.basicConfig(level=logging.DEBUG, filename=log_path / "debug.log", format
 #       - <subject name>-epo.fif                    Epochs object in .fif format                                       #
 #       - <subject name>-<cortical area name>.stc   SourceEstimate object in .stc format                               #
 ########################################################################################################################
+
 
 def get_args():
 

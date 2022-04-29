@@ -20,7 +20,7 @@ fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: "
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
 root = get_project_root()
-log_path = root / "data/logs"
+log_path = root / "meg-mvpa/data/logs"
 
 logging.basicConfig(level=logging.DEBUG,
                     format=fmt,

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --array=1001,1003,1004          ## subject IDs
+#SBATCH --array=1001,1003
 #SBATCH --ntasks-per-node=10
 #SBATCH --job-name=freesurfer-recon-all
 #SBATCH --mail-type=BEGIN,END,

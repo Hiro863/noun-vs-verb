@@ -199,7 +199,7 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
         epoch_fname = f"{subject}-epo.fif"
         logging.debug(f"Writing {epoch_fname} epochs to file")
         try:
-            epochs.save(str(dst_dir / epoch_fname))
+            epochs.save(str(dst_dir / epoch_fname), overwrite=True)
         except OSError as e:
             msg = f"Failed to write the file {dst_dir / epoch_fname}. {e}"
             logging.exception(msg)

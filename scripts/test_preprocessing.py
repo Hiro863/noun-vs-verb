@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     # Set up directories
     root = Path("/data/home/hiroyoshi/test-dir")
-    src_dir = root / "test-src" / subj_name
+    src_dir = Path("/data/home/hiroyoshi/data/MOUS") / subj_name
     dst_dir = root / "test-dst"
     events_dir = root / "events_dir"
     param_dir = root / "param_dir"

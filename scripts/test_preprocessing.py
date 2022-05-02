@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     # Get input from the bash script
     subj_id = sys.argv[1]
-    n_cores = sys.argv[2]
+    n_cores = int(sys.argv[2])
 
     subj_name = f"sub-V1{str(subj_id).zfill(3)}"
 

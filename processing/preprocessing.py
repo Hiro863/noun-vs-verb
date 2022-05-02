@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.DEBUG,
 ########################################################################################################################
 
 
-def downsample(raw: Raw, params: dict) -> Tuple[Raw, np.array, np.array]:
+def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]:
     """
     Downsample to some lower sampling frequency
     :param raw: raw object
@@ -56,7 +56,8 @@ def downsample(raw: Raw, params: dict) -> Tuple[Raw, np.array, np.array]:
     if sfreq > 0 and not None:
         logging.debug(f"Resampling at {sfreq} Hz")
 
-        raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=params["n_jobs"])
+        n_jobs = min(n_jobs, params["n_jobs"])
+        raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
         return raw, events, new_events
     else:
@@ -357,7 +358,8 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                            subject_name: str,
                            downsample_params: dict, filter_params: dict,
                            artifact_params: dict, epoch_params: dict,
-                           stc_params: dict) -> None:
+                           stc_params: dict,
+                           n_cores) -> None:
 
     logging.debug(f"Processing subject data from {src_dir}")
 
@@ -368,7 +370,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
         raw = read_raw(src_dir=src_dir, dst_dir=dst_dir, file_reader=read_mous_subject)
 
         # Resample
-        raw, events, new_events = downsample(raw, downsample_params)
+        raw, events, new_events = downsample(raw, downsample_params, n_jobs=n_cores)
 
         # Filter
         if filter_params["filter"]:

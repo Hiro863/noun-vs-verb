@@ -26,6 +26,8 @@ if __name__ == "__main__":
 
     # Read raw
     #raw = read_mous_subject(data_dir / subj_name)
-    info = read_info("/data/home/hiroyoshi/data/MOUS/sub-V1001/meg/sub-V1001_task-visual_meg.ds")#str(data_dir / subj_name))
+    raw.save(data_dir / f"{subj_name}-raw.fif")
 
-    get_trans(subject=str(subjects_dir), dst_dir=dst_dir, subjects_dir=subjects_dir, info=info)
+    #info = read_info("/data/home/hiroyoshi/data/MOUS/sub-V1001/meg/sub-V1001_task-visual_meg.ds")#str(data_dir / subj_name))
+
+    #get_trans(subject=str(subjects_dir), dst_dir=dst_dir, subjects_dir=subjects_dir, info=info)

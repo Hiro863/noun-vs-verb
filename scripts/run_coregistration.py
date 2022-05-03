@@ -25,7 +25,7 @@ if __name__ == "__main__":
     dst_dir = data_dir / subj_name
 
     # Read raw
-    #raw = read_mous_subject(data_dir / subj_name)
+    raw = read_mous_subject(data_dir / subj_name)
     raw.save(data_dir / f"{subj_name}-raw.fif")
 
     #info = read_info("/data/home/hiroyoshi/data/MOUS/sub-V1001/meg/sub-V1001_task-visual_meg.ds")#str(data_dir / subj_name))

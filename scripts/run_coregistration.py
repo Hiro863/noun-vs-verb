@@ -26,6 +26,6 @@ if __name__ == "__main__":
 
     # Read raw
     raw = read_mous_subject(data_dir / subj_name)
-    info = read_info(data_dir / subj_name)
+    info = read_info(str(data_dir / subj_name))
 
     get_trans(subject=str(subjects_dir), dst_dir=dst_dir, subjects_dir=subjects_dir, info=info)

@@ -15,4 +15,4 @@ param_dir=/data/home/hiroyoshi/params
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts
-python $scripts_dir/run_coregstration.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir
+python $scripts_dir/run_coregistration.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir

@@ -106,8 +106,8 @@ def read_mous_subject(subject_dir: Path):
         msg = f"The CTF directory in {meg_dir} was not found."
         logging.exception(msg)
         raise FileNotFoundError(msg)
-    print(ctf_dir)
-    raw = read_raw_ctf(str(ctf_dir), preload=True)#.crop(0, 30)  # todo: debug purpose, remove crop
+
+    raw = read_raw_ctf(str(ctf_dir), preload=True)
 
     logging.debug(f"File {ctf_dir} successfully read")
     return raw

@@ -152,7 +152,6 @@ def _get_array_size(paths, sensor=False):
             epochs = read_epochs(path)
             x = epochs.get_data()
         else:
-            print(str(path))
             x = np.load(str(path))
 
         dim_0 += x.shape[0]

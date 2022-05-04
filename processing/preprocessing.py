@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label)
+                 find_events, Epochs, SourceEstimate, Label, read_forward_solution)
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -119,10 +119,9 @@ def remove_artifacts(raw: Raw, n_components: int,
 def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> Raw:
 
     logging.debug(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
-    # todo: filter
 
-    #todo raw.filter(l_freq=l_freq, h_freq=h_freq)
-    #raw_highpass = raw.copy().filter(l_freq=cutoff, h_freq=None)
+    raw = raw.filter(l_freq=l_freq, h_freq=h_freq)
+    raw = raw.notch_filter(freqs=notch)
 
     return raw
 
@@ -230,15 +229,16 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict) -
     # Generate set of labels
     labels = read_labels_from_annot(params["subject"], params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
-    inv = get_operator(epochs, trans=params["trans"], src=params["src"], bem=params["bem"])
+    #inv = get_operator(epochs, trans=params["trans"], src=params["src"], bem=params["bem"])
+    inv = get_inv(epochs, fwd_path=params["fwd_path"])
+
     for label in labels:
 
         # Ignore irrelevant labels
         if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
             continue
 
-        stcs = _inverse_epochs(epochs, label, inv=inv, method=params["method"], pick_ori=params["pick ori"],
-                               trans=params["trans"], src=params["src"], bem=params["bem"])
+        stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"], pick_ori=params["pick ori"])
 
         data_array = _concatenate_arrays(stcs)
 
@@ -291,15 +291,16 @@ def _write_array(dst_dir: Path, label: Label, data_array):
         raise SubjectNotProcessedError(e)
 
 
-def _inverse_evoked(evoked, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
-                    epochs=None, trans=None, src=None, bem=None,
-                    mindist=5., n_jobs=1, tmax=0.,
+def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
+                    epochs=None, n_jobs=1, tmax=0.,
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=True):
 
     if not inv:
-        inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
-                           method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
+        inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
+                      loose=loose, depth=depth, verbose=verbose)
+        #inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
+        #                   method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
 
     lambda2 = 1. / snr ** 2
     return apply_inverse(evoked, inv, lambda2,
@@ -308,14 +309,15 @@ def _inverse_evoked(evoked, method="dSPM", snr=3., return_residual=True, pick_or
 
 
 def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, inv=None,
-                    trans=None, src=None, bem=None,
-                    mindist=5., n_jobs=1, tmax=0.,
+                    n_jobs=1, tmax=0., fwd_path="",
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=True):
 
     if not inv:
-        inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
-                           method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
+        inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
+                      loose=loose, depth=depth, verbose=verbose)
+        #inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
+        #                   method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
 
     lambda2 = 1. / snr ** 2
     return apply_inverse_epochs(epochs, inv, lambda2, label=label,
@@ -328,6 +330,14 @@ def get_operator(epochs, trans, src, bem, mindist=5., n_jobs=1, tmax=0.,
 
     fwd = make_forward_solution(epochs.info, trans=trans, src=src, bem=bem, mindist=mindist,
                                 n_jobs=n_jobs, verbose=verbose)
+    noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, verbose=verbose)
+    inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
+    return inv
+
+
+def get_inv(epochs, fwd_path, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
+            rank=None, loose=0.2, depth=0.8, verbose=True):
+    fwd = read_forward_solution(fwd_path, verbose=False)
     noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, verbose=verbose)
     inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
     return inv

@@ -1,4 +1,9 @@
 {
+  "directories":
+  {
+    "root": "/data/home/hiroyoshi/results",
+    "raw-dir": "/data/home/hiroyoshi/data/MOUS"
+  },
   "downsample params":
     {
       "sfreq": 100,
@@ -46,7 +51,7 @@
     "stc params":
     {
       "subject": "fsaverage",
-      "fwd_path": "",
+      "fwd_path": "/data/home/hiroyoshi/data/MOUS/fwds",
       "parcellation": "aparc",
       "hemi": "lh",
       "subjects dir": "/data/home/hiroyoshi/data/MNE-sample-data/subjects",

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH --job-name=test_preprocessing
-#SBATCH --array=1          ## subject IDs
+#SBATCH --job-name=preprocessing
+#SBATCH --array=1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,19,20       ## subject IDs
 #SBATCH --ntasks-per-node=10   ## number of cores per subject
 
 #SBATCH --mail-type=BEGIN,END
@@ -11,7 +11,9 @@
 
 #SBATCH --mem=15gb
 
+scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts  # scripts directory
+param_dir=/data/home/hiroyoshi/results/param-dir           # parameter directory
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts
-python $scripts_dir/test_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE
+
+python $scripts_dir/run_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir

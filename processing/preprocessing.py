@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label)
+                 find_events, Epochs, SourceEstimate, Label, read_forward_solution)
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -56,7 +56,6 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     if sfreq > 0 and not None:
         logging.debug(f"Resampling at {sfreq} Hz")
 
-        n_jobs = min(n_jobs, params["n_jobs"])
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
         return raw, events, new_events
@@ -69,7 +68,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
 
 
 def remove_artifacts(raw: Raw, n_components: int,
-                     eog_channels=None, ecg_channel=None) -> Raw:
+                     eog_channels=None, ecg_channel=None, n_jobs=1) -> Raw:
     """
     Perform artifact removal using ICA.
     :param raw: mne raw object
@@ -86,7 +85,7 @@ def remove_artifacts(raw: Raw, n_components: int,
     # Perform ICA
     logging.info(f"Starting ICA with {n_components} components")
 
-    filtered_raw = raw.copy().filter(l_freq=1., h_freq=None)
+    filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
 
     ica = ICA(n_components=n_components)
     ica.fit(filtered_raw)
@@ -96,13 +95,13 @@ def remove_artifacts(raw: Raw, n_components: int,
     # Remove ocular artifacts
     if eog_channels is not None:
         logging.debug("Repairing ocular artifacts")
-        eog_indices, _ = ica.find_bads_eog(raw, ch_name=eog_channels, verbose=False)
+        eog_indices, _ = ica.find_bads_eog(raw, ch_name=eog_channels, verbose=True)
         ica.exclude = eog_indices
 
     # Remove heartbeat artifacts
     if ecg_channel is not None:
         logging.debug("Repairing heartbeat artifacts")
-        ecg_indices, _ = ica.find_bads_eog(raw, ch_name=ecg_channel, verbose=False)
+        ecg_indices, _ = ica.find_bads_eog(raw, ch_name=ecg_channel, verbose=True)
         ica.exclude = ecg_indices
 
     logging.info(f"Total of {len(ica.exclude)} components removed")
@@ -119,10 +118,9 @@ def remove_artifacts(raw: Raw, n_components: int,
 def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> Raw:
 
     logging.debug(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
-    # todo: filter
 
-    #todo raw.filter(l_freq=l_freq, h_freq=h_freq)
-    #raw_highpass = raw.copy().filter(l_freq=cutoff, h_freq=None)
+    raw = raw.filter(l_freq=l_freq, h_freq=h_freq)
+    raw = raw.notch_filter(freqs=notch)
 
     return raw
 
@@ -214,7 +212,7 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
 ########################################################################################################################
 
 
-def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict) -> None:
+def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     """
     Source localize and save the data as a numpy array
     :param dst_dir: path to directory in which results will be saved
@@ -230,15 +228,17 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict) -
     # Generate set of labels
     labels = read_labels_from_annot(params["subject"], params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
-    inv = get_operator(epochs, trans=params["trans"], src=params["src"], bem=params["bem"])
+
+    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
+
     for label in labels:
 
         # Ignore irrelevant labels
         if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
             continue
 
-        stcs = _inverse_epochs(epochs, label, inv=inv, method=params["method"], pick_ori=params["pick ori"],
-                               trans=params["trans"], src=params["src"], bem=params["bem"])
+        stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
+                               pick_ori=params["pick ori"], n_jobs=n_jobs)
 
         data_array = _concatenate_arrays(stcs)
 
@@ -291,15 +291,14 @@ def _write_array(dst_dir: Path, label: Label, data_array):
         raise SubjectNotProcessedError(e)
 
 
-def _inverse_evoked(evoked, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
-                    epochs=None, trans=None, src=None, bem=None,
-                    mindist=5., n_jobs=1, tmax=0.,
+def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
+                    epochs=None, n_jobs=1, tmax=0.,
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=True):
 
     if not inv:
-        inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
-                           method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
+        inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
+                      loose=loose, depth=depth, verbose=verbose)
 
     lambda2 = 1. / snr ** 2
     return apply_inverse(evoked, inv, lambda2,
@@ -308,14 +307,13 @@ def _inverse_evoked(evoked, method="dSPM", snr=3., return_residual=True, pick_or
 
 
 def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, inv=None,
-                    trans=None, src=None, bem=None,
-                    mindist=5., n_jobs=1, tmax=0.,
+                    n_jobs=1, tmax=0., fwd_path="",
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=True):
 
     if not inv:
-        inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
-                           method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
+        inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
+                      loose=loose, depth=depth, verbose=verbose)
 
     lambda2 = 1. / snr ** 2
     return apply_inverse_epochs(epochs, inv, lambda2, label=label,
@@ -328,6 +326,14 @@ def get_operator(epochs, trans, src, bem, mindist=5., n_jobs=1, tmax=0.,
 
     fwd = make_forward_solution(epochs.info, trans=trans, src=src, bem=bem, mindist=mindist,
                                 n_jobs=n_jobs, verbose=verbose)
+    noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, verbose=verbose)
+    inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
+    return inv
+
+
+def get_inv(epochs, fwd_path, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
+            rank=None, loose=0.2, depth=0.8, verbose=True):
+    fwd = read_forward_solution(fwd_path, verbose=False)
     noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, verbose=verbose)
     inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
     return inv
@@ -359,7 +365,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                            downsample_params: dict, filter_params: dict,
                            artifact_params: dict, epoch_params: dict,
                            stc_params: dict,
-                           n_cores) -> None:
+                           n_cores: int) -> None:
 
     logging.debug(f"Processing subject data from {src_dir}")
 
@@ -375,13 +381,13 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
         # Filter
         if filter_params["filter"]:
             raw = apply_filter(raw, l_freq=filter_params["l_freq"], h_freq=filter_params["h_freq"],
-                               notch=filter_params["notch"], n_jobs=filter_params["n_jobs"])
+                               notch=filter_params["notch"], n_jobs=n_cores)
 
         # Remove physiological artifacts
         if artifact_params["eog"] or artifact_params["ecg"]:
             raw = remove_artifacts(raw, n_components=artifact_params["n components"],
                                    eog_channels=artifact_params["eog channels"],
-                                   ecg_channel=artifact_params["ecg channel"])
+                                   ecg_channel=artifact_params["ecg channel"], n_jobs=n_cores)
 
         # Epoch
         epochs = epoch(dst_dir=dst_dir, events_dir=events_dir, subject=subject_name, raw=raw,
@@ -391,7 +397,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                        reject=epoch_params["reject"], channel_reader=get_mous_meg_channels)
 
         # Source localize
-        source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params)
+        source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
 
     except SubjectNotProcessedError as e:
         logging.error(f"Subject {subject_name} was not processed correctly. \n {e} \n {traceback.format_exc()}")

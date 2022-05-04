@@ -93,6 +93,16 @@ pos_dict = {"N": 1,
             "CONJ": 6}
 
 
+def convert_to_nv(meaning_id, dictionary):
+    match = dictionary.iloc[[meaning_id]]
+    if match["Class"].values[0] == "N":
+        return True, 0
+    elif match["Class"].values[0] == "V":
+        return True,
+    else:
+        return False, -1
+
+
 def convert_to_pos(meaning_id, dictionary, picks=("V", "N"),
                    include_ambiguous=False, include_homonyms=False):  # todo: fix picks
 

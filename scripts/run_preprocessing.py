@@ -13,7 +13,7 @@ if __name__ == "__main__":
     subj_name = f"sub-V1{str(subj_id).zfill(3)}"
 
     # Get the parameters
-    params = read_json(param_dir, "preprocess_params.json")
+    params = read_json(param_dir, "preprocess-params.json")
 
     # Set up directories
     root = Path(params["directories"]["root"])

@@ -24,8 +24,8 @@
 
     "artifact params":
     {
-      "eog": false,
-      "ecg": false,
+      "eog": true,
+      "ecg": true,
       "n components": 0.99,
       "eog channels": ["EEG057", "EEG058"],
       "ecg channel": "EEG059"

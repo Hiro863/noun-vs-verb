@@ -229,7 +229,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict) -
     # Generate set of labels
     labels = read_labels_from_annot(params["subject"], params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
-    #inv = get_operator(epochs, trans=params["trans"], src=params["src"], bem=params["bem"])
+
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif")
 
     for label in labels:
@@ -299,8 +299,6 @@ def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=Tru
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
                       loose=loose, depth=depth, verbose=verbose)
-        #inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
-        #                   method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
 
     lambda2 = 1. / snr ** 2
     return apply_inverse(evoked, inv, lambda2,
@@ -316,8 +314,6 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
                       loose=loose, depth=depth, verbose=verbose)
-        #inv = get_operator(epochs, trans=trans, src=src, bem=bem, mindist=mindist, n_jobs=n_jobs, tmax=tmax,
-        #                   method=inv_method, rank=rank, loose=loose, depth=depth, verbose=verbose)
 
     lambda2 = 1. / snr ** 2
     return apply_inverse_epochs(epochs, inv, lambda2, label=label,

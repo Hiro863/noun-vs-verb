@@ -9,7 +9,7 @@
 
 #SBATCH --chdir=/data/home/hiroyoshi/logs
 
-#SBATCH --mem=20gb
+#SBATCH --mem=100gb
 ##,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,19,20       ## subject IDs
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts  # scripts directory

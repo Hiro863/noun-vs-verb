@@ -230,7 +230,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict) -
     labels = read_labels_from_annot(params["subject"], params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
     #inv = get_operator(epochs, trans=params["trans"], src=params["src"], bem=params["bem"])
-    inv = get_inv(epochs, fwd_path=params["fwd_path"])
+    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif")
 
     for label in labels:
 

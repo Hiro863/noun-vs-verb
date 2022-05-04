@@ -56,6 +56,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     if sfreq > 0 and not None:
         logging.debug(f"Resampling at {sfreq} Hz")
 
+        n_jobs = max(5, n_jobs)  # to avoid running out of memory
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
         return raw, events, new_events
@@ -85,6 +86,7 @@ def remove_artifacts(raw: Raw, n_components: int,
     # Perform ICA
     logging.info(f"Starting ICA with {n_components} components")
 
+    n_jobs = max(5, n_jobs)  # to avoid running out of memory
     filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
 
     ica = ICA(n_components=n_components)

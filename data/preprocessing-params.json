@@ -6,20 +6,18 @@
   },
   "downsample params":
     {
-      "sfreq": 100,
-      "n_jobs": 10
+      "sfreq": 100
     },
 
     "filter params":
     {
-      "filter": false,
+      "filter": true,
       "l_freq": 0.1,
       "h_freq": 50,
       "notch": [
         50,
         100
-      ],
-      "n_jobs": 10
+      ]
     },
 
     "artifact params":
@@ -57,7 +55,5 @@
       "subjects dir": "/data/home/hiroyoshi/data/MNE-sample-data/subjects",
       "method": "dSPM",
       "pick ori": null
-    },
-
-    "n_jobs": 2
+    }
 }

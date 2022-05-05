@@ -10,7 +10,7 @@ def main(raw_dir, subjects_dir, fwd_dir, subject):
 
     raw_paths = get_mous_raw_paths(raw_dir)
 
-    path = raw_dir / subject / "meg" / "sub-V1020_task-visual_meg.ds"
+    path = raw_dir / subject
     raw = read_mous_subject(path, preload=False)
 
     trans = get_trans(subject=subject, subjects_dir=subjects_dir, info=raw.info)
@@ -28,7 +28,7 @@ def main(raw_dir, subjects_dir, fwd_dir, subject):
         write_forward_solution(fwd_dir / f"{subject}-fwd.fif", fwd, overwrite=True)
     except RuntimeError as e:
         print(f"Runtime error: {e}")
-        print(f"Failed to make forward model with one layers")
+        print(f"Failed to make forward model with one layer")
 
 
 if __name__ == "__main__":

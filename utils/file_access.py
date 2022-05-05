@@ -89,7 +89,7 @@ def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
     return path_list
 
 
-def read_mous_subject(subject_dir: Path):
+def read_mous_subject(subject_dir: Path, preload=True):
     # later comment
     logging.debug(f"Parsing {subject_dir}")
 
@@ -107,7 +107,7 @@ def read_mous_subject(subject_dir: Path):
         logging.exception(msg)
         raise FileNotFoundError(msg)
 
-    raw = read_raw_ctf(str(ctf_dir), preload=True)
+    raw = read_raw_ctf(str(ctf_dir), preload=preload)
 
     logging.debug(f"File {ctf_dir} successfully read")
     return raw

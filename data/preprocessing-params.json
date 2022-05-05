@@ -16,10 +16,7 @@
       "h_freq": 50,
       "notch": [
         50,
-        100,
-        150,
-        200,
-        250
+        100
       ]
     },
 
@@ -54,7 +51,7 @@
       "fwd_path": "/data/home/hiroyoshi/data/MOUS/fwds",
       "parcellation": "aparc_sub",
       "hemi": "both",
-      "subjects dir": "/data/home/hiroyoshi/data/MNE-sample-data/subjects",
+      "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
       "pick ori": "vector"
     }

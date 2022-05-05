@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label, read_forward_solution)
+                 find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels)
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -56,6 +56,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     if sfreq > 0 and not None:
         logging.debug(f"Resampling at {sfreq} Hz")
 
+        n_jobs = min(5, n_jobs)  # to avoid running out of memory
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
         return raw, events, new_events
@@ -85,6 +86,7 @@ def remove_artifacts(raw: Raw, n_components: int,
     # Perform ICA
     logging.info(f"Starting ICA with {n_components} components")
 
+    n_jobs = min(5, n_jobs)  # to avoid running out of memory
     filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
 
     ica = ICA(n_components=n_components)
@@ -226,8 +228,11 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     logging.debug(f"Source localizing {subject} files")
 
     # Generate set of labels
-    labels = read_labels_from_annot(params["subject"], params["parcellation"], params["hemi"],
+    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
+    labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
+                          subjects_dir=params["subjects dir"],
+                          surf_name="white", verbose=None)
 
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 

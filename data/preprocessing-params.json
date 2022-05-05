@@ -6,7 +6,7 @@
   },
   "downsample params":
     {
-      "sfreq": 100
+      "sfreq": 250
     },
 
     "filter params":
@@ -41,19 +41,18 @@
         "response/2": 60,
         "response/3": 70
       },
-      "tmin": -0.3,
-      "tmax": 1.0,
+      "tmin": -0.5,
+      "tmax": 1.5,
       "reject": null
     },
 
     "stc params":
     {
-      "subject": "fsaverage",
       "fwd_path": "/data/home/hiroyoshi/data/MOUS/fwds",
-      "parcellation": "aparc",
-      "hemi": "lh",
-      "subjects dir": "/data/home/hiroyoshi/data/MNE-sample-data/subjects",
+      "parcellation": "aparc_sub",
+      "hemi": "both",
+      "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
-      "pick ori": null
+      "pick ori": "vector"
     }
 }

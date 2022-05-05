@@ -13,4 +13,4 @@
 
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/test_dataset.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE
+python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/run_dataset.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE

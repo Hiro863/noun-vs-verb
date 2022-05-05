@@ -1,3 +1,4 @@
+import os
 import sys
 from utils.file_access import read_json
 from pathlib import Path
@@ -20,6 +21,9 @@ if __name__ == "__main__":
     raw_dir = Path(params["directories"]["raw-dir"]) / subj_name
     epochs_dir = root / "epochs-dir" / subj_name
     events_dir = root / "events-dir"
+
+    if not epochs_dir.exists():
+        os.makedirs(epochs_dir)
 
     process_single_subject(raw_dir, epochs_dir, events_dir, subj_name,
                            downsample_params=params["downsample params"], filter_params=params["filter params"],

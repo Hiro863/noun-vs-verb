@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # Set up directories
     root = Path(params["directories"]["root"])
     raw_dir = Path(params["directories"]["raw-dir"]) / subj_name
-    epochs_dir = root / "epochs-dir"
+    epochs_dir = root / "epochs-dir" / subj_name
     events_dir = root / "events-dir"
 
     process_single_subject(raw_dir, epochs_dir, events_dir, subj_name,

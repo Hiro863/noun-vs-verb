@@ -2,26 +2,16 @@ import sys
 import re
 from pathlib import Path
 from mne import write_forward_solution
-from utils.file_access import get_mous_raw_paths, read_mous_subject
+from utils.file_access import read_mous_subject
 from processing.coregistration import get_trans, get_forward
 
 
 def main(raw_dir, subjects_dir, fwd_dir, subject):
 
-    raw_paths = get_mous_raw_paths(raw_dir)
-
     path = raw_dir / subject
     raw = read_mous_subject(path, preload=False)
 
     trans = get_trans(subject=subject, subjects_dir=subjects_dir, info=raw.info)
-    """try:
-        fwd = get_forward(info=raw.info, trans=trans, subject=subject, subjects_dir=subjects_dir, layers=3)
-        write_forward_solution(fwd_dir / f"{subject}-fwd.fif", fwd, overwrite=True)
-    except RuntimeError as e:
-        print(f"Runtime error: {e}")
-        print(f"Failed to make forward model with three layers for the subject {subject}")
-        print("Trying one layer instead...")
-        failed_list.append(f"{subject}: failed for 3 layers")"""
 
     try:
         fwd = get_forward(info=raw.info, trans=trans, subject=subject, subjects_dir=subjects_dir, layers=1)

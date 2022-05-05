@@ -14,7 +14,7 @@
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts  # scripts directory
 mous_dir=/data/home/hiroyoshi/data/MOUS
 subjects_dir=/data/home/hiroyoshi/freesurfer/subjects
-fwd_dir=/data/home/hiroyoshi/MOUS/fwds
+fwd_dir=/data/home/hiroyoshi/data/MOUS/fwds
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 

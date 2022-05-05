@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label, read_forward_solution)
+                 find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels)
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -228,8 +228,11 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     logging.debug(f"Source localizing {subject} files")
 
     # Generate set of labels
-    labels = read_labels_from_annot(params["subject"], params["parcellation"], params["hemi"],
+    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
+    labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
+                          subjects_dir=params["subjects dir"],
+                          surf_name="white", verbose=None)
 
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 

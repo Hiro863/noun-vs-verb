@@ -34,11 +34,11 @@ def generate_id_df(id_to_word, dictionary):
     return df
 
 
-def get_token_to_meaning_dict(df_path, missing="drop"):
+def get_token_to_meaning_dict(df_path): # missing="drop"):
     df = pd.read_csv(df_path)
 
-    if missing == "drop":
-        df.drop(df[df["meaning ID"] < 0].index, inplace=True)  # drop ambiguous cases
+    #if missing == "drop":
+    #    df.drop(df[df["meaning ID"] < 0].index, inplace=True)  # drop ambiguous cases
 
     token_to_meaning = {row["token ID"]: row["meaning ID"] for _, row in df.iterrows()}
     return token_to_meaning

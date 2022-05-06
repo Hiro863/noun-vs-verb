@@ -272,6 +272,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     dir_path = Path(temp_dir.name)
     print("temp ")
     n_stcs = len(stcs)
+    print(stcs[0].data.shape)
     for i, stc in enumerate(stcs):
         print(i)
         stc.save(str(dir_path / f"{i}.stc"))
@@ -279,6 +280,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     del stcs  # save RAM
 
     fs_stcs = []
+
     for i in range(n_stcs):
         print(f"{i} source")
         stc = read_source_estimate(str(dir_path / f"{i}.stc"), subject=subject)

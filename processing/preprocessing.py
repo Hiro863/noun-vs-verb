@@ -9,7 +9,8 @@ from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
                  find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels,
-                 read_source_spaces, compute_source_morph, read_source_estimate)
+                 read_source_spaces, compute_source_morph, extract_label_time_course)
+from mne.label import select_sources
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -216,6 +217,35 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
 ########################################################################################################################
 
 
+def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
+    logging.debug(f"Source localizing {subject} files")
+
+    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
+
+    # Common source space
+    fsaverage_src_path = Path(params["subjects dir"] + "_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
+    fs_src = read_source_spaces(str(fsaverage_src_path))
+    morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
+                                 subjects_dir=params["subjects dir"]+ "_")
+
+    # Generate set of labels
+    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
+                                    subjects_dir=params["subjects dir"] + "_", verbose=False)
+    for label in labels:
+        logging.debug(f"Starting the source localization for the {label.name}")
+
+        # Ignore irrelevant labels
+        if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
+            continue
+
+        stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"], n_jobs=n_jobs)
+
+        stcs = _morph_to_common(stcs, morph)
+        data = extract_label_time_course(stcs, labels=label)
+        print(data.shape)
+
+
+
 def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     """
     Source localize and save the data as a numpy array
@@ -266,42 +296,11 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         logging.debug(f"Source localization for {subject} has finished")
 
 
-def _morph_to_common(stcs, subject, fs_src, subjects_dir):
-    logging.debug(f"Morphing to a common source space")
+def _morph_to_common(stcs, morph):
 
-    """temp_dir = tempfile.TemporaryDirectory()
-    dir_path = Path(temp_dir.name)
-
-    paths = []
-    for i, stc in enumerate(stcs):
-        print(stc)
-        print(i)
-        path = str(dir_path / str(i))
-        stc.save(path, ftype="stc")
-        paths.append(path)
-        del stc
-
-    del stcs  # save RAM"""
-
-    fs_stcs = []
-
-    for i, stc in enumerate(stcs):
-        #stc = read_source_estimate(path, subject=subject)
-        #print(path)
-        print(stc)
-        print(stc.data.shape)
-        print(f"stc data: size {sys.getsizeof(stc.data)}")
-        print(f"stc shape: {stc.data.shape}")
-        morph = compute_source_morph(stc, subject_from=subject, subject_to="fsaverage", src_to=fs_src,
-                                     subjects_dir=subjects_dir)
-
+    for stc in stcs:
         fs_stc = morph.apply(stc)
-        print(f"fs data: size {sys.getsizeof(fs_stc.data)}")
-        print(f"stc shape: {fs_stc.data.shape}")
-        fs_stcs.append(fs_stc.data)
-
-    #temp_dir.cleanup()
-    return fs_stcs
+        yield fs_stc
 
 
 def concatenate_arrays(stc_data):
@@ -470,7 +469,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
         # Source localize
         if stc:
-            source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
+            _source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
 
     except SubjectNotProcessedError as e:
         logging.error(f"Subject {subject_name} was not processed correctly. \n {e} \n {traceback.format_exc()}")

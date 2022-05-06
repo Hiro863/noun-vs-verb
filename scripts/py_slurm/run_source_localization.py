@@ -2,7 +2,7 @@ import sys
 from utils.file_access import read_json, write_json
 from pathlib import Path
 from mne import read_epochs
-from processing.preprocessing import _source_localize
+from processing.preprocessing import source_localize_
 
 if __name__ == "__main__":
 
@@ -22,6 +22,6 @@ if __name__ == "__main__":
 
     epochs = read_epochs(epochs_dir / f"{subj_name}-epo.fif")
 
-    _source_localize(dst_dir=epochs_dir, subject=subj_name, epochs=epochs, params=params["stc params"], n_jobs=n_cores)
+    source_localize_(dst_dir=epochs_dir, subject=subj_name, epochs=epochs, params=params["stc params"], n_jobs=n_cores)
 
     write_json(dir_path=epochs_dir / "stc", file_name="parameters.json", data=params["stc params"])

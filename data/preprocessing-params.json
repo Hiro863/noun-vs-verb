@@ -53,6 +53,6 @@
       "hemi": "both",
       "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
-      "pick ori": "vector"
+      "pick ori": null
     }
 }

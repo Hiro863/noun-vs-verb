@@ -11,4 +11,3 @@
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 python /data/home/hiroyoshi/scripts/meg-mvpa/scripts/run_dataset.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE
-seff $"SLURM_JOBID" > "performance-dataset-${SLURM_ARRAY_TASK_ID}$-${SLURM_JOBID}.out"

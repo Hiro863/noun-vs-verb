@@ -6,8 +6,8 @@ import traceback
 from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
-from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels,
+from mne import (compute_covariance, read_labels_from_annot,
+                 find_events, Epochs, SourceEstimate, Label, read_forward_solution,
                  read_source_spaces, compute_source_morph, extract_label_time_course)
 
 from joblib import Parallel, delayed
@@ -290,7 +290,7 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
     logging.debug(f"{len(parallel_funcs)} time steps processed")
 
 
-def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, morph):
+def _process_single_label(dst_dir, epochs, label, inv, params, fs_src, morph):
 
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
 
@@ -299,8 +299,7 @@ def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, 
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 
-
-def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
+def source_localize_old(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     """
     Source localize and save the data as a numpy array
     :param dst_dir: path to directory in which results will be saved
@@ -340,9 +339,6 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
-        #todo: stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
-
-        #data_array = concatenate_arrays(stc_data)
         data_array = _concatenate_arrays(stcs)
 
         _write_array(dst_dir=dst_dir, label=label, data_array=data_array)

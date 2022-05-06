@@ -269,7 +269,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     logging.debug(f"Morphing to a common source space")
 
-    temp_dir = tempfile.TemporaryDirectory()
+    """temp_dir = tempfile.TemporaryDirectory()
     dir_path = Path(temp_dir.name)
 
     paths = []
@@ -281,22 +281,22 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
         paths.append(path)
         del stc
 
-    del stcs  # save RAM
+    del stcs  # save RAM"""
 
     fs_stcs = []
 
-    for i, path in enumerate(paths):
-        stc = read_source_estimate(path, subject=subject)
-        print(path)
+    for i, stc in enumerate(stcs):
+        #stc = read_source_estimate(path, subject=subject)
+        #print(path)
         print(stc)
         print(stc.data.shape)
         morph = compute_source_morph(stc, subject_from=subject, subject_to="fsaverage", src_to=fs_src, smooth="nearest",
                                      subjects_dir=subjects_dir)
         fs_stc = morph.apply(stc)
         fs_stcs.append(fs_stc.data)
-        del stc, morph, fs_stc
+        #del stc, morph, fs_stc
 
-    temp_dir.cleanup()
+    #temp_dir.cleanup()
     return fs_stcs
 
 
@@ -384,7 +384,7 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
 
     lambda2 = 1. / snr ** 2
     return apply_inverse_epochs(epochs, inv, lambda2, label=label,
-                                method=method, pick_ori=pick_ori, verbose=verbose)
+                                method=method, pick_ori=pick_ori, verbose=verbose, return_generator=True)
 
 
 def get_operator(epochs, trans, src, bem, mindist=5., n_jobs=1, tmax=0.,

@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels)
+                 find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels,
+                 read_source_spaces, compute_source_morph)
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -230,10 +231,15 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     # Generate set of labels
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
-    #todo
-    #labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
-    #                      subjects_dir=params["subjects dir"],
-    #                      surf_name="white", verbose=None)
+
+    # Morph to subject source space
+    labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
+                          subjects_dir=params["subjects dir"],
+                          surf_name="white", verbose=None)
+
+    # Common source space
+    fsaverage_src_path = Path(params["subjects dir"]) / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
+    fs_src = read_source_spaces(str(fsaverage_src_path))
 
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 
@@ -246,11 +252,26 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
+        stcs = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"])
+
         data_array = _concatenate_arrays(stcs)
 
         _write_array(dst_dir=dst_dir, label=label, data_array=data_array)
 
         logging.debug(f"Source localization for {subject} has finished")
+
+
+def _morph_to_common(stcs, subject, fs_src, subjects_dir):
+
+    morph = compute_source_morph(stcs[0], subject_from=subject,
+                                 subject_to="fsaverage", src_to=fs_src,
+                                 subjects_dir=subjects_dir)
+
+    fs_stcs = []
+    for stc in stcs:
+        fs_stc = morph.apply(stc)
+        fs_stcs.append(fs_stc)
+    return fs_stcs
 
 
 def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:

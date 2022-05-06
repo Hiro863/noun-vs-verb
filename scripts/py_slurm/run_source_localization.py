@@ -1,4 +1,3 @@
-import os
 import sys
 from utils.file_access import read_json, write_json
 from pathlib import Path

@@ -2,7 +2,6 @@ import logging
 import os
 import re
 import sys
-import tempfile
 import traceback
 from pathlib import Path
 from typing import Callable, Tuple, List
@@ -10,7 +9,8 @@ import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
                  find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels,
                  read_source_spaces, compute_source_morph, extract_label_time_course)
-from mne.label import select_sources
+
+from joblib import Parallel, delayed
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -250,6 +250,56 @@ def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
         logging.debug(f"Source localization for {subject} has finished")
 
 
+def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
+    logging.debug(f"Source localizing {subject} files")
+
+    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
+
+    # Common source space
+    logging.debug(f"Setting up morph to FS average")
+    fsaverage_src_path = Path(params["subjects dir"] + "_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
+    fs_src = read_source_spaces(str(fsaverage_src_path))
+    morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
+                                 subjects_dir=params["subjects dir"]+ "_")
+
+    # Generate set of labels
+    logging.debug(f"Reading labels")
+    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
+                                    subjects_dir=params["subjects dir"] + "_", verbose=False)
+
+    # Create parallel functions per time point
+    parallel_funcs = []
+
+    for label in labels:
+        logging.debug(f"Starting the source localization for the {label.name}")
+
+        # Ignore irrelevant labels
+        if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
+            continue
+        func = delayed(_process_single_label)(dst_dir=dst_dir, subject=subject,
+                                              epochs=epochs, label=label, inv=inv,
+                                              params=params, fs_src=fs_src,
+                                              morph=morph)
+        parallel_funcs.append(func)
+
+    print(f"Total of {len(parallel_funcs)} parallel functions added")
+
+    print(f"Executing {n_jobs} jobs in parallel")
+    parallel_pool = Parallel(n_jobs=n_jobs)
+    parallel_pool(parallel_funcs)
+
+    print(f"{len(parallel_funcs)} time steps processed")
+
+def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, morph):
+
+    stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
+
+    stcs = _morph_to_common(stcs, morph)
+    data = extract_label_time_course(stcs, labels=label, src=fs_src)
+    print(data.shape)
+    _write_array(dst_dir=dst_dir, label=label, data_array=data)
+
+    logging.debug(f"Source localization for {subject} has finished")
 
 def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     """

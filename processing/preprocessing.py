@@ -276,7 +276,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     paths = []
     for i, stc in enumerate(stcs):
         path = str(dir_path / str(i))
-        stc.save(path)
+        stc.save(path, ftype="stc")
         paths.append(path)
 
     del stcs  # save RAM

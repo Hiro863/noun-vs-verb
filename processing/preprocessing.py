@@ -296,8 +296,6 @@ def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, 
 
     stcs = _morph_to_common(stcs, morph)
     data = extract_label_time_course(stcs, labels=label, src=fs_src)
-    print(len(data))
-    print(data[0].shape)
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 

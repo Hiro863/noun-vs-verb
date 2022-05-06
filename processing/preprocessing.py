@@ -241,9 +241,12 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     fsaverage_src_path = Path(params["subjects dir"]+"_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
 
+    # Calculate inverse solution
+    logging.debug(f"Calculating the inverse solution for the subject {subject}")
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 
     for label in labels:
+        logging.debug(f"Starting the source localization for the {label.name}")
 
         # Ignore irrelevant labels
         if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):

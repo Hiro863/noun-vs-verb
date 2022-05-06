@@ -223,12 +223,14 @@ def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 
     # Common source space
+    logging.debug(f"Setting up morph to FS average")
     fsaverage_src_path = Path(params["subjects dir"] + "_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
     morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
                                  subjects_dir=params["subjects dir"]+ "_")
 
     # Generate set of labels
+    logging.debug(f"Reading labels")
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"] + "_", verbose=False)
     for label in labels:
@@ -241,7 +243,7 @@ def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
         stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"], n_jobs=n_jobs)
 
         stcs = _morph_to_common(stcs, morph)
-        data = extract_label_time_course(stcs, labels=label)
+        data = extract_label_time_course(stcs, labels=label, src=inv["src"])
         print(data.shape)
 
 

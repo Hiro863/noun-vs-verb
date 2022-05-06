@@ -234,7 +234,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
     # Morph to subject source space
     labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
-                          subjects_dir=params["subjects dir"],
+                          subjects_dir=params["subjects dir"]+"_",
                           surf_name="white", verbose=None)
 
     # Common source space

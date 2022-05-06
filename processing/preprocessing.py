@@ -256,7 +256,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
         print(inv["src"])
-
+        print(fs_src)
         stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
 
         data_array = concatenate_arrays(stc_data)

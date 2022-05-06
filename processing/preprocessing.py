@@ -243,7 +243,7 @@ def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
         stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"], n_jobs=n_jobs)
 
         stcs = _morph_to_common(stcs, morph)
-        data = extract_label_time_course(stcs, labels=label, src=inv["src"])
+        data = extract_label_time_course(stcs, labels=label, src=fs_src)
         print(data.shape)
 
 

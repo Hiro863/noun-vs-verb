@@ -291,7 +291,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
         print(stc)
         print(stc.data.shape)
         print(f"stc data: size {sys.getsizeof(stc.data)}")
-        morph = compute_source_morph(stc, subject_from=subject, subject_to="fsaverage", src_to=fs_src, smooth="nearest",
+        morph = compute_source_morph(stc, subject_from=subject, subject_to="fsaverage", src_to=fs_src,
                                      subjects_dir=subjects_dir)
 
         fs_stc = morph.apply(stc)

@@ -373,7 +373,7 @@ def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=Tru
     lambda2 = 1. / snr ** 2
     return apply_inverse(evoked, inv, lambda2,
                          method=method, pick_ori=pick_ori,
-                         return_residual=return_residual, verbose=verbose)
+                         return_residual=return_residual, verbose=False)
 
 
 def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, inv=None,

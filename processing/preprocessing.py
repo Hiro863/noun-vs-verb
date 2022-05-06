@@ -270,9 +270,8 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     logging.debug(f"Morphing to a common source space")
     temp_dir = tempfile.TemporaryDirectory()
     dir_path = Path(temp_dir.name)
-    print("temp ")
+
     n_stcs = len(stcs)
-    print(stcs[0].data.shape)
     for i, stc in enumerate(stcs):
         print(i)
         stc.save(str(dir_path / f"{i}.stc"))
@@ -283,6 +282,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
 
     for i in range(n_stcs):
         print(f"{i} source")
+        print(dir_path / f"{i}.stc")
         stc = read_source_estimate(str(dir_path / f"{i}.stc"), subject=subject)
         morph = compute_source_morph(stc, subject_from=subject,
                                      subject_to="fsaverage", src_to=fs_src, smooth="nearest",

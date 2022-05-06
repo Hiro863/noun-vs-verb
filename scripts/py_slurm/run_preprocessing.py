@@ -1,8 +1,16 @@
 import os
 import sys
+import logging
 from utils.file_access import read_json, write_json
 from pathlib import Path
 from processing.preprocessing import process_single_subject
+
+fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
+      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
+
+logging.basicConfig(level=logging.DEBUG,
+                    format=fmt,
+                    handlers=[logging.StreamHandler(sys.stdout)])
 
 if __name__ == "__main__":
 
@@ -33,3 +41,6 @@ if __name__ == "__main__":
                            n_cores=n_cores)
 
     write_json(dir_path=epochs_dir, file_name="parameters.json", data=params)
+
+    logging.debug("Process completed successfully.")
+

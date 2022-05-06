@@ -272,7 +272,6 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
     parallel_funcs = []
 
     for label in labels:
-
         # Ignore irrelevant labels
         if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
             continue
@@ -282,13 +281,13 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
                                               morph=morph)
         parallel_funcs.append(func)
 
-    print(f"Total of {len(parallel_funcs)} parallel functions added")
+    logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")
 
-    print(f"Executing {n_jobs} jobs in parallel")
+    logging.debug(f"Executing {n_jobs} jobs in parallel")
     parallel_pool = Parallel(n_jobs=n_jobs)
     parallel_pool(parallel_funcs)
 
-    print(f"{len(parallel_funcs)} time steps processed")
+    logging.debug(f"{len(parallel_funcs)} time steps processed")
 
 
 def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, morph):
@@ -301,7 +300,7 @@ def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, 
     print(data[0].shape)
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
-    logging.debug(f"Source localization for {subject} has finished")
+
 
 def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     """
@@ -445,17 +444,6 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
     lambda2 = 1. / snr ** 2
     return apply_inverse_epochs(epochs, inv, lambda2, label=label,
                                 method=method, pick_ori=pick_ori, verbose=verbose, return_generator=True)
-
-
-def get_operator(epochs, trans, src, bem, mindist=5., n_jobs=1, tmax=0.,
-                 method=("shrunk", "empirical"), rank=None,
-                 loose=0.2, depth=0.8, verbose=True):
-
-    fwd = make_forward_solution(epochs.info, trans=trans, src=src, bem=bem, mindist=mindist,
-                                n_jobs=n_jobs, verbose=verbose)
-    noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, verbose=verbose)
-    inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
-    return inv
 
 
 def get_inv(epochs, fwd_path, tmax=0., n_jobs=1, method=("shrunk", "empirical"),

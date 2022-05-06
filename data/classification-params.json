@@ -1,0 +1,12 @@
+
+{
+  "x-path": "/Users/yamazakihiroyoshi/Downloads/NP-VP/x.npy",
+  "y-path": "/Users/yamazakihiroyoshi/Downloads/NP-VP/y.npy",
+  "epochs-tmin": -0.5,
+  "epochs-tmax": 1.5,
+  "sfreq": 250,
+  "classification-tmin": 0.0,
+  "classification-tmax": 0.03,
+  "cv": 3,
+  "window-size": 10
+}

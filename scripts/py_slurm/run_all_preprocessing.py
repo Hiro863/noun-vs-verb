@@ -29,5 +29,6 @@ if __name__ == "__main__":
                            downsample_params=params["downsample params"], filter_params=params["filter params"],
                            artifact_params=params["artifact params"], epoch_params=params["epoch params"],
                            stc_params=params["stc params"],
+                           stc=True,
                            n_cores=n_cores)
 

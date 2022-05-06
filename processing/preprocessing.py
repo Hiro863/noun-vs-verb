@@ -370,6 +370,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                            downsample_params: dict, filter_params: dict,
                            artifact_params: dict, epoch_params: dict,
                            stc_params: dict,
+                           stc: bool,
                            n_cores: int) -> None:
 
     logging.debug(f"Processing subject data from {src_dir}")
@@ -402,7 +403,8 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                        reject=epoch_params["reject"], channel_reader=get_mous_meg_channels)
 
         # Source localize
-        source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
+        if stc:
+            source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
 
     except SubjectNotProcessedError as e:
         logging.error(f"Subject {subject_name} was not processed correctly. \n {e} \n {traceback.format_exc()}")

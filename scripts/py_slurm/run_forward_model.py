@@ -1,5 +1,4 @@
 import sys
-import re
 from pathlib import Path
 from mne import write_forward_solution
 from utils.file_access import read_mous_subject
@@ -27,4 +26,5 @@ if __name__ == "__main__":
     fwd_dir = Path(sys.argv[3])
     subj_id = int(sys.argv[4])
 
-    main(mous_dir, subjects_dir, fwd_dir, f"sub-V10{subj_id}")
+    subj_name = f"sub-V1{str(subj_id).zfill(3)}"
+    main(mous_dir, subjects_dir, fwd_dir, subject=subj_name)

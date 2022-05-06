@@ -1,12 +1,19 @@
 #!/bin/bash
 
-#SBATCH --array=110,111,113,114,115,116,117
+#SBATCH --array=1-117
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=freesurfer-recon-all
 #SBATCH --mail-type=BEGIN,END,
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
 #SBATCH --mem=10gb
+
+# Skip non-existent subjects
+no_subject=(14 18 21 23 41 43 47 51 56 60 67 82 91 112)  # non-existent subjects
+if [[ " ${no_subject[*]} " =~ ${SLURM_ARRAY_TASK_ID} ]]; then
+  echo "This subject does not exist"
+  exit 0
+fi
 
 export FREESURFER_HOME=/data/home/hiroyoshi/freesurfer
 source $FREESURFER_HOME/SetUpFreeSurfer.sh

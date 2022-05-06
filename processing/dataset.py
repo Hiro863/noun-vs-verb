@@ -97,7 +97,7 @@ def _generate_x(dst_dir: Path, paths: List[Path], sensor=False):
 
         x_list.append(x)
 
-    x = np.vstack(x_list)
+    x = np.vstack(x_list)  # todo: won’t work if shape is different
     fname = "x.npy"
     np.save(str(dst_dir / fname), x)
 
@@ -151,13 +151,22 @@ def _get_array_size(paths, sensor=False):
         if sensor:
             epochs = read_epochs(path)
             x = epochs.get_data()
+            shape = np.array(x.shape)
+            del x
         else:
-            x = np.load(str(path))
+            #x = np.load(str(path))
 
-        dim_0 += x.shape[0]
+            with open(str(path), "rb") as f:
+                major, minor = np.lib.format.read_magic(f)
+                shape, fortran, dtype = np.lib.format.read_array_header_1_0(f)
+                shape = np.array(shape)
+        dim_0 += shape[0] #x.shape[0]
         if dim_rest is None:
-            dim_rest = x.shape[1:]
-        del x
+            dim_rest = shape[1:] #x.shape[1:]
+        else:
+            dim_rest = np.maximum(dim_rest, shape[1:])
+
+        #del x
 
     x_shape = [dim_0]
     x_shape.extend(dim_rest)

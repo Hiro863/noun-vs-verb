@@ -256,12 +256,10 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
+        stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
 
-        stc_data = _morph_to_common(stcs=stcs, src=inv["src"],
-                                    subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
-
-        #data_array = concatenate_arrays(stc_data)
-        data_array = _concatenate_arrays(stcs)
+        data_array = concatenate_arrays(stc_data)
+        #data_array = _concatenate_arrays(stcs)
 
         _write_array(dst_dir=dst_dir, label=label, data_array=data_array)
 
@@ -274,25 +272,28 @@ def _morph_to_common(stcs, src, subject, fs_src, subjects_dir):
     temp_dir = tempfile.TemporaryDirectory()
     dir_path = Path(temp_dir.name)
 
-    """n_stcs = len(stcs)
+    n_stcs = len(stcs)
     paths = []
     for i, stc in enumerate(stcs):
         path = str(dir_path / str(i))
         stc.save(path, ftype="stc")
         paths.append(path)
 
-    del stcs  # save RAM"""
+    del stcs  # save RAM
 
     fs_stcs = []
 
     #for path in paths:
     #    print(f"{path}. source")
-    #    stc = read_source_estimate(path, subject=subject)
-    morph = compute_source_morph(src, subject_from=subject,
-                                 subject_to="fsaverage", src_to=fs_src, smooth="nearest",
-                                 subjects_dir=subjects_dir)
-    for stc in stcs:
+    #
+
+    for i, path in enumerate(paths):
+        stc = read_source_estimate(path, subject=subject)
+        print(path)
         print(stc)
+        print(stc.data.shape)
+        morph = compute_source_morph(stc, subject_from=subject, subject_to="fsaverage", src_to=fs_src, smooth="nearest",
+                                     subjects_dir=subjects_dir)
         fs_stc = morph.apply(stc)
         fs_stcs.append(fs_stc.data)
 

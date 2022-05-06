@@ -245,6 +245,9 @@ def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
         stcs = _morph_to_common(stcs, morph)
         data = extract_label_time_course(stcs, labels=label, src=fs_src)
         print(data.shape)
+        _write_array(dst_dir=dst_dir, label=label, data_array=data)
+
+        logging.debug(f"Source localization for {subject} has finished")
 
 
 

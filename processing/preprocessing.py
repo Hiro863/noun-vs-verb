@@ -238,7 +238,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
                           surf_name="white", verbose=None)
 
     # Common source space
-    fsaverage_src_path = Path(params["subjects dir"]) / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
+    fsaverage_src_path = Path(params["subjects dir"]+"_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
 
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
@@ -252,7 +252,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
-        stcs = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"])
+        stcs = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
 
         data_array = _concatenate_arrays(stcs)
 

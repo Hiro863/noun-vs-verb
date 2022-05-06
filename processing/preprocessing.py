@@ -296,7 +296,8 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
         fs_stc = morph.apply(stc)
         print(f"{fs_stc}: size {sys.getsizeof(fs_stc)}")
         print(f"data: size {sys.getsizeof(fs_stc.data)}")
-        #fs_stcs.append(fs_stc.data)
+        fs_stcs.append(fs_stc.data)
+        print(f"{fs_stcs}: size {sys.getsizeof(fs_stcs)}")
 
     #temp_dir.cleanup()
     return fs_stcs

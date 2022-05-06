@@ -315,7 +315,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
     # Generate set of labels
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
-                                    subjects_dir=params["subjects dir"]+ "_", verbose=False)
+                                    subjects_dir=params["subjects dir"], verbose=False)
 
     # Morph to subject source space
     """labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",

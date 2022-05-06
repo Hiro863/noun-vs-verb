@@ -257,7 +257,8 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
 
-        stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
+        stc_data = _morph_to_common(stcs=stcs, src=inv["src"],
+                                    subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
 
         #data_array = concatenate_arrays(stc_data)
         data_array = _concatenate_arrays(stcs)
@@ -267,7 +268,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         logging.debug(f"Source localization for {subject} has finished")
 
 
-def _morph_to_common(stcs, subject, fs_src, subjects_dir):
+def _morph_to_common(stcs, src, subject, fs_src, subjects_dir):
     logging.debug(f"Morphing to a common source space")
 
     temp_dir = tempfile.TemporaryDirectory()
@@ -287,10 +288,11 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     #for path in paths:
     #    print(f"{path}. source")
     #    stc = read_source_estimate(path, subject=subject)
+    morph = compute_source_morph(src, subject_from=subject,
+                                 subject_to="fsaverage", src_to=fs_src, smooth="nearest",
+                                 subjects_dir=subjects_dir)
     for stc in stcs:
-        morph = compute_source_morph(stc, subject_from=subject,
-                                     subject_to="fsaverage", src_to=fs_src, smooth="nearest",
-                                     subjects_dir=subjects_dir)
+        print(stc)
         fs_stc = morph.apply(stc)
         fs_stcs.append(fs_stc.data)
 

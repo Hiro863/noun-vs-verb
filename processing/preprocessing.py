@@ -234,13 +234,13 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
                                     subjects_dir=params["subjects dir"]+ "_", verbose=False)
 
     # Morph to subject source space
-    labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
+    """labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
                           subjects_dir=params["subjects dir"]+"_",
                           surf_name="white", verbose=None)
 
     # Common source space
     fsaverage_src_path = Path(params["subjects dir"]+"_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
-    fs_src = read_source_spaces(str(fsaverage_src_path))
+    fs_src = read_source_spaces(str(fsaverage_src_path))"""
 
     # Calculate inverse solution
     logging.debug(f"Calculating the inverse solution for the subject {subject}")
@@ -256,10 +256,10 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
-        stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
+        #todo: stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
 
-        data_array = concatenate_arrays(stc_data)
-        #data_array = _concatenate_arrays(stcs)
+        #data_array = concatenate_arrays(stc_data)
+        data_array = _concatenate_arrays(stcs)
 
         _write_array(dst_dir=dst_dir, label=label, data_array=data_array)
 

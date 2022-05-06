@@ -2,13 +2,14 @@ import logging
 import os
 import re
 import sys
+import tempfile
 import traceback
 from pathlib import Path
 from typing import Callable, Tuple, List
 import numpy as np
 from mne import (make_forward_solution, compute_covariance, read_labels_from_annot,
                  find_events, Epochs, SourceEstimate, Label, read_forward_solution, morph_labels,
-                 read_source_spaces, compute_source_morph)
+                 read_source_spaces, compute_source_morph, read_source_estimate)
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
@@ -255,9 +256,10 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
                                pick_ori=params["pick ori"], n_jobs=n_jobs)
 
-        #stcs = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
+        stc_data = _morph_to_common(stcs=stcs, subject=subject, fs_src=fs_src, subjects_dir=params["subjects dir"]+"_")
 
-        data_array = _concatenate_arrays(stcs)
+        data_array = concatenate_arrays(stc_data)
+        #data_array = _concatenate_arrays(stcs)
 
         _write_array(dst_dir=dst_dir, label=label, data_array=data_array)
 
@@ -266,16 +268,38 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
 def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     logging.debug(f"Morphing to a common source space")
+    temp_dir = tempfile.TemporaryDirectory()
+    dir_path = Path(temp_dir.name)
 
-    morph = compute_source_morph(stcs[0], subject_from=subject,
-                                 subject_to="fsaverage", src_to=fs_src,
-                                 subjects_dir=subjects_dir)
+    n_stcs = len(stcs)
+    for i, stc in enumerate(stcs):
+        stc.save(str(dir_path / f"{i}.stc"))
+
+    del stcs  # save RAM
 
     fs_stcs = []
-    for stc in stcs:
+    for i in range(n_stcs):
+        stc = read_source_estimate(str(dir_path / f"{i}.stc"), subject=subject)
+        morph = compute_source_morph(stc, subject_from=subject,
+                                     subject_to="fsaverage", src_to=fs_src,
+                                     subjects_dir=subjects_dir)
         fs_stc = morph.apply(stc)
-        fs_stcs.append(fs_stc)
+        fs_stcs.append(fs_stc.data)
+
+    temp_dir.cleanup()
     return fs_stcs
+
+
+def concatenate_arrays(stc_data):
+    logging.debug(f"Concatenating the source estimate arrays")
+
+    data_list = []
+
+    for i, stc in enumerate(stc_data):
+        data_list.append(stc)
+
+    data_array = np.stack(data_list)
+    return data_array
 
 
 def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:

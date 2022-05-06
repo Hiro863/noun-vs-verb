@@ -252,6 +252,7 @@ def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
 
 def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     logging.debug(f"Source localizing {subject} files")
+    epochs = epochs.crop(0, 100) ##todo
 
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 
@@ -271,7 +272,6 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
     parallel_funcs = []
 
     for label in labels:
-        logging.debug(f"Starting the source localization for the {label.name}")
 
         # Ignore irrelevant labels
         if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
@@ -290,13 +290,15 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
 
     print(f"{len(parallel_funcs)} time steps processed")
 
+
 def _process_single_label(dst_dir, subject, epochs, label, inv, params, fs_src, morph):
 
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
 
     stcs = _morph_to_common(stcs, morph)
     data = extract_label_time_course(stcs, labels=label, src=fs_src)
-    print(data.shape)
+    print(len(data))
+    print(data[0].shape)
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
     logging.debug(f"Source localization for {subject} has finished")

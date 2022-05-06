@@ -275,6 +275,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     paths = []
     for i, stc in enumerate(stcs):
         print(stc)
+        print(i)
         path = str(dir_path / str(i))
         stc.save(path, ftype="stc")
         paths.append(path)
@@ -293,6 +294,7 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
                                      subjects_dir=subjects_dir)
         fs_stc = morph.apply(stc)
         fs_stcs.append(fs_stc.data)
+        del stc, morph, fs_stc
 
     temp_dir.cleanup()
     return fs_stcs

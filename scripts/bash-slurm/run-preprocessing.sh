@@ -9,7 +9,7 @@
 #SBATCH --mem=30gb   ## filtering and ICA requires memory
 
 # Skip non-existent subjects
-no_subject=("14" "15")# 18 21 23 41 43 47 51 56 60 67 82 91 112)  # non-existent subjects
+no_subject=("14" "15")   # 18 21 23 41 43 47 51 56 60 67 82 91 112)  # non-existent subjects
 if [[ " ${no_subject[*]} " =~ ${SLURM_ARRAY_TASK_ID} ]]; then
   echo "Subject ${SLURM_ARRAY_TASK_ID} does not exist"
   exit 0

@@ -291,11 +291,13 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
         print(stc)
         print(stc.data.shape)
         print(f"stc data: size {sys.getsizeof(stc.data)}")
+        print(f"stc shape: {stc.data.shape}")
         morph = compute_source_morph(stc, subject_from=subject, subject_to="fsaverage", src_to=fs_src,
                                      subjects_dir=subjects_dir)
 
         fs_stc = morph.apply(stc)
         print(f"fs data: size {sys.getsizeof(fs_stc.data)}")
+        print(f"stc shape: {fs_stc.data.shape}")
         fs_stcs.append(fs_stc.data)
 
     #temp_dir.cleanup()

@@ -15,6 +15,13 @@ if [[ ${no_subject[*]} =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
   exit 0
 fi
 
+# Skip problematic subjects
+prob_subjects=(33 97)  # some technical issues with these subjects
+if [[ ${prob_subjects[*]} =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
+  echo "Subject ${SLURM_ARRAY_TASK_ID} does not exist"
+  exit 0
+fi
+
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
 param_dir=/data/home/hiroyoshi/results/param-dir                    # parameter directory
 

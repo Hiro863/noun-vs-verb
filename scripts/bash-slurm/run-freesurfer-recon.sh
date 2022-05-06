@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --array=1-117
+#SBATCH --array=100-117
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=freesurfer-recon-all
 #SBATCH --mail-type=BEGIN,END,
@@ -19,7 +19,7 @@ export FREESURFER_HOME=/data/home/hiroyoshi/freesurfer
 source $FREESURFER_HOME/SetUpFreeSurfer.sh
 export SUBJECTS_DIR=/data/home/hiroyoshi/freesurfer/subjects
 
-my_subject="sub-V10${SLURM_ARRAY_TASK_ID}"
+my_subject="sub-V1${SLURM_ARRAY_TASK_ID}"
 my_NIfTI="/data/home/hiroyoshi/data/MOUS/sub-V1${SLURM_ARRAY_TASK_ID}/anat/sub-V1${SLURM_ARRAY_TASK_ID}_T1w.nii"
 recon-all -i $my_NIfTI -s $my_subject -all
 

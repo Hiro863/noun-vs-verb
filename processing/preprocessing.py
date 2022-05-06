@@ -268,22 +268,24 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
 def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     logging.debug(f"Morphing to a common source space")
+
     temp_dir = tempfile.TemporaryDirectory()
     dir_path = Path(temp_dir.name)
 
     n_stcs = len(stcs)
+    paths = []
     for i, stc in enumerate(stcs):
-        print(i)
-        stc.save(str(dir_path / f"{i}.stc"))
+        path = str(dir_path / str(i))
+        stc.save(path)
+        paths.append(path)
 
     del stcs  # save RAM
 
     fs_stcs = []
 
-    for i in range(n_stcs):
-        print(f"{i} source")
-        print(dir_path / f"{i}.stc")
-        stc = read_source_estimate(str(dir_path / f"{i}.stc"), subject=subject)
+    for path in paths:
+        print(f"{path}. source")
+        stc = read_source_estimate(path, subject=subject)
         morph = compute_source_morph(stc, subject_from=subject,
                                      subject_to="fsaverage", src_to=fs_src, smooth="nearest",
                                      subjects_dir=subjects_dir)

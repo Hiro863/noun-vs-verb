@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=source-localization
-#SBATCH --array=1  #117           ## subject IDs
+#SBATCH --array=1-117           ## subject IDs
 #SBATCH --ntasks-per-node=1         ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr

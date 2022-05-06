@@ -265,6 +265,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
 
 def _morph_to_common(stcs, subject, fs_src, subjects_dir):
+    logging.debug(f"Morphing to a common source space")
 
     morph = compute_source_morph(stcs[0], subject_from=subject,
                                  subject_to="fsaverage", src_to=fs_src,
@@ -284,6 +285,7 @@ def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:
     :return:
         data_array: data in form n_epochs x n_dipoles x n_times
     """
+    logging.debug(f"Concatenating the arrays")
 
     data_list = []
 
@@ -303,6 +305,7 @@ def _write_array(dst_dir: Path, label: Label, data_array):
     :return:
         None
     """
+    logging.debug(f"Writing the data for {label.name} to file")
 
     stc_fname = f"{label.name}.npy"
 

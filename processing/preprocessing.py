@@ -281,9 +281,10 @@ def _morph_to_common(stcs, subject, fs_src, subjects_dir):
     for i in range(n_stcs):
         stc = read_source_estimate(str(dir_path / f"{i}.stc"), subject=subject)
         morph = compute_source_morph(stc, subject_from=subject,
-                                     subject_to="fsaverage", src_to=fs_src,
+                                     subject_to="fsaverage", src_to=fs_src, smooth="nearest",
                                      subjects_dir=subjects_dir)
         fs_stc = morph.apply(stc)
+        print(fs_stc.data.shape)
         fs_stcs.append(fs_stc.data)
 
     temp_dir.cleanup()

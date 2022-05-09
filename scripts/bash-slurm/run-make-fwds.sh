@@ -23,11 +23,11 @@ if [[ ${prob_subjects[*]} =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
   exit 0
 fi
 
-scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts  # scripts directory
-mous_dir=/data/home/hiroyoshi/data/MOUS                    # data directory
-subjects_dir=/data/home/hiroyoshi/freesurfer/subjects      # freesurfer subjects
-fwd_dir=/data/home/hiroyoshi/data/MOUS/fwds                # directory to save forward models
+scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
+mous_dir=/data/home/hiroyoshi/data/MOUS                             # data directory
+subjects_dir=/data/home/hiroyoshi/freesurfer/subjects               # freesurfer subjects
+fwd_dir=/data/home/hiroyoshi/data/MOUS/fwds                         # directory to save forward models
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 
-python $scripts_dir/make_fwds.py $mous_dir $subjects_dir $fwd_dir $SLURM_ARRAY_TASK_ID
+python $scripts_dir/run_forward_model.py $mous_dir $subjects_dir $fwd_dir $SLURM_ARRAY_TASK_ID

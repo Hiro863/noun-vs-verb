@@ -155,6 +155,7 @@ def _get_array_size(paths, sensor=False):
             shape = np.array(x.shape)
             del x
         else:
+            print(path)
             x = np.load(str(path))
             shape = x.shape
             del x

@@ -26,8 +26,6 @@ root = get_project_root()
 log_path = root / "meg-mvpa/data/logs"
 
 logging.basicConfig(level=logging.DEBUG,
-                    filename=str(log_path),
-                    filemode="w",
                     format=fmt,
                     handlers=[logging.StreamHandler(sys.stdout)])
 
@@ -239,7 +237,6 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
     # Generate set of labels
     logging.debug(f"Reading labels")
-    sys.stdout = open(os.devnull, "w")
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
 

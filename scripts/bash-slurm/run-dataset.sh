@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=dataset
-#SBATCH --array=0-447          ## cortical area IDs, for aparc_sub
+#SBATCH --array=0  ## -447          ## cortical area IDs, for aparc_sub
 #SBATCH --ntasks-per-node=10   ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr

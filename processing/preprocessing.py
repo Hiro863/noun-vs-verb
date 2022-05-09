@@ -233,7 +233,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     fsaverage_src_path = Path(params["subjects dir"]) / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
     morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
-                                 subjects_dir=params["subjects dir"])
+                                 subjects_dir=params["subjects dir"], verbose=False)
 
     # Generate set of labels
     logging.debug(f"Reading labels")

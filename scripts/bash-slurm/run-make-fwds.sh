@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=forward-model
-#SBATCH --array=100-117
+#SBATCH --array=1-117
 #SBATCH --ntasks-per-node=1   ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr

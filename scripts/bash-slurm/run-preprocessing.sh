@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=preprocessing
-#SBATCH --array=1 ##-99 ## -117          ## subject IDs
+#SBATCH --array=2 ##-99 ## -117          ## subject IDs
 #SBATCH --ntasks-per-node=5    ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr

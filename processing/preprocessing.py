@@ -18,7 +18,6 @@ from events.formatting import get_event_array, crop_events
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 
-sys.stdout = open(os.devnull, "w")
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
@@ -238,6 +237,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
     # Generate set of labels
     logging.debug(f"Reading labels")
+    sys.stdout = open(os.devnull, "w")
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
 
@@ -262,6 +262,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
 
 def _process_single_label(dst_dir, epochs, label, inv, params, morph):
+    logging.debug(f"Processing single subject for {label.name} ")
 
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
     stcs = _morph_to_common(stcs, morph)
@@ -408,6 +409,7 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
                     n_jobs=1, tmax=0., fwd_path="",
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
+    logging.debug(f"Inverting epochs")
 
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,

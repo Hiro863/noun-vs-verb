@@ -127,7 +127,9 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
     logging.debug(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
 
     raw = raw.filter(l_freq=l_freq, h_freq=h_freq)
-    raw = raw.notch_filter(freqs=notch)
+
+    if len(notch) > 0:
+        raw = raw.notch_filter(freqs=notch)
 
     return raw
 

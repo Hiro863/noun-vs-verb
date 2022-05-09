@@ -391,7 +391,7 @@ def _write_array(dst_dir: Path, label: Label, data_array):
 def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
                     epochs=None, n_jobs=1, tmax=0.,
                     inv_method=("shrunk", "empirical"), rank=None,
-                    loose=0.2, depth=0.8, verbose=True):
+                    loose=0.2, depth=0.8, verbose=False):
 
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
@@ -406,7 +406,7 @@ def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=Tru
 def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, inv=None,
                     n_jobs=1, tmax=0., fwd_path="",
                     inv_method=("shrunk", "empirical"), rank=None,
-                    loose=0.2, depth=0.8, verbose=True):
+                    loose=0.2, depth=0.8, verbose=False):
 
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,

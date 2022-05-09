@@ -167,7 +167,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
 
     epochs = None
     try:
-        epochs = Epochs(raw, events, event_id=events_id, tmin=tmin, tmax=tmax,
+        epochs = Epochs(raw, id_events, tmin=tmin, tmax=tmax,
                         picks=picks, preload=True, reject=reject, on_missing="warn")
 
     except ValueError as e:

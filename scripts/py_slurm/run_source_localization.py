@@ -28,7 +28,7 @@ if __name__ == "__main__":
     root = Path(params["directories"]["root"])
     epochs_dir = root / "epochs-dir" / subj_name
 
-    epochs = read_epochs(epochs_dir / f"{subj_name}-epo.fif")
+    epochs = read_epochs(epochs_dir / f"{subj_name}-epo.fif", verbose=False)
 
     source_localize_old(dst_dir=epochs_dir, subject=subj_name, epochs=epochs, params=params["stc params"], n_jobs=n_cores)
 

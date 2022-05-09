@@ -28,8 +28,8 @@ log_path = root / "meg-mvpa/data/logs"
 logging.basicConfig(level=logging.DEBUG,
                     filename=str(log_path),
                     filemode="w",
-                    format=fmt),
-                    #handlers=[logging.StreamHandler(sys.stdout)])
+                    format=fmt,
+                    handlers=[logging.StreamHandler(sys.stdout)])
 
 
 ########################################################################################################################

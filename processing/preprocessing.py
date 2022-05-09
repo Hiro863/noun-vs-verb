@@ -26,8 +26,10 @@ root = get_project_root()
 log_path = root / "meg-mvpa/data/logs"
 
 logging.basicConfig(level=logging.DEBUG,
-                    format=fmt,
-                    handlers=[logging.StreamHandler(sys.stdout)])
+                    filename=str(log_path),
+                    filemode="w",
+                    format=fmt),
+                    #handlers=[logging.StreamHandler(sys.stdout)])
 
 
 ########################################################################################################################

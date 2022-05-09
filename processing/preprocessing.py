@@ -160,7 +160,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     print(f" events, tpye {type(events)}")
     # Get events data
     events, id_events = _read_events_file(events_dir, events, subject)
-    events, id_events = crop_events(events, id_events)
+    events, id_events = crop_events(events, id_events)  # todo: simplify?
 
     # Get relevant channels
     picks = channel_reader(channels=raw.ch_names)

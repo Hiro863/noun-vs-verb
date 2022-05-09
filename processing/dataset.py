@@ -155,6 +155,7 @@ def _get_array_size(paths, sensor=False):
             shape = np.array(x.shape)
             del x
         else:
+            print(path)
             with open(str(path), "rb") as f:
                 shape, fortran, dtype = np.lib.format.read_array_header_1_0(f)
                 shape = np.array(shape)

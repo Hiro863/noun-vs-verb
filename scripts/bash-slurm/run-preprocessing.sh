@@ -9,7 +9,6 @@
 #SBATCH --mem-per-cpu=5gb
 
 # Skip non-existent subjects
-
 no_subject=(14 15 18 21 23 41 43 47 51 56 60 67 82 91 112)  # non-existent subjects
 for i in "${no_subject[@]}"
 do

@@ -31,9 +31,6 @@
       "event id":
       {
         "word": 1,
-        "block": 10,
-        "fixation": 20,
-        "question": 40,
         "response/1": 50,
         "response/2": 60,
         "response/3": 70

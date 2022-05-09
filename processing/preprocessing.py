@@ -160,6 +160,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     print(f" events, tpye {type(events)}")
     # Get events data
     events, id_events = _read_events_file(events_dir, events, subject)
+    events, id_events = crop_events(events, id_events)
 
     # Get relevant channels
     picks = channel_reader(channels=raw.ch_names)
@@ -466,7 +467,6 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
         # Resample
         raw, events, new_events = downsample(raw, downsample_params, n_jobs=n_cores)
-        events = crop_events(events)  # only interested in "word" condition
 
         # Filter
         if filter_params["filter"]:

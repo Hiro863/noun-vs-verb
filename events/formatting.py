@@ -328,12 +328,16 @@ def get_event_array(events, event_path):  # todo: tidy
     return events, id_events
 
 
-def crop_events(events):
+def crop_events(events, id_events):
     event_list = []
-    for event in events:
+    id_event_list = []
+
+    for event, id_event in zip(events, id_events):
         if event[2] in id_to_name:
             if id_to_name[event[2]] == "word":
                 event_list.append(event)
+                id_event_list.append(id_event)
 
     events = np.array(events)
-    return events
+    id_events = np.array(id_event_list)
+    return events, id_events

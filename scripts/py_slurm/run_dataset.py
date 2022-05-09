@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     # Set up directories
     root = Path(params["directories"]["root"])
-    epoch_dir = root / "epoch-dir"
+    epoch_dir = root / "epochs-dir"
     dataset_dir = root / "dataset-dir"
 
     with open(params["directories"]["idx-to-name"], "rb") as handle:

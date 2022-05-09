@@ -1,19 +1,20 @@
 import logging
 import re
 import os
+import sys
 from pathlib import Path
 from typing import List
 import numpy as np
 from mne import read_epochs
-from utils.file_access import write_json, get_project_root
+from utils.file_access import write_json
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
-root = get_project_root()
-log_path = root / "data/logs"
 
-logging.basicConfig(level=logging.DEBUG, filename=log_path / "debug.log", format=fmt)
+logging.basicConfig(level=logging.DEBUG,
+                    format=fmt,
+                    handlers=[logging.StreamHandler(sys.stdout)])
 
 ########################################################################################################################
 # DATASET GENERATION                                                                                                   #
@@ -154,19 +155,12 @@ def _get_array_size(paths, sensor=False):
             shape = np.array(x.shape)
             del x
         else:
-            #x = np.load(str(path))
-
             with open(str(path), "rb") as f:
-                major, minor = np.lib.format.read_magic(f)
                 shape, fortran, dtype = np.lib.format.read_array_header_1_0(f)
                 shape = np.array(shape)
-        dim_0 += shape[0] #x.shape[0]
+        dim_0 += shape[0]
         if dim_rest is None:
-            dim_rest = shape[1:] #x.shape[1:]
-        else:
-            dim_rest = np.maximum(dim_rest, shape[1:])
-
-        #del x
+            dim_rest = shape[1:]
 
     x_shape = [dim_0]
     x_shape.extend(dim_rest)
@@ -183,6 +177,14 @@ def _get_reject_list(reject_path: Path):
 
 
 def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, memmap=True, reject=None) -> None:
+    """
+    :param epoch_dir:
+    :param dst_dir:
+    :param area_name:
+    :param memmap:
+    :param reject:
+    :return:
+    """
     logging.debug(f"Generating dataset for {area_name}")
 
     # Get list of subjects to ignore

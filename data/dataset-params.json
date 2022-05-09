@@ -1,0 +1,10 @@
+{
+  "directories":
+  {
+    "root": "",
+    "idx-to-name": "",
+    "subjects-dir": ""
+  },
+  "parcellation": "aparc_sub",
+  "hemi": "both"
+}

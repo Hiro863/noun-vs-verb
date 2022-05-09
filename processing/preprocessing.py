@@ -4,17 +4,17 @@ import re
 import sys
 import traceback
 from pathlib import Path
-from typing import Callable, Tuple, List
+from typing import Callable, Tuple
 import numpy as np
 from mne import (compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, SourceEstimate, Label, read_forward_solution,
-                 read_source_spaces, compute_source_morph, extract_label_time_course)
+                 find_events, Epochs, Label, read_forward_solution,
+                 read_source_spaces, compute_source_morph)
 
 from joblib import Parallel, delayed
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
-from events.formatting import get_event_array
+from events.formatting import get_event_array, crop_events
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 
@@ -40,6 +40,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     Downsample to some lower sampling frequency
     :param raw: raw object
     :param params: dictionary of parameters {"sfreq": sampling frequency, "n_jobs": number of workers for joblib}
+    :param n_jobs: number of jobs for parallelism
     :return:
         raw: resampled raw object
         events: original events (needed for validating events)
@@ -79,6 +80,7 @@ def remove_artifacts(raw: Raw, n_components: int,
     :param n_components: number of components to use for ICA
     :param eog_channels: list of channel names to be used as EOG channels
     :param ecg_channel: the name of the channel to be used as the ECG channel
+    :param n_jobs: number of jobs for parallelism
     :return: raw: repaired raw
     """
 
@@ -143,7 +145,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     :param dst_dir: path to which the epochs object will be saved
     :param events_dir: path to events csv files
     :param subject: name of the subject
-    :param raw: raw objectm
+    :param raw: raw object
     :param events: events array (possibly downsampled)
     :param events_id: dictionary of events and names
     :param tmin: start time of epoch
@@ -217,56 +219,24 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
 ########################################################################################################################
 
 
-def _source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
+def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     logging.debug(f"Source localizing {subject} files")
 
+    # Make inverse model
+    logging.debug(f"Making an inverse model for the subject {subject} ")
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 
     # Common source space
     logging.debug(f"Setting up morph to FS average")
-    fsaverage_src_path = Path(params["subjects dir"] + "_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
+    fsaverage_src_path = Path(params["subjects dir"]) / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
     morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
-                                 subjects_dir=params["subjects dir"]+ "_")
+                                 subjects_dir=params["subjects dir"])
 
     # Generate set of labels
     logging.debug(f"Reading labels")
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
-                                    subjects_dir=params["subjects dir"] + "_", verbose=False)
-    for label in labels:
-        logging.debug(f"Starting the source localization for the {label.name}")
-
-        # Ignore irrelevant labels
-        if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
-            continue
-
-        stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"], n_jobs=n_jobs)
-
-        stcs = _morph_to_common(stcs, morph)
-        data = extract_label_time_course(stcs, labels=label, src=fs_src)
-        print(data.shape)
-        _write_array(dst_dir=dst_dir, label=label, data_array=data)
-
-        logging.debug(f"Source localization for {subject} has finished")
-
-
-def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
-    logging.debug(f"Source localizing {subject} files")
-    epochs = epochs.crop(0, 100) ##todo
-
-    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
-
-    # Common source space
-    logging.debug(f"Setting up morph to FS average")
-    fsaverage_src_path = Path(params["subjects dir"] + "_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
-    fs_src = read_source_spaces(str(fsaverage_src_path))
-    morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
-                                 subjects_dir=params["subjects dir"]+ "_")
-
-    # Generate set of labels
-    logging.debug(f"Reading labels")
-    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
-                                    subjects_dir=params["subjects dir"] + "_", verbose=False)
+                                    subjects_dir=params["subjects dir"], verbose=False)
 
     # Create parallel functions per time point
     parallel_funcs = []
@@ -277,12 +247,10 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
             continue
         func = delayed(_process_single_label)(dst_dir=dst_dir, subject=subject,
                                               epochs=epochs, label=label, inv=inv,
-                                              params=params, fs_src=fs_src,
-                                              morph=morph)
+                                              params=params, morph=morph)
         parallel_funcs.append(func)
 
     logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")
-
     logging.debug(f"Executing {n_jobs} jobs in parallel")
     parallel_pool = Parallel(n_jobs=n_jobs)
     parallel_pool(parallel_funcs)
@@ -290,12 +258,18 @@ def source_localize_(dst_dir: Path, subject: str, epochs: Epochs, params: dict, 
     logging.debug(f"{len(parallel_funcs)} time steps processed")
 
 
-def _process_single_label(dst_dir, epochs, label, inv, params, fs_src, morph):
+def _process_single_label(dst_dir, epochs, label, inv, params, morph):
 
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
-
     stcs = _morph_to_common(stcs, morph)
-    data = extract_label_time_course(stcs, labels=label, src=fs_src)
+
+    data_list = []
+    for stc in stcs:
+        stc = stc.in_label(label)
+        data_list.append(stc.data)
+
+    data = _concatenate_arrays(stcs)
+
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 
@@ -347,40 +321,41 @@ def source_localize_old(dst_dir: Path, subject: str, epochs: Epochs, params: dic
 
 
 def _morph_to_common(stcs, morph):
+    logging.debug(f"Morphing to fsaverage")
 
     for stc in stcs:
         fs_stc = morph.apply(stc)
         yield fs_stc
 
 
-def concatenate_arrays(stc_data):
+def _concatenate_arrays(stc_data):
     logging.debug(f"Concatenating the source estimate arrays")
 
     data_list = []
 
-    for i, stc in enumerate(stc_data):
+    for stc in stc_data:
         data_list.append(stc)
 
     data_array = np.stack(data_list)
     return data_array
 
 
-def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:
+#def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:
     """
     Concatenate the data into a single array, shape n_epochs x n_dipoles x n_times
     :param stcs: list of source estimate objects (per epoch)
     :return:
         data_array: data in form n_epochs x n_dipoles x n_times
     """
-    logging.debug(f"Concatenating the arrays")
+#    logging.debug(f"Concatenating the arrays")
 
-    data_list = []
+#    data_list = []
 
-    for i, stc in enumerate(stcs):
-        data_list.append(stc.data)
+#    for i, stc in enumerate(stcs):
+#        data_list.append(stc.data)
 
-    data_array = np.stack(data_list)
-    return data_array
+#    data_array = np.stack(data_list)
+#    return data_array
 
 
 def _write_array(dst_dir: Path, label: Label, data_array):
@@ -443,7 +418,7 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
 def get_inv(epochs, fwd_path, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
             rank=None, loose=0.2, depth=0.8, verbose=True):
     fwd = read_forward_solution(fwd_path, verbose=False)
-    noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, verbose=verbose)
+    noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, n_jobs=n_jobs, verbose=verbose)
     inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
     return inv
 
@@ -487,6 +462,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
         # Resample
         raw, events, new_events = downsample(raw, downsample_params, n_jobs=n_cores)
+        events = crop_events(events)  # only interested in "word" condition
 
         # Filter
         if filter_params["filter"]:
@@ -508,7 +484,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
         # Source localize
         if stc:
-            _source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
+            source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
 
     except SubjectNotProcessedError as e:
         logging.error(f"Subject {subject_name} was not processed correctly. \n {e} \n {traceback.format_exc()}")

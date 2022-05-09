@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --array=100-117
+#SBATCH --array=1-117
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=freesurfer-recon-all
 #SBATCH --mail-type=BEGIN,END,

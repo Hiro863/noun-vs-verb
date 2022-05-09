@@ -1,3 +1,4 @@
+import pickle
 import sys
 from utils.file_access import read_json
 from pathlib import Path
@@ -10,17 +11,20 @@ if __name__ == "__main__":
     # Get input from the bash script
     area_id = int(sys.argv[1])
     n_cores = int(sys.argv[2])
+    param_dir = Path(sys.argv[3])
+
+    # Get the parameters
+    params = read_json(param_dir, "dataset-params.json")
 
     # Set up directories
-    root = Path("/data/home/hiroyoshi/test-dir")
-    epoch_dir = root / "epoch_dir"
-    dataset_dir = root / "dataset_dir"
-    param_dir = root / "param_dir"
+    root = Path(params["directories"]["root"])
+    epoch_dir = root / "epoch-dir"
+    dataset_dir = root / "dataset-dir"
 
-    params = read_json(param_dir, "preprocess_params.json")
-
-    subjects_dir = "/data/home/hiroyoshi/data/mne_data/MNE-sample-data/subjects"
-    labels = read_labels_from_annot("fsaverage", "aparc", "lh", subjects_dir=subjects_dir)
-    name = labels[area_id].name
+    with open(params["directories"]["idx-to-name"], "rb") as handle:
+        idx_to_name = pickle.load(handle)
+    subjects_dir = params["directories"]["subjects-dir"]
+    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"], subjects_dir=subjects_dir)
+    name = idx_to_name[area_id]
 
     generate_dataset(epoch_dir, dataset_dir, name)

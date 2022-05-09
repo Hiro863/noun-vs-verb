@@ -26,6 +26,8 @@ logging.basicConfig(level=logging.DEBUG,
 
 MAX_JOBS = 100
 
+name_to_obj = {"LinearSVC": LinearSVC()}
+
 
 def format_results(data, params):
     scores, lowers, uppers = [], [], []
@@ -50,13 +52,15 @@ def run_classification(label_name, params, n_cores):
     # Create parallel functions per time point
     parallel_funcs = []
 
+    # Load data
     x = np.load(params["x-path"])
     y = np.load(params["y-path"])
 
+    # Time array
     times = np.arange(params["epochs-tmin"], params["epochs-tmax"], 1 / params["sfreq"])
     start_idx, end_idx = get_indices(times, params["analysis-tmin"], params["analysis-tmax"], params["sfreq"])
 
-    clf = make_pipeline(StandardScaler(), LinearSVC())
+    clf = make_pipeline(StandardScaler(), name_to_obj[params["clf"]])
 
     for t_idx in range(start_idx, end_idx):
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
@@ -65,14 +69,13 @@ def run_classification(label_name, params, n_cores):
         parallel_funcs.append(func)
 
     logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")
-
     logging.debug(f"Executing {n_jobs} jobs in parallel")
+
     parallel_pool = Parallel(n_jobs=n_jobs)
     results = parallel_pool(parallel_funcs)
-
     results = format_results(data=results, params=params)
 
-    with open(f"{label_name}.pickle", 'wb') as handle:
+    with open(f"{label_name}.pickle", "wb") as handle:
         pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     logging.info(f"{len(parallel_funcs)} time steps processed")
@@ -88,7 +91,7 @@ if __name__ == "__main__":
     # Get the parameters
     params = read_json(param_dir, "classification-params.json")
     parcellation = params["parcellation"]
-    with open(f"data/{parcellation}-idx_to_name", 'rb') as handle:
+    with open(f"data/{parcellation}-idx_to_name", "rb") as handle:
         idx_to_name = pickle.load(handle)
 
     label_name = idx_to_name[label_id]

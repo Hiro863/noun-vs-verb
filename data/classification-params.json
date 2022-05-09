@@ -8,5 +8,6 @@
   "classification-tmin": 0.0,
   "classification-tmax": 0.03,
   "cv": 3,
-  "window-size": 10
+  "window-size": 10,
+  "clf": "LinearSVC"
 }

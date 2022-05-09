@@ -155,9 +155,9 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     :param reject: rejection criteria
     :param channel_reader: a function for getting a list of relevant channels
     :return:
-        None
+        Non
     """
-
+    print(f" events, tpye {type(events)}")
     # Get events data
     events, id_events = _read_events_file(events_dir, events, subject)
 
@@ -480,6 +480,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                                    ecg_channel=artifact_params["ecg channel"], n_jobs=n_cores)
 
         # Epoch
+        print(f"DEBUG new_events before epoch {new_events.shape}")
         epochs = epoch(dst_dir=dst_dir, events_dir=events_dir, subject=subject_name, raw=raw,
                        events=(events, new_events),
                        events_id=epoch_params["event id"],

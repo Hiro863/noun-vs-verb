@@ -16,7 +16,7 @@ if [[ ${no_subject[*]} =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
 fi
 
 # Skip problematic subjects
-prob_subjects=(33 97)  # some technical issues with these subjects
+prob_subjects=(33 97 109)  # some technical issues with these subjects
 if [[ ${prob_subjects[*]} =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
   echo "Subject ${SLURM_ARRAY_TASK_ID} does not exist"
   exit 0

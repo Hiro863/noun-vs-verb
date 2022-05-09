@@ -271,7 +271,7 @@ def _process_single_label(dst_dir, epochs, label, inv, params, morph):
         stc = stc.in_label(label)
         data_list.append(stc.data)
 
-    data = _concatenate_arrays(data_list)
+    data = np.stack(data_list)
 
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
@@ -339,8 +339,8 @@ def _concatenate_arrays(stc_data):
     for stc in stc_data:
         data_list.append(stc)
 
-    data_array = np.stack(data_list)
-    return data_array
+
+    #return data_array
 
 
 #def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:

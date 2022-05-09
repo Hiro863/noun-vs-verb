@@ -271,7 +271,7 @@ def _process_single_label(dst_dir, epochs, label, inv, params, morph):
         stc = stc.in_label(label)
         data_list.append(stc.data)
 
-    data = _concatenate_arrays(stcs)
+    data = _concatenate_arrays(data_list)
 
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 

@@ -14,7 +14,7 @@ from joblib import Parallel, delayed
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
-from events.formatting import get_event_array, crop_events
+from events.formatting import get_event_array_, crop_events
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 
@@ -159,15 +159,16 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     """
     print(f" events, tpye {type(events)}")
     # Get events data
-    events, id_events = _read_events_file(events_dir, events, subject)
-    events, id_events = crop_events(events, id_events)  # todo: simplify?
+    #events, id_events = _read_events_file(events_dir, events, subject)
+    events = _read_events_file(events_dir, events, subject)
+    #events, id_events = crop_events(events, id_events)  # todo: simplify?
 
     # Get relevant channels
     picks = channel_reader(channels=raw.ch_names)
 
     epochs = None
     try:
-        epochs = Epochs(raw, id_events, tmin=tmin, tmax=tmax,
+        epochs = Epochs(raw, events, tmin=tmin, tmax=tmax,
                         picks=picks, preload=True, reject=reject, on_missing="warn")
 
     except ValueError as e:
@@ -178,7 +179,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     _save_epochs(epochs, subject, dst_dir)
 
     # Save events to file
-    events = id_events[epochs.selection]  # some events may be rejected
+    #events = id_events[epochs.selection]  # some events may be rejected
     fname = "events.npy"
     np.save(str(dst_dir / fname), events)
 
@@ -199,9 +200,10 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str) -> Tuple
         raise SubjectNotProcessedError(FileNotFoundError, msg)
 
     event_path = events_dir / events_file
-    events, id_events = get_event_array(events, event_path)
+    #events, id_events = get_event_array(events, event_path)
+    events = get_event_array_(events, event_path)
 
-    return events, id_events
+    return events #, id_events
 
 
 def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:

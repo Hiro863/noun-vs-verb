@@ -18,6 +18,7 @@ from events.formatting import get_event_array, crop_events
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 
+sys.stdout = open(os.devnull, "w")
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"

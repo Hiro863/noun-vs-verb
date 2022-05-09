@@ -1,9 +1,12 @@
 import logging
+import os
 import sys
 from utils.file_access import read_json, write_json
 from pathlib import Path
 from mne import read_epochs
 from processing.preprocessing import source_localize
+
+sys.stdout = open(os.devnull, "w")
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"

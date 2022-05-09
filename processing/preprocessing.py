@@ -418,7 +418,7 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
 
 
 def get_inv(epochs, fwd_path, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
-            rank=None, loose=0.2, depth=0.8, verbose=True):
+            rank=None, loose=0.2, depth=0.8, verbose=False):
     fwd = read_forward_solution(fwd_path, verbose=False)
     noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, n_jobs=n_jobs, verbose=verbose)
     inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)

@@ -1,9 +1,9 @@
 {
   "directories":
   {
-    "root": "",
-    "idx-to-name": "",
-    "subjects-dir": ""
+    "root": "/data/home/hiroyoshi/results",
+    "idx-to-name": "/data/home/hiroyoshi/meg-mvpa/data/aparc_sub-idx_to_name.pickle",
+    "subjects-dir": "/data/home/hiroyoshi/meg-mvpa/data/aparc_sub-name_to_idx.pickle"
   },
   "parcellation": "aparc_sub",
   "hemi": "both"

@@ -247,7 +247,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
         # Ignore irrelevant labels
         if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
             continue
-        func = delayed(_process_single_label)(dst_dir=dst_dir, subject=subject,
+        func = delayed(_process_single_label)(dst_dir=dst_dir,
                                               epochs=epochs, label=label, inv=inv,
                                               params=params, morph=morph)
         parallel_funcs.append(func)

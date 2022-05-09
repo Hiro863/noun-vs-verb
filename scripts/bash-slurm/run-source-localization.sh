@@ -2,11 +2,11 @@
 
 #SBATCH --job-name=source-localization
 #SBATCH --array=1  ## -117               ## subject IDs
-#SBATCH --ntasks-per-node=50         ## number of cores per subject
+#SBATCH --ntasks-per-node=40         ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
-#SBATCH --mem-per-cpu=8gb
+#SBATCH --mem-per-cpu=10gb
 
 # Skip non-existent subjects
 no_subject=(14 15 18 21 23 41 43 47 51 56 60 67 82 91 112)  # non-existent subjects

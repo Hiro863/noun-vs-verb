@@ -493,6 +493,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
         with open(str(rejected_path), "a") as file:
             file.write(f"{subject_name}\n")
+        sys.exit(-1)
 
     except Exception as e:  # noqa
 
@@ -500,3 +501,4 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
         with open(str(rejected_path), "a") as file:
             file.write(f"{subject_name}\n")
+        sys.exit(-1)

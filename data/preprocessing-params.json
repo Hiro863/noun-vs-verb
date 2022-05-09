@@ -13,8 +13,8 @@
     {
       "filter": true,
       "l_freq": 0.1,
-      "h_freq": 50,
-      "notch"
+      "h_freq": 45,
+      "notch": []
     },
 
     "artifact params":

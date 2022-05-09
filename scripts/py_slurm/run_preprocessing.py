@@ -42,5 +42,4 @@ if __name__ == "__main__":
 
     write_json(dir_path=epochs_dir, file_name="parameters.json", data=params)
 
-    logging.debug("Process completed successfully.")
 

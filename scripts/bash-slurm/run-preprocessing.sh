@@ -27,3 +27,6 @@ param_dir=/data/home/hiroyoshi/results/param-dir                    # parameter 
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 python $scripts_dir/run_preprocessing.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir
+
+echo "The process terminated with the exit code"
+echo $?

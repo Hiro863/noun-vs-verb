@@ -24,9 +24,7 @@ logging.basicConfig(level=logging.DEBUG,
                     handlers=[logging.StreamHandler(sys.stdout)])
 
 
-MAX_JOBS = 100
-
-name_to_obj = {"LinearSVC": LinearSVC()}
+MAX_JOBS = 32
 
 
 def format_results(data, params):
@@ -61,8 +59,7 @@ def run_classification(label_name, params, n_cores):
     dropped = np.load(str(included_path))
     x = x[dropped]
 
-    print(x.shape)
-    print(y.shape)
+    name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}
 
     # Time array
     times = np.arange(params["epochs-tmin"], params["epochs-tmax"], 1 / params["sfreq"])

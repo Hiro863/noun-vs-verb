@@ -1,3 +1,4 @@
+import os
 import pickle
 import sys
 from utils.file_access import read_json
@@ -27,4 +28,8 @@ if __name__ == "__main__":
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"], subjects_dir=subjects_dir)
     name = idx_to_name[area_id]
 
-    generate_dataset(epoch_dir, dataset_dir / name, name, memmap=params["memmap"])
+    dst_dir = dataset_dir / name
+    if not dst_dir.exists():
+        os.makedirs(dst_dir)
+
+    generate_dataset(epoch_dir, dst_dir, name, memmap=params["memmap"])

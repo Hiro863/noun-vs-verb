@@ -60,7 +60,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     if sfreq > 0 and not None:
         logging.debug(f"Resampling at {sfreq} Hz")
 
-        n_jobs = min(5, n_jobs)  # to avoid running out of memory
+        # n_jobs = min(5, n_jobs)  # to avoid running out of memory
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
         return raw, events, new_events
@@ -404,7 +404,6 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                                    ecg_channel=artifact_params["ecg channel"], n_jobs=n_cores)
 
         # Epoch
-        print(f"DEBUG new_events before epoch {new_events.shape}")
         epochs = epoch(dst_dir=dst_dir, events_dir=events_dir, subject=subject_name, raw=raw,
                        events=(events, new_events),
                        events_id=epoch_params["event id"],

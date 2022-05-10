@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=preprocessing
-#SBATCH --array=1-117          ## subject IDs
-#SBATCH --ntasks-per-node=5    ## number of cores per subject
+#SBATCH --array=1-32  ## 117          ## subject IDs
+#SBATCH --ntasks-per-node=10    ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
@@ -19,7 +19,7 @@ do
 done
 
 # Skip problematic subjects
-prob_subjects=(6 9 10 14 33 44 90 97 97 107 109)  # some technical issues with these subjects
+prob_subjects=(3 4 5 6 9 10 11 14 26 30 33 44 90 97 97 107 109)  # some technical issues with these subjects
 for i in "${prob_subjects[@]}"
 do
   if [[ "$i" =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then

@@ -72,6 +72,8 @@ def run_classification(label_name, params, n_cores):
 
     for t_idx in range(start_idx, end_idx):
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
+        print(x_slice.shape)
+        print(t_idx)
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
                                  clf=clf, scoring=balanced_accuracy_score)
         parallel_funcs.append(func)

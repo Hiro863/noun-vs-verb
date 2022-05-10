@@ -37,7 +37,7 @@ def classify(x, y, cv, clf: Pipeline, scoring):
     dummy_scores = np.zeros((cv,))
 
     y = y[0].reshape(-1,) # todo tmp
-    dummy_clf = make_pipeline(StandardScaler(), DummyClassifier(strategy="stratify"))
+    dummy_clf = make_pipeline(StandardScaler(), DummyClassifier(strategy="stratified"))
 
     for i, (train_idx, test_idx) in enumerate(kf.split(x)):
 

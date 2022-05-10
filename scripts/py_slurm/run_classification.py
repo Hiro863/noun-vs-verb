@@ -53,8 +53,8 @@ def run_classification(label_name, params, n_cores):
     parallel_funcs = []
 
     # Load data
-    x_path = Path(params["dataset_dir"] / params["x-name"])
-    y_path = Path(params["dataset_dir"] / params["y-name"])
+    x_path = Path(params["dataset-dir"] / params["x-name"])
+    y_path = Path(params["dataset-dir"] / params["y-name"])
     x = np.load(str(x_path))
     y = np.load(str(y_path))
 
@@ -93,7 +93,8 @@ if __name__ == "__main__":
     # Get the parameters
     params = read_json(param_dir, "classification-params.json")
     parcellation = params["parcellation"]
-    with open(f"data/{parcellation}-idx_to_name", "rb") as handle:
+    root = Path(params["dict-dir"])
+    with open(root / f"{parcellation}-idx_to_name", "rb") as handle:
         idx_to_name = pickle.load(handle)
 
     label_name = idx_to_name[label_id]

@@ -1,10 +1,12 @@
 
 {
-  "dataset_dir": "/data/home/hiroyoshi/results/dataset-dir",
+  "dataset-dir": "/data/home/hiroyoshi/results/dataset-dir",
+  "dict-dir": "/data/home/hiroyoshi/meg-mvpa/data",
   "x-name": "x.npy",
   "y-name": "y.npy",
   "epochs-tmin": -0.5,
   "epochs-tmax": 1.5,
+  "parcellation": "aparc_sub",
   "sfreq": 250,
   "classification-tmin": 0.0,
   "classification-tmax": 0.03,

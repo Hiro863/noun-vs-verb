@@ -257,24 +257,14 @@ def format_event_data(events_path, stimuli_path):
 ########################################################################################################################
 
 
-def _simplify(events):
-    for event in events:
-        if event[2] < 10:
-            event[2] = 1
+def get_event_array(events, event_path):
 
-    return events
-# todo: make sure that events are long enough (2>
-# todo: make sure new and old event have the same shape
-def get_event_array(events, event_path):  # todo: tidy
-
-    # events = mne.find_events(raw)
-    original_events = events[0]
-    new_events = events[1]
+    original_events = events[0]  # at original sfreq
+    new_events = events[1]       # downsampled
     df = pd.read_csv(event_path)
 
     valid_events = []
     invalid_events = []
-    id_events = []  # identical to valid_events except instead of event ID, use token ID
     for idx, o_event in enumerate(original_events):
 
         # Ignore events that are not in the dictionary
@@ -296,21 +286,11 @@ def get_event_array(events, event_path):  # todo: tidy
 
         # The event name is identical
         if df_event["type"].values[0] == mne_event:
-            event = new_events[idx].copy()
-            token = new_events[idx].copy()
-            token[2] = int(df_event["ID"].values[0]) if not isnan(df_event["ID"].values[0]) else -1
-            valid_events.append(event)
-            id_events.append(token)
 
-        # Check for response, because they reflect response values (1, 2 or 3) rather than event type
-        elif df_event["type"].values[0].startswith("response") and mne_event == "word":
-            value = int(df_event["type"].values[0][-1])  # 1, 2 or 3, e.g. "response/1"
-            if value == o_event[2]:
-                event = new_events[idx].copy()
-                token = new_events[idx].copy()
-                token[2] = int(df_event["ID"].values[0]) if not isnan(df_event["ID"].values[0]) else -1
-                valid_events.append(event)
-                id_events.append(token)
+            if not isnan(df_event["ID"].values[0]):
+                # Replace MNE ID with Token ID
+                new_events[idx, 2] = int(df_event["ID"].values[0])
+                valid_events.append(new_events[idx])
 
         # These are neither valid nor relevant
         elif mne_event == "word" and df_event["type"].values[0] == "empty":  # blank "words", e.g. 5 300
@@ -322,15 +302,11 @@ def get_event_array(events, event_path):  # todo: tidy
     logging.debug(f"Total of {len(valid_events)} events added")
 
     events = np.array(valid_events)
-    id_events = np.array(id_events)
-
-    events = _simplify(events)
-    return events, id_events
+    return events
 
 
 def get_event_array_(events, event_path):  # todo: tidy
 
-    # events = mne.find_events(raw)
     original_events = events[0]
     new_events = events[1]
     df = pd.read_csv(event_path)
@@ -388,19 +364,7 @@ def get_event_array_(events, event_path):  # todo: tidy
     id_events = np.array(id_events)
 
     #events = _simplify(events)
-    events = crop_events(id_events)
+    #events = crop_events(id_events)
     return events
 
-def crop_events(events):#, id_events):
-    event_list = []
-    id_event_list = []
 
-    for event in events:#, id_events):
-        if event[2] in id_to_name:
-            if id_to_name[event[2]] == "word":
-                event_list.append(event)
-                #id_event_list.append(id_event)
-
-    events = np.array(events)
-    #id_events = np.array(id_event_list)
-    return events#, id_events

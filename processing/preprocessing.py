@@ -14,7 +14,7 @@ from joblib import Parallel, delayed
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
-from events.formatting import get_event_array_, crop_events
+from events.formatting import get_event_array
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 
@@ -161,7 +161,6 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     # Get events data
     #events, id_events = _read_events_file(events_dir, events, subject)
     events = _read_events_file(events_dir, events, subject)
-    #events, id_events = crop_events(events, id_events)  # todo: simplify?
 
     # Get relevant channels
     picks = channel_reader(channels=raw.ch_names)
@@ -201,7 +200,7 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str) -> Tuple
 
     event_path = events_dir / events_file
     #events, id_events = get_event_array(events, event_path)
-    events = get_event_array_(events, event_path)
+    events = get_event_array(events, event_path)
 
     return events #, id_events
 
@@ -279,89 +278,12 @@ def _process_single_label(dst_dir, epochs, label, inv, params, morph):
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 
-def source_localize_old(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
-    """
-    Source localize and save the data as a numpy array
-    :param dst_dir: path to directory in which results will be saved
-    :param subject: name of the subject
-    :param epochs: epochs object
-    :param params: relevant parameters for source localization
-    :return:
-        None
-    """
-
-    logging.debug(f"Source localizing {subject} files")
-
-    # Generate set of labels
-    labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
-                                    subjects_dir=params["subjects dir"], verbose=False)
-
-    # Morph to subject source space
-    """labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
-                          subjects_dir=params["subjects dir"]+"_",
-                          surf_name="white", verbose=None)
-
-    # Common source space
-    fsaverage_src_path = Path(params["subjects dir"]+"_") / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
-    fs_src = read_source_spaces(str(fsaverage_src_path))"""
-
-    # Calculate inverse solution
-    logging.debug(f"Calculating the inverse solution for the subject {subject}")
-    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
-
-    for label in labels:
-        logging.debug(f"Starting the source localization for the {label.name}")
-
-        # Ignore irrelevant labels
-        if re.match(r".*(unknown|\?|deeper|cluster|default|ongur|medial\.wall).*", label.name.lower()):
-            continue
-
-        stcs = _inverse_epochs(epochs, label=label, inv=inv, method=params["method"],
-                               pick_ori=params["pick ori"], n_jobs=n_jobs)
-
-        data_array = _concatenate_arrays(stcs)
-
-        _write_array(dst_dir=dst_dir, label=label, data_array=data_array)
-
-        logging.debug(f"Source localization for {subject} has finished")
-
-
 def _morph_to_common(stcs, morph):
     logging.debug(f"Morphing to fsaverage")
 
     for stc in stcs:
         fs_stc = morph.apply(stc)
         yield fs_stc
-
-
-def _concatenate_arrays(stc_data):
-    logging.debug(f"Concatenating the source estimate arrays")
-
-    data_list = []
-
-    for stc in stc_data:
-        data_list.append(stc)
-
-
-    #return data_array
-
-
-#def _concatenate_arrays(stcs: List[SourceEstimate]) -> np.array:
-    """
-    Concatenate the data into a single array, shape n_epochs x n_dipoles x n_times
-    :param stcs: list of source estimate objects (per epoch)
-    :return:
-        data_array: data in form n_epochs x n_dipoles x n_times
-    """
-#    logging.debug(f"Concatenating the arrays")
-
-#    data_list = []
-
-#    for i, stc in enumerate(stcs):
-#        data_list.append(stc.data)
-
-#    data_array = np.stack(data_list)
-#    return data_array
 
 
 def _write_array(dst_dir: Path, label: Label, data_array):

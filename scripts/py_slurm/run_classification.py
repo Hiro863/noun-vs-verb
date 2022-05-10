@@ -55,10 +55,11 @@ def run_classification(label_name, params, n_cores):
     # Load data
     x_path = Path(params["dataset-dir"]) / label_name / params["x-name"]
     y_path = Path(params["dataset-dir"]) / label_name / params["y-name"]
+    dropped_path = Path(params["dataset-dir"]) / label_name / params["dropped"]
     x = np.load(str(x_path))
     y = np.load(str(y_path))
-    print(x.shape)
-    print(y.shape)
+    dropped = np.load(str(dropped_path))
+    x = x[dropped]
 
     # Time array
     times = np.arange(params["epochs-tmin"], params["epochs-tmax"], 1 / params["sfreq"])

@@ -86,7 +86,7 @@ def run_classification(label_name, params, n_cores):
     results = parallel_pool(parallel_funcs)
     results = format_results(data=results, params=params)
 
-    with open(f"{label_name}.pickle", "wb") as handle:
+    with open(Path(params["dst-dir"]) / f"{label_name}.pickle", "wb") as handle:
         pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     logging.info(f"{len(parallel_funcs)} time steps processed")

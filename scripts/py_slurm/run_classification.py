@@ -60,7 +60,10 @@ def run_classification(label_name, params, n_cores):
 
     # Time array
     times = np.arange(params["epochs-tmin"], params["epochs-tmax"], 1 / params["sfreq"])
-    start_idx, end_idx = get_indices(times, params["analysis-tmin"], params["analysis-tmax"], params["sfreq"])
+    start_idx, end_idx = get_indices(times,
+                                     params["classification-tmin"],
+                                     params["classification-tmax"],
+                                     params["sfreq"])
 
     clf = make_pipeline(StandardScaler(), name_to_obj[params["clf"]])
 

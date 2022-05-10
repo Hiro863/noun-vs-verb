@@ -61,6 +61,9 @@ def run_classification(label_name, params, n_cores):
     dropped = np.load(str(dropped_path))
     x = x[dropped]
 
+    print(x.shape)
+    print(y.shape)
+
     # Time array
     times = np.arange(params["epochs-tmin"], params["epochs-tmax"], 1 / params["sfreq"])
     start_idx, end_idx = get_indices(times,

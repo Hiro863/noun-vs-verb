@@ -6,5 +6,6 @@
     "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects"
   },
   "parcellation": "aparc_sub",
-  "hemi": "both"
+  "hemi": "both",
+  "memmap": false
 }

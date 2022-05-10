@@ -266,7 +266,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
 def _process_single_label(dst_dir, epochs, label, inv, params, morph):
     logging.debug(f"Processing single subject for {label.name} ")
-
+    # todo this is inefficient
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
     stcs = _morph_to_common(stcs, morph)
 

@@ -72,8 +72,8 @@ def run_classification(label_name, params, n_cores):
     included_path = Path(params["dataset-dir"]) / label_name / params["included"]
     x = np.load(str(x_path))
     y = np.load(str(y_path))
-    dropped = np.load(str(included_path))
-    x = x[dropped]
+    included = np.load(str(included_path))
+    x = x[included]
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}
 

@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=30         ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
-#SBATCH --chdir=/data/home/hiroyoshi/logs
+#SBATCH --chdir=/data/home/hiroyoshi/logs/source-localization
 #SBATCH --mem-per-cpu=5gb
 
 # Skip non-existent subjects

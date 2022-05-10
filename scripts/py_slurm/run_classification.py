@@ -99,4 +99,6 @@ if __name__ == "__main__":
 
     label_name = idx_to_name[label_id]
 
+    run_classification(label_name, params, n_cores)
+
 

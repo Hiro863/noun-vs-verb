@@ -1,7 +1,7 @@
 
 {
   "dataset-dir": "/data/home/hiroyoshi/results/dataset-dir",
-  "dict-dir": "/data/home/hiroyoshi/meg-mvpa/data",
+  "dict-dir": "/data/home/hiroyoshi/scripts/meg-mvpa/data",
   "x-name": "x.npy",
   "y-name": "y.npy",
   "epochs-tmin": -0.5,

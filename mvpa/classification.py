@@ -35,7 +35,7 @@ def classify(x, y, cv, clf: Pipeline, scoring):
 
         x_train, x_test = x[train_idx], x[test_idx]
         y_train, y_test = y[train_idx], y[test_idx]
-
+        print(y.shape)
         clf = clone(clf)
 
         clf.fit(x_train, y_train)

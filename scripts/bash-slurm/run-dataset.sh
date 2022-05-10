@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #SBATCH --job-name=dataset
-#SBATCH --array=0  ## -447          ## cortical area IDs, for aparc_sub
-#SBATCH --ntasks-per-node=10   ## number of cores per subject
+#SBATCH --array=1 ## -447          ## cortical area IDs, for aparc_sub
+#SBATCH --ntasks-per-node=1   ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
-#SBATCH --mem-per-cpu=15gb
+#SBATCH --mem-per-cpu=3gb
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
 param_dir=/data/home/hiroyoshi/results/param-dir                    # parameter directory

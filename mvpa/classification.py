@@ -30,6 +30,7 @@ def classify(x, y, cv, clf: Pipeline, scoring):
 
     kf = KFold(cv)
     scores = np.zeros((cv,))
+    y = y[0] # todo tmp
     for i, (train_idx, test_idx) in enumerate(kf.split(x)):
 
         x_train, x_test = x[train_idx], x[test_idx]

@@ -2,12 +2,12 @@ import pandas as pd
 import numpy as np
 
 
-def load_to_nv(path, index=False):
+def load_to_nv(path, to_index=False):
     df = pd.read_csv(path)
 
     id_to_nv = {}
     for idx, row in df.iterrows():
-        if index:
+        if to_index:
             id_to_nv[row["Token ID"]] = 0 if row["POS"] == "N" else 1
         else:
             id_to_nv[row["Token ID"]] = row["POS"]
@@ -22,11 +22,11 @@ def generate_frequency_table(tokens_path, subtlex_path):
     return merged
 
 
-def convert_to_nv(y, csv_path):
+def convert_to_nv(y, csv_path, to_index):
     conditions = []
     tokens = []
 
-    id_to_nv = pd.read_csv(csv_path)
+    id_to_nv = load_to_nv(csv_path, to_index)
     for item in y:
         if item in id_to_nv:
             conditions.append(id_to_nv[item])

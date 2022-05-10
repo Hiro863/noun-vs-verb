@@ -408,7 +408,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
         # Epoch
         epochs = epoch(dst_dir=dst_dir, events_dir=events_dir, subject=subject_name, raw=raw,
                        events=(events, new_events),
-                       mode=epoch_params["modes"],
+                       mode=epoch_params["mode"],
                        tmin=epoch_params["tmin"], tmax=epoch_params["tmax"],
                        reject=epoch_params["reject"], channel_reader=get_mous_meg_channels)
 

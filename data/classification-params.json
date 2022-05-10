@@ -9,7 +9,7 @@
   "epochs-tmin": -0.5,
   "epochs-tmax": 1.5,
   "parcellation": "aparc_sub",
-  "sfreq": 250,
+  "sfreq": 100,
   "classification-tmin": 0.0,
   "classification-tmax": 1.0,
   "cv": 3,

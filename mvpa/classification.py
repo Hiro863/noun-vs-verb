@@ -2,7 +2,9 @@ import numpy as np
 
 from sklearn.base import clone
 from sklearn.model_selection import KFold
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.dummy import DummyClassifier
 
 from mne.stats import bootstrap_confidence_interval
 
@@ -26,11 +28,17 @@ def get_slice(x, t_idx, window_size=-1., sfreq=-1):
         return x[..., t_idx - t_steps + 1: t_idx + 1].reshape(x.shape[0], -1)
 
 
+
+
 def classify(x, y, cv, clf: Pipeline, scoring):
 
     kf = KFold(cv)
     scores = np.zeros((cv,))
+    dummy_scores = np.zeros((cv,))
+
     y = y[0].reshape(-1,) # todo tmp
+    dummy_clf = make_pipeline(StandardScaler(), DummyClassifier(strategy="stratify"))
+
     for i, (train_idx, test_idx) in enumerate(kf.split(x)):
 
         x_train, x_test = x[train_idx], x[test_idx]
@@ -42,8 +50,13 @@ def classify(x, y, cv, clf: Pipeline, scoring):
         y_pred = clf.predict(x_test)
         scores[i] = scoring(y_test, y_pred)
 
+        dummy_clf.fit(x_train, y_train)
+        y_pred = dummy_clf.predict(x_test)
+        dummy_scores[i] = scoring(y_test, y_pred)
+
     lower, upper = bootstrap_confidence_interval(scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
-    return scores, lower, upper
+    dummy_lower, dummy_upper = bootstrap_confidence_interval(scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
+    return scores, lower, upper, dummy_scores, dummy_lower, dummy_upper
 
 
 

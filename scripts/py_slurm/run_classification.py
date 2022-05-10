@@ -29,16 +29,32 @@ MAX_JOBS = 32
 
 def format_results(data, params):
     scores, lowers, uppers = [], [], []
-    for s, l, u in data:  # per time step
+    d_scores, d_lowers, d_uppers = [], [], []
+    for s, l, u, ds, dl, du in data:  # per time step
         scores.append(s)
         lowers.append(l)
         uppers.append(u)
+        d_scores.append(ds)
+        d_lowers.append(dl)
+        d_uppers.append(du)
 
     scores = np.stack(scores, axis=1)  # cv x time steps
     lowers = np.array(lowers)
     uppers = np.array(uppers)
+    d_scores = np.stack(d_scores, axis=1)
+    d_lowers = np.array(d_lowers)
+    d_uppers = np.array(d_uppers)
 
-    results = {"meta": params, "data": {"scores": scores, "lowers": lowers, "uppers": uppers}}
+    results = {"meta": params,
+               "data":
+                   {
+                       "scores": scores,
+                       "lowers": lowers,
+                       "uppers": uppers,
+                       "dummy-scores": d_scores,
+                       "dummy-lowers": d_lowers,
+                       "dummy-uppers": d_uppers
+                   }}
     return results
 
 
@@ -57,7 +73,6 @@ def run_classification(label_name, params, n_cores):
     x = np.load(str(x_path))
     y = np.load(str(y_path))
     dropped = np.load(str(included_path))
-    print(f"x first{x.shape}")
     x = x[dropped]
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}

@@ -57,6 +57,7 @@ def run_classification(label_name, params, n_cores):
     x = np.load(str(x_path))
     y = np.load(str(y_path))
     dropped = np.load(str(included_path))
+    print(f"x first{x.shape}")
     x = x[dropped]
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}

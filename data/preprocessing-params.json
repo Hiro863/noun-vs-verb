@@ -37,7 +37,8 @@
       },
       "tmin": -0.5,
       "tmax": 1.5,
-      "reject": null
+      "reject": null,
+      "mode": "sentence"
     },
 
     "stc params":

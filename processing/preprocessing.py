@@ -14,7 +14,7 @@ from joblib import Parallel, delayed
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
-from events.formatting import get_event_array
+from events.formatting import get_event_array, select_conditions
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 
@@ -140,7 +140,7 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
 
 
 def epoch(dst_dir: Path, events_dir: Path, subject: str,
-          raw: Raw, events: np.array, events_id: dict,
+          raw: Raw, events: np.array, mode,
           tmin: float, tmax: float, reject: dict, channel_reader: Callable) -> Epochs:
     """
     Epoch the subject data
@@ -160,7 +160,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     print(f" events, tpye {type(events)}")
     # Get events data
     #events, id_events = _read_events_file(events_dir, events, subject)
-    events = _read_events_file(events_dir, events, subject)
+    events = _read_events_file(events_dir, events, subject, mode)
 
     # Get relevant channels
     picks = channel_reader(channels=raw.ch_names)
@@ -185,7 +185,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     return epochs
 
 
-def _read_events_file(events_dir: Path, events: np.array, subject: str) -> Tuple[np.array, dict]:
+def _read_events_file(events_dir: Path, events: np.array, subject: str, mode) -> Tuple[np.array, dict]:
     events_file = None
 
     # Find the corresponding event info file
@@ -201,6 +201,8 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str) -> Tuple
     event_path = events_dir / events_file
     #events, id_events = get_event_array(events, event_path)
     events = get_event_array(events, event_path)
+
+    events = select_conditions(events, mode=mode)
 
     return events #, id_events
 
@@ -406,7 +408,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
         # Epoch
         epochs = epoch(dst_dir=dst_dir, events_dir=events_dir, subject=subject_name, raw=raw,
                        events=(events, new_events),
-                       events_id=epoch_params["event id"],
+                       mode=epoch_params["modes"],
                        tmin=epoch_params["tmin"], tmax=epoch_params["tmax"],
                        reject=epoch_params["reject"], channel_reader=get_mous_meg_channels)
 

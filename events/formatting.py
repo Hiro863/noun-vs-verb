@@ -305,6 +305,15 @@ def get_event_array(events, event_path):
     return events
 
 
+def select_conditions(events, mode="both"):
+
+    if mode == "sentence":
+        events = events[np.where(events[:, 2] < 4598)]  # 4597 = largest sentence token ID
+    elif mode == "list":
+        events = events[np.where(events[:2] >= 4598)]
+    return events
+
+
 def get_event_array_(events, event_path):  # todo: tidy
 
     original_events = events[0]

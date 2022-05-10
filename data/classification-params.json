@@ -4,7 +4,7 @@
   "dict-dir": "/data/home/hiroyoshi/scripts/meg-mvpa/data",
   "x-name": "x.npy",
   "y-name": "y-nv.npy",
-  "dropped": "dropped-nv.npy",
+  "included": "included-nv.npy",
   "epochs-tmin": -0.5,
   "epochs-tmax": 1.5,
   "parcellation": "aparc_sub",

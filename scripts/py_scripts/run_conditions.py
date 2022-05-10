@@ -11,7 +11,7 @@ def convert_y(params):
     y_nv, dropped = convert_to_nv(y, params["NV-path"], to_index=params["to-index"])
 
     np.save(str(Path(params["dst-dir"]) / "y-nv.npy"), y_nv)
-    np.save(str(Path(params["dst-dir"]) / "dropped-nv.npy"), dropped)
+    np.save(str(Path(params["dst-dir"]) / "included-nv.npy"), dropped)
 
 
 if __name__ == "__main__":

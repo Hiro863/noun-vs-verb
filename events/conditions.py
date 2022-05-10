@@ -25,14 +25,13 @@ def generate_frequency_table(tokens_path, subtlex_path):
 def convert_to_nv(y, csv_path, to_index):
     conditions = []
     tokens = []
-    dropped = []
+    included = []
 
     id_to_nv = load_to_nv(csv_path, to_index)
     for idx, item in enumerate(y):
         if item in id_to_nv:
             conditions.append(id_to_nv[item])
             tokens.append(item)
-        else:
-            dropped.append(idx)
+            included.append(idx)
 
-    return np.array([conditions, tokens]), np.array(dropped)
+    return np.array([conditions, tokens]), np.array(included)

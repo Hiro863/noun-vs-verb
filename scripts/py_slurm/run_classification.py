@@ -45,7 +45,7 @@ def format_results(data, params):
 
 
 def run_classification(label_name, params, n_cores):
-    logging.info("Starting classification")
+    logging.info(f"Starting classification for the area {label_name}")
 
     n_jobs = min(n_cores, MAX_JOBS)
 
@@ -53,8 +53,8 @@ def run_classification(label_name, params, n_cores):
     parallel_funcs = []
 
     # Load data
-    x_path = Path(params["dataset-dir"] / params["x-name"])
-    y_path = Path(params["dataset-dir"] / params["y-name"])
+    x_path = Path(params["dataset-dir"]) / params["x-name"]
+    y_path = Path(params["dataset-dir"]) / params["y-name"]
     x = np.load(str(x_path))
     y = np.load(str(y_path))
 

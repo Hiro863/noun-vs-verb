@@ -12,4 +12,4 @@ scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts  # scripts directory
 param_dir=/data/home/hiroyoshi/results/param-dir           # parameter directory
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa/py_slurm
-python $scripts_dir/run_classiffication.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir
+python $scripts_dir/run_classification.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir

@@ -28,8 +28,6 @@ def get_slice(x, t_idx, window_size=-1., sfreq=-1):
         return x[..., t_idx - t_steps + 1: t_idx + 1].reshape(x.shape[0], -1)
 
 
-
-
 def classify(x, y, cv, clf: Pipeline, scoring):
 
     kf = KFold(cv)

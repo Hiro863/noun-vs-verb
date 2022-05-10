@@ -55,7 +55,7 @@ def classify(x, y, cv, clf: Pipeline, scoring):
         dummy_scores[i] = scoring(y_test, y_pred)
 
     lower, upper = bootstrap_confidence_interval(scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
-    dummy_lower, dummy_upper = bootstrap_confidence_interval(scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
+    dummy_lower, dummy_upper = bootstrap_confidence_interval(dummy_scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
     return scores, lower, upper, dummy_scores, dummy_lower, dummy_upper
 
 

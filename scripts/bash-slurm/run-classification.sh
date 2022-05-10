@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name=classification
-#SBATCH --array=0  ## parcel ID
-#SBATCH --ntasks-per-node=10   ## number of cores per parcel
+#SBATCH --array=210  ## parcel ID
+#SBATCH --ntasks-per-node=30   ## number of cores per parcel
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs

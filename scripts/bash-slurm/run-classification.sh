@@ -6,7 +6,7 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
-#SBATCH --mem-per-cpu=10gb
+#SBATCH --mem-per-cpu=3gb
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
 param_dir=/data/home/hiroyoshi/results/param-dir                    # parameter directory

@@ -53,8 +53,10 @@ def run_classification(label_name, params, n_cores):
     parallel_funcs = []
 
     # Load data
-    x = np.load(params["x-path"])
-    y = np.load(params["y-path"])
+    x_path = Path(params["dataset_dir"] / params["x-name"])
+    y_path = Path(params["dataset_dir"] / params["y-name"])
+    x = np.load(str(x_path))
+    y = np.load(str(y_path))
 
     # Time array
     times = np.arange(params["epochs-tmin"], params["epochs-tmax"], 1 / params["sfreq"])

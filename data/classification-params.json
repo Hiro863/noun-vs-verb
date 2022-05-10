@@ -1,7 +1,8 @@
 
 {
-  "x-path": "/Users/yamazakihiroyoshi/Downloads/NP-VP/x.npy",
-  "y-path": "/Users/yamazakihiroyoshi/Downloads/NP-VP/y.npy",
+  "dataset_dir": "/data/home/hiroyoshi/results/dataset-dir",
+  "x-name": "x.npy",
+  "y-name": "y.npy",
   "epochs-tmin": -0.5,
   "epochs-tmax": 1.5,
   "sfreq": 250,

@@ -69,7 +69,7 @@ def run_classification(label_name, params, n_cores):
                                      params["sfreq"])
 
     clf = make_pipeline(StandardScaler(), name_to_obj[params["clf"]])
-
+    print(x.shape)
     for t_idx in range(start_idx, end_idx):
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
         print(x_slice.shape)

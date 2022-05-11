@@ -1,5 +1,6 @@
 import pickle
 import sys
+import os
 import numpy as np
 from utils.file_access import read_json
 from pathlib import Path
@@ -14,8 +15,12 @@ def convert(name, params):
     y_nv, included = convert_to_nv(y, params["csv-path"], params["to-index"])
     x = x[included]
 
-    np.save(str(dir_name / params["dst-name"] / "x.npy"), x)
-    np.save(str(dir_name / params["dst-name"] / "x.npy"), y_nv)
+    dst_dir = dir_name / params["dst-name"]
+    if not dst_dir.exists():
+        os.makedirs(dst_dir)
+
+    np.save(str(dst_dir / "x.npy"), x)
+    np.save(str(dst_dir / "x.npy"), y_nv)
 
 
 if __name__ == "__main__":

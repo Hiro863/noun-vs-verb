@@ -35,6 +35,7 @@ def get_job_file(name, array_str, n_tasks_per_node, mem_per_cpu, script, script_
     job_file += f"python $scripts_dir/{script} $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir\n"
 
     job_path = JOBS_DIR / f"{name}.job"
+    print(job_file)
 
     with open(job_path, "w") as f:
         f.write(job_file)
@@ -46,7 +47,7 @@ def run_downsampling(subjects):
 
 
 def main():
-    subject_ids = [i for i in range(TOTAL_SUBJECTS) if i not in no_subject or prob_subject]
+    subject_ids = [i for i in range(1, TOTAL_SUBJECTS + 1) if i not in no_subject or prob_subject]
     subjects = "".join(str(s) + "," for s in subject_ids)[:-1]
 
     path = get_job_file("preprocessing", array_str=subjects, n_tasks_per_node=32, mem_per_cpu=5,

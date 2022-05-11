@@ -37,10 +37,16 @@
       },
       "tmin": -0.5,
       "tmax": 1.5,
-      "reject": null,
+      "reject":
+      {
+        "grad": 4000e-13,
+        "mag": 4e-12,
+        "eeg": 40e-6,
+        "eog": 250e-6
+      },
       "mode": "sentence",
-      "dictionary-path": "/data/home/hiroyoshi/mous_wd/NV.csv",
-      "simplify-mode": "index"
+      "dictionary-path": "/data/home/hiroyoshi/mous_wd/param-dir/NV.csv",
+      "simplify-mode": "binary"
     },
 
     "stc params":

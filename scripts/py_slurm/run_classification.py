@@ -68,8 +68,8 @@ def run_classification(label_name, params, n_cores):
     parallel_funcs = []
 
     # Load data
-    x_path = Path(params["dataset-dir"]) / label_name / params["condition"] / "x.npy"
-    y_path = Path(params["dataset-dir"]) / label_name / params["condition"] / "y.npy"
+    x_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "x.npy"
+    y_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "y.npy"
     # included_path = Path(params["dataset-dir"]) / label_name / params["included"]
     x = np.load(str(x_path))
     y = np.load(str(y_path))

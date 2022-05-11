@@ -9,7 +9,7 @@ LOGS_DIR = Path("/data/home/hiroyoshi/logs")
 JOBS_DIR = Path("/data/home/hiroyoshi/jobs")
 PARAM_DIR = Path("")
 JOB_DIR = Path("")
-TOTAL_SUBJECTS = 117
+TOTAL_SUBJECTS = 1#17
 
 
 def get_job_file(name, array_str, n_tasks_per_node, mem_per_cpu, script, script_dir, param_dir):

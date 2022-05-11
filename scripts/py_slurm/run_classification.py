@@ -120,6 +120,7 @@ if __name__ == "__main__":
 
     # Get the parameters
     params = read_json(param_dir, "classification-params.json")
+    print(param_dir)
     #parcellation = params["parcellation"]
     path = Path(params["idx-to-name"])
     print(params)

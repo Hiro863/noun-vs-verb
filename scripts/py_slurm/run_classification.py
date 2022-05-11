@@ -122,6 +122,7 @@ if __name__ == "__main__":
     params = read_json(param_dir, "classification-params.json")
     parcellation = params["parcellation"]
     root = Path(params["dict-dir"])
+    print(params)
     with open(root / f"{parcellation}-idx_to_name.pickle", "rb") as handle:
         idx_to_name = pickle.load(handle)
 

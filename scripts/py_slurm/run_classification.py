@@ -92,7 +92,7 @@ def run_classification(label_name, params, n_cores):
         #print(x_slice.shape)
         #print(t_idx)
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
-                                 clf=clf, scoring=roc_auc_score)
+                                 clf=clf, scoring=balanced_accuracy_score)
         parallel_funcs.append(func)
 
     logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")

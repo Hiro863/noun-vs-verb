@@ -257,7 +257,7 @@ def format_event_data(events_path, stimuli_path):
 ########################################################################################################################
 
 
-def get_event_array(events, event_path):
+def get_event_array(events, event_path, dictionary_path):
 
     original_events = events[0]  # at original sfreq
     new_events = events[1]       # downsampled
@@ -302,7 +302,7 @@ def get_event_array(events, event_path):
     logging.debug(f"Total of {len(valid_events)} events added")
 
     events = np.array(valid_events)
-    events = _simplify_(events, "/data/home/hiroyoshi/mous_wd/cropped.csv")
+    events = _simplify(events, dictionary_path)
     return events
 
 

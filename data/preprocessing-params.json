@@ -48,6 +48,7 @@
       "hemi": "lh",
       "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
-      "pick ori": null
+      "pick ori": null,
+      "dictionary-path": "/data/home/hiroyoshi/params/NV.csv"
     }
 }

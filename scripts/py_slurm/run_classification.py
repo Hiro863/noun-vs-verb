@@ -6,7 +6,7 @@ import numpy as np
 from joblib import Parallel, delayed
 from pathlib import Path
 
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import balanced_accuracy_score, roc_auc_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
@@ -85,13 +85,13 @@ def run_classification(label_name, params, n_cores):
                                      params["sfreq"])
 
     clf = make_pipeline(StandardScaler(), name_to_obj[params["clf"]])
-    print(x.shape)
+    #print(x.shape)
     for t_idx in range(start_idx, end_idx):
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
-        print(x_slice.shape)
-        print(t_idx)
+        #print(x_slice.shape)
+        #print(t_idx)
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
-                                 clf=clf, scoring=balanced_accuracy_score)
+                                 clf=clf, scoring=roc_auc_score())
         parallel_funcs.append(func)
 
     logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")

@@ -13,4 +13,4 @@ param_dir=/data/home/hiroyoshi/mous_wd/param-dir                    # parameter 
 
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
-python $scripts_dir/run_dataset.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir
+python $scripts_dir/run_conditions.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir

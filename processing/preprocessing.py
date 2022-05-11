@@ -142,7 +142,7 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
 def epoch(dst_dir: Path, events_dir: Path, subject: str,
           raw: Raw, events: np.array, mode,
           tmin: float, tmax: float, reject: dict, channel_reader: Callable,
-          dictionary_path) -> Epochs:
+          dictionary_path, simplify_mode) -> Epochs:
     """
     Epoch the subject data
     :param dst_dir: path to which the epochs object will be saved
@@ -161,7 +161,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     print(f" events, tpye {type(events)}")
     # Get events data
     #events, id_events = _read_events_file(events_dir, events, subject)
-    events = _read_events_file(events_dir, events, subject, mode, dictionary_path)
+    events = _read_events_file(events_dir, events, subject, mode, dictionary_path, simplify_mode)
 
     # Get relevant channels
     picks = channel_reader(channels=raw.ch_names)
@@ -186,7 +186,8 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     return epochs
 
 
-def _read_events_file(events_dir: Path, events: np.array, subject: str, mode, dictionary_path) -> Tuple[np.array, dict]:
+def _read_events_file(events_dir: Path, events: np.array, subject: str, mode,
+                      dictionary_path, simplify_mode) -> Tuple[np.array, dict]:
     events_file = None
 
     # Find the corresponding event info file
@@ -201,7 +202,7 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str, mode, di
 
     event_path = events_dir / events_file
     #events, id_events = get_event_array(events, event_path)
-    events = get_event_array(events, event_path, dictionary_path)
+    events = get_event_array(events, event_path, dictionary_path, simplify_mode)
 
     events = select_conditions(events, mode=mode)
 
@@ -413,6 +414,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                        tmin=epoch_params["tmin"], tmax=epoch_params["tmax"],
                        reject=epoch_params["reject"],
                        dictionary_path=epoch_params["dictionary-path"],
+                       simplify_mode=epoch_params["simplify-mode"],
                        channel_reader=get_mous_meg_channels)
 
         # Source localize

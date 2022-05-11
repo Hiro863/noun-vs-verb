@@ -1,4 +1,3 @@
-import os
 import pickle
 import sys
 import numpy as np
@@ -8,10 +7,15 @@ from mne import read_labels_from_annot
 from events.conditions import convert_to_nv
 
 
-def convert(params):
-    x = np.load(params["x-path"])
-    y = np.load(params["y-path"])
-    idx_to_name
+def convert(name, params):
+    dir_name = Path(params["dir-name"]) / name
+    x = np.load(str(dir_name / "x.npy"))
+    y = np.load(str(dir_name / "y.npy"))
+    y_nv, included = convert_to_nv(y, params["csv-path"], params["to-index"])
+    x = x[included]
+
+    np.save(str(dir_name / params["dst-name"] / "x.npy"), x)
+    np.save(str(dir_name / params["dst-name"] / "x.npy"), y_nv)
 
 
 if __name__ == "__main__":
@@ -33,3 +37,6 @@ if __name__ == "__main__":
     subjects_dir = params["directories"]["subjects-dir"]
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"], subjects_dir=subjects_dir)
     name = idx_to_name[area_id]
+
+    convert(name, params)
+

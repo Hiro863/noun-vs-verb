@@ -38,7 +38,9 @@
       "tmin": -0.5,
       "tmax": 1.5,
       "reject": null,
-      "mode": "sentence"
+      "mode": "sentence",
+      "dictionary-path": "/data/home/hiroyoshi/mous_wd/NV.csv",
+      "simplify-mode": "index"
     },
 
     "stc params":
@@ -48,7 +50,6 @@
       "hemi": "lh",
       "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
-      "pick ori": null,
-      "dictionary-path": "/data/home/hiroyoshi/params/NV.csv"
+      "pick ori": null
     }
 }

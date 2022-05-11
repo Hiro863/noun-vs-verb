@@ -1,7 +1,7 @@
 {
-  "NV-path": "/Users/yamazakihiroyoshi/Downloads/NV.csv",
-  "x-path": "",
-  "y-path": "/Users/yamazakihiroyoshi/Desktop/y.npy",
+  "dir-name": "/data/home/hiroyoshi/mous_wd/dataset-ir",
+  "csv-path": "/data/home/hiroyoshi/mous_wd/param-dir/NV.csv",
+  "dst-name": "nv",
   "dst-dir": "/Users/yamazakihiroyoshi/Desktop",
   "to-index": true
 }

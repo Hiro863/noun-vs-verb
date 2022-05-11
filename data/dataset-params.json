@@ -5,7 +5,7 @@
     "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc_sub-idx_to_name.pickle",
     "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects"
   },
-  "parcellation": "aparc_sub",
-  "hemi": "both",
+  "parcellation": "aparc",
+  "hemi": "lh",
   "memmap": false
 }

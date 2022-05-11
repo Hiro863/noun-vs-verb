@@ -19,8 +19,10 @@ if __name__ == "__main__":
 
     # Set up directories
     root = Path(params["directories"]["root"])
-    epoch_dir = root / "test-epochs-dir"  # todo remove
+    epoch_dir = root / "epochs-dir"
     dataset_dir = root / "dataset-dir"
+    if dataset_dir.exists():
+        os.makedirs(dataset_dir)
 
     with open(params["directories"]["idx-to-name"], "rb") as handle:
         idx_to_name = pickle.load(handle)

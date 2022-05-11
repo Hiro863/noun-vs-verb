@@ -120,9 +120,9 @@ if __name__ == "__main__":
 
     # Get the parameters
     params = read_json(param_dir, "classification-params.json")
-    parcellation = params["parcellation"]
+    #parcellation = params["parcellation"]
     path = Path(params["idx-to-name"])
-# print(params)
+    print(params)
     with open(path, "rb") as handle:
         idx_to_name = pickle.load(handle)
 

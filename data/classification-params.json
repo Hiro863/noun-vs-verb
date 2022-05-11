@@ -1,6 +1,6 @@
 
 {
-  "dataset-dir": "/data/home/hiroyoshi/results/dataset-dir",
+  "dataset-dir": "/data/home/hiroyoshi/mous_wd/dataset-dir",
   "idx-to-name":"/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
   "dst-dir": "/data/home/hiroyoshi/mous_wd/results",
   "conditions": "nv",

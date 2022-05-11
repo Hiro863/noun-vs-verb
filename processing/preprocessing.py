@@ -160,7 +160,6 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     """
     print(f" events, tpye {type(events)}")
     # Get events data
-    #events, id_events = _read_events_file(events_dir, events, subject)
     events = _read_events_file(events_dir, events, subject, mode, dictionary_path, simplify_mode)
 
     # Get relevant channels
@@ -179,7 +178,6 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     _save_epochs(epochs, subject, dst_dir)
 
     # Save events to file
-    #events = id_events[epochs.selection]  # some events may be rejected
     fname = "events.npy"
     np.save(str(dst_dir / fname), events)
 
@@ -201,12 +199,11 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str, mode,
         raise SubjectNotProcessedError(FileNotFoundError, msg)
 
     event_path = events_dir / events_file
-    #events, id_events = get_event_array(events, event_path)
     events = get_event_array(events, event_path, dictionary_path, simplify_mode)
 
     events = select_conditions(events, mode=mode)
 
-    return events #, id_events
+    return events
 
 
 def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:

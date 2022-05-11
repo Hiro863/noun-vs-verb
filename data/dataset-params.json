@@ -1,8 +1,8 @@
 {
   "directories":
   {
-    "root": "/data/home/hiroyoshi/results",
-    "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc_sub-idx_to_name.pickle",
+    "root": "/data/home/hiroyoshi/mous_wd",
+    "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
     "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects"
   },
   "parcellation": "aparc",

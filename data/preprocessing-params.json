@@ -47,7 +47,7 @@
     {
       "fwd_path": "/data/home/hiroyoshi/data/MOUS/fwds",
       "parcellation": "aparc",
-      "hemi": "lh",
+      "hemi": "both",
       "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
       "pick ori": null

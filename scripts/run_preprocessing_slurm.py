@@ -36,7 +36,7 @@ def get_job_file(name, array_str, n_tasks_per_node, mem_per_cpu, script, script_
 
     job_path = JOBS_DIR / f"{name}.job"
 
-    with open(job_path) as f:
+    with open(job_path, "w") as f:
         f.write(job_file)
 
     return job_path

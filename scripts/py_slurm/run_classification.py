@@ -1,4 +1,5 @@
 import logging
+import os
 import pickle
 import sys
 
@@ -67,13 +68,13 @@ def run_classification(label_name, params, n_cores):
     parallel_funcs = []
 
     # Load data
-    x_path = Path(params["dataset-dir"]) / label_name / params["x-name"]
-    y_path = Path(params["dataset-dir"]) / label_name / params["y-name"]
-    included_path = Path(params["dataset-dir"]) / label_name / params["included"]
+    x_path = Path(params["dataset-dir"]) / label_name / params["condition"] / "x.npy"
+    y_path = Path(params["dataset-dir"]) / label_name / params["condition"] / "y.npy"
+    # included_path = Path(params["dataset-dir"]) / label_name / params["included"]
     x = np.load(str(x_path))
     y = np.load(str(y_path))
-    included = np.load(str(included_path))
-    x = x[included]
+    # included = np.load(str(included_path))
+    # x = x[included]
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}
 
@@ -91,7 +92,7 @@ def run_classification(label_name, params, n_cores):
         #print(x_slice.shape)
         #print(t_idx)
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
-                                 clf=clf, scoring=roc_auc_score())
+                                 clf=clf, scoring=roc_auc_score)
         parallel_funcs.append(func)
 
     logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")
@@ -101,6 +102,9 @@ def run_classification(label_name, params, n_cores):
     results = parallel_pool(parallel_funcs)
     results = format_results(data=results, params=params)
 
+    dst_dir = Path(params["dst-dir"])
+    if not dst_dir.exists():
+        os.makedirs(dst_dir)
     with open(Path(params["dst-dir"]) / f"{label_name}.pickle", "wb") as handle:
         pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

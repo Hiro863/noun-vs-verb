@@ -34,7 +34,7 @@ def run_classification(label_name, params, n_cores):
     n_jobs = min(n_cores, MAX_JOBS)
 
     # Load data
-    x_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "x.npy"
+    x_path = Path(params["dataset-dir"]) / label_name / "x.npy"
     y_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "y.npy"
     included_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "included.npy"
     x = np.load(str(x_path))

@@ -1,7 +1,7 @@
 {
   "directories":
   {
-    "root": "/data/home/hiroyoshi/results",
+    "root": "/data/home/hiroyoshi/mous_wd",
     "raw-dir": "/data/home/hiroyoshi/data/MOUS"
   },
   "downsample params":

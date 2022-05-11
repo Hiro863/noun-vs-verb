@@ -302,17 +302,31 @@ def get_event_array(events, event_path):
     logging.debug(f"Total of {len(valid_events)} events added")
 
     events = np.array(valid_events)
-    events = _simplify(events, "/data/home/hiroyoshi/mous_wd/cropped.csv")
+    events = _simplify_(events, "/data/home/hiroyoshi/mous_wd/cropped.csv")
     return events
 
 
-def _simplify(events, df_path):
+def _simplify_(events, df_path):
     df = pd.read_csv(df_path)
     df["POS"] = df["POS"].apply(lambda x: 0 if x == "N" else 1)
     idx = [df["Idx"].to_numpy()]  # indices of events where = N/V
 
     events = events[idx]
     events[:, 2] = df["POS"]
+    return events
+
+
+def _simplify(events, df_path, mode="index"):
+    df = pd.read_csv(df_path)
+    df["POS"] = df["POS"].apply(lambda x: 0 if x == "N" else 1)
+
+    event_list = []
+    for event in events:
+        if event[2] in df["Token ID"].values:
+            if mode == "binary":
+                event[2] = df[df["Token ID"] == event[2]]["POS"]  # convert to noun vs verb binary
+            event_list.append(event)
+    events = np.array(event_list)
     return events
 
 

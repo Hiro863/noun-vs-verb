@@ -56,7 +56,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
         logging.exception(f"Issue with shortest event. Needs manual inspection {e}")
         raise SubjectNotProcessedError(e)
 
-    # If sampling frequency specified, downsample
+    # If sampling frequency is specified, downsample
     if sfreq > 0 and not None:
         logging.debug(f"Resampling at {sfreq} Hz")
 

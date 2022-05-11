@@ -302,6 +302,17 @@ def get_event_array(events, event_path):
     logging.debug(f"Total of {len(valid_events)} events added")
 
     events = np.array(valid_events)
+    events = _simplify(events, "/data/home/hiroyoshi/mous_wd/cropped.csv")
+    return events
+
+
+def _simplify(events, df_path):
+    df = pd.read_csv(df_path)
+    df["POS"] = df["POS"].apply(lambda x: 0 if x == "N" else 1)
+    idx = [df["Idx"].to_numpy()]  # indices of events where = N/V
+
+    events = events[idx]
+    events[:, 2] = df["POS"]
     return events
 
 

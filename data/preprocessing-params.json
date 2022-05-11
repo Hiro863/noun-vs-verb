@@ -11,7 +11,7 @@
 
     "filter params":
     {
-      "filter": true,
+      "filter": false,
       "l_freq": 0.1,
       "h_freq": 45,
       "notch": []
@@ -19,8 +19,8 @@
 
     "artifact params":
     {
-      "eog": true,
-      "ecg": true,
+      "eog": false,
+      "ecg": false,
       "n components": 0.99,
       "eog channels": ["EEG057", "EEG058"],
       "ecg channel": "EEG059"
@@ -44,8 +44,8 @@
     "stc params":
     {
       "fwd_path": "/data/home/hiroyoshi/data/MOUS/fwds",
-      "parcellation": "aparc_sub",
-      "hemi": "both",
+      "parcellation": "aparc",
+      "hemi": "lh",
       "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",
       "pick ori": null

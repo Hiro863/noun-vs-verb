@@ -20,7 +20,7 @@ def convert(name, params):
         os.makedirs(dst_dir)
 
     np.save(str(dst_dir / "x.npy"), x)
-    np.save(str(dst_dir / "x.npy"), y_nv)
+    np.save(str(dst_dir / "y.npy"), y_nv)
 
 
 if __name__ == "__main__":

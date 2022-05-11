@@ -45,21 +45,16 @@ def run_downsampling(subjects):
     pass
 
 
-
-
-def main():#(params):
+def main():
     subject_ids = [i for i in range(TOTAL_SUBJECTS) if i not in no_subject or prob_subject]
     subjects = "".join(str(s) + "," for s in subject_ids)[:-1]
 
-    path = get_job_file("downsample", array_str=subjects, n_tasks_per_node=32, mem_per_cpu=5,
+    path = get_job_file("preprocessing", array_str=subjects, n_tasks_per_node=32, mem_per_cpu=5,
                         script="run_preprocessing.py",
                         script_dir="/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm",
                         param_dir="/data/home/hiroyoshi/mous_wd/param-dir")
 
     os.system(f"sbatch {path}")
-
-
-    pass
 
 
 if __name__ == "__main__":

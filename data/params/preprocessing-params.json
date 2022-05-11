@@ -43,7 +43,7 @@
       },
       "mode": "sentence",
       "dictionary-path": "/data/home/hiroyoshi/mous_wd/param-dir/NV.csv",
-      "simplify-mode": "binary"
+      "simplify-mode": "index"
     },
 
     "stc params":

@@ -1,6 +1,6 @@
 {
 
   "parcellation": "aparc",
-  "hemi": "lh",
+  "hemi": "both",
   "memmap": false
 }

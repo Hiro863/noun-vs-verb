@@ -8,6 +8,6 @@
   "dst-dir": "/Users/yamazakihiroyoshi/Desktop",
   "to-index": true,
   "parcellation": "aparc",
-  "hemi": "lh",
+  "hemi": "both",
   "memmap": false
 }

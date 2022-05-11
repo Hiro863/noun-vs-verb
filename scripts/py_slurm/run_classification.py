@@ -70,11 +70,11 @@ def run_classification(label_name, params, n_cores):
     # Load data
     x_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "x.npy"
     y_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "y.npy"
-    # included_path = Path(params["dataset-dir"]) / label_name / params["included"]
+    included_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "included.npy"
     x = np.load(str(x_path))
     y = np.load(str(y_path))
-    # included = np.load(str(included_path))
-    # x = x[included]
+    included = np.load(str(included_path))
+    x = x[included]
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}
 

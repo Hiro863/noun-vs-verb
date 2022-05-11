@@ -10,17 +10,18 @@ from events.conditions import convert_to_nv
 
 def convert(name, params):
     dir_name = Path(params["dir-name"]) / name
-    x = np.load(str(dir_name / "x.npy"))
+    #x = np.load(str(dir_name / "x.npy"))
     y = np.load(str(dir_name / "y.npy"))
     y_nv, included = convert_to_nv(y, params["csv-path"], params["to-index"])
-    x = x[included]
+    #x = x[included]
 
     dst_dir = dir_name / params["dst-name"]
     if not dst_dir.exists():
         os.makedirs(dst_dir)
 
-    np.save(str(dst_dir / "x.npy"), x)
+    #np.save(str(dst_dir / "x.npy"), x)
     np.save(str(dst_dir / "y.npy"), y_nv)
+    np.save(str(dst_dir / "included.npy"), included)
 
 
 if __name__ == "__main__":

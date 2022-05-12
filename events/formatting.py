@@ -249,6 +249,7 @@ def format_event_data(events_path, stimuli_path):
 
     events_df = _clean_df(events_df)
     events_df, rejected_list = _add_sentence_column(events_df, stimuli_text)
+    events_df.dropna(axis=0, inplace=True)  # todo, workaround
     #events_df = _add_ids(events_df, position_to_id)
     return events_df, rejected_list
 

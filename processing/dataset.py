@@ -201,6 +201,7 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
         n_epochs_y = y.shape[0]
         y_list.append(y)
 
+        # Make sure the shape stays the same
         if n_epochs_y != n_epochs_x:
             raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
         break # just for debug todo remove

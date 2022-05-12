@@ -14,6 +14,7 @@ def convert_y(y, mode, df_dir, to_index, params):
     id_to_cond = None
     if mode == "nv":
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)
+        print(id_to_cond)
 
     elif mode == "length":
         pass
@@ -33,12 +34,13 @@ def convert_y(y, mode, df_dir, to_index, params):
         raise ValueError(f"Unknown mode \'{mode}\'")
 
     y, included = _to_arrays(y, id_to_cond)
-    return y, np.array([])
+    return y, included
 
 
 def _to_dict(df, key, column, mapper, to_index):
     # mapper: {"N": 0, "V": 1}
     id_to_cond = {}
+
     for idx, row in df.iterrows():
         if to_index:
             id_to_cond[row[key]] = mapper[row[column]]
@@ -74,8 +76,10 @@ def _to_nv(df_dir, to_index, params):
                          allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
                          allow_proper=params["proper"])
 
-    df = pd.merge(nv_df, v_df, how="right", on="Token ID")
-    df = pd.merge(df, n_df, how="right", on="Token ID")
+    df_v = pd.merge(nv_df, v_df, how="right", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    df_n = pd.merge(nv_df, n_df, how="outer", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+
+    df = pd.concat([df_v, df_n])
 
     return _to_dict(df=df, key="Token ID", column="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
 

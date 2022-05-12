@@ -9,7 +9,8 @@ DST_DIR = Path("/Users/yamazakihiroyoshi/Desktop/events-dst")
 STIMULI_PATH = Path("/Users/yamazakihiroyoshi/Desktop/Stage/stimuli-processing/stimuli-modified-cropped.txt")
 
 skip = ["sub-V1044", "sub-V1032", "sub-V1086", "sub-V1038", "sub-V1104", "sub-V1033", "sub-V1080",
-        "sub-V1042"]
+        "sub-V1042", "sub-V1074", "sub-V1050", "sub-V1068", "sub-V1068"]
+
 
 
 def main():
@@ -21,7 +22,7 @@ def main():
 
             subject_name = re.findall(r"^sub-V\d+", file)[0]
 
-            if subject_name not in skip:
+            if subject_name in skip:
 
                 events_df, rejected_list = format_event_data(SRC_DIR / file, STIMULI_PATH)
                 events_df.to_csv(DST_DIR / f"{subject_name}-clean-events.csv")

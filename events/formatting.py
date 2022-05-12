@@ -133,7 +133,8 @@ def _match_event(events, sample_list, type_list, onset_list, form_list):
                 matched = True
                 break
 
-            elif row["value"] in ["blank", "pause", "ISI", "PULSE MODE 0", "PULSE MODE 1", "PULSE MODE 2", "PULSE MODE 3", "PULSE MODE 4", "PULSE MODE 5"]:  # ignore, TODO CHECK OUT PULSE MODES
+            elif row["value"] in ["blank", "pause", "ISI", "PULSE MODE 0", "PULSE MODE 1", "PULSE MODE 2",
+                                  "PULSE MODE 3", "PULSE MODE 4", "PULSE MODE 5"]:  # ignore, TODO CHECK OUT PULSE MODES
                 break
 
             # Word
@@ -232,6 +233,7 @@ def _add_ids(df, position_to_id):
         sentence_number = row["sentence"]
         position = row["position"]
         if sentence_number is not None and position != "":  # missing sentence or position
+            print(f"DEBUG senence number {sentence_number}, posititon {position}")
             token_id = position_to_id[sentence_number][position]
             df.at[idx, "ID"] = token_id
 
@@ -247,7 +249,7 @@ def format_event_data(events_path, stimuli_path):
 
     events_df = _clean_df(events_df)
     events_df, rejected_list = _add_sentence_column(events_df, stimuli_text)
-    events_df = _add_ids(events_df, position_to_id)
+    #events_df = _add_ids(events_df, position_to_id)
     return events_df, rejected_list
 
 ########################################################################################################################

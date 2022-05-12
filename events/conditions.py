@@ -9,8 +9,6 @@ modes = {"nv": None,
          "gender": None, "n-number": None
          }
 
-SUBTLEX_PATH = Path("/Users/yamazakihiroyoshi/Desktop/InCog/meg-mvpa/data")
-
 
 def convert_y(y, mode, df_dir, to_index, params):
 
@@ -19,19 +17,26 @@ def convert_y(y, mode, df_dir, to_index, params):
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)
 
     elif mode == "length":
-        pass
+        id_to_cond = _to_length(df_dir=df_dir, to_index=to_index, params=params)
+
     elif mode == "frequency":
-        pass
+        id_to_cond = _to_frequency(df_dir=df_dir, to_index=to_index, params=params)
+
     elif mode == "tense":
-        pass
+        id_to_cond = _to_tense(df_dir=df_dir, to_index=to_index, params=params)
+
     elif mode == "v-number":
-        pass
+        id_to_cond = _to_v_number(df_dir=df_dir, to_index=to_index, params=params)
+
     elif mode == "voice":
-        pass
+        id_to_cond = _to_voice(df_dir=df_dir, to_index=to_index, params=params)
+
     elif mode == "gender":
-        pass
+        id_to_cond = _to_gender(df_dir=df_dir, to_index=to_index, params=params)
+
     elif mode == "n-number":
-        pass
+        id_to_cond = _to_n_number(df_dir=df_dir, to_index=to_index, params=params)
+
     else:
         raise ValueError(f"Unknown mode \'{mode}\'")
 
@@ -161,11 +166,27 @@ def _to_length(df_dir, to_index, params):
     df = pd.read_csv(df_dir / "NV.csv")
 
     df["Length"] = df["Word"].apply(lambda x: len(x))
-    #return _to_dict(df=df, key="Token ID", column="Length", mapper=)
+
+    # Conditions for grouping into 3 groups
+    conditions = [(df["Length"] < params["lower"]),
+                  (params["lower"] <= df["Length"]) & (df["Length"] < params["upper"]),
+                  (params["upper"] <= df["Length"])]
+    df["Group"] = np.select(conditions, ["short", "medium", "long"])
+
+    if not params["medium"]:
+        df["Group"] = df[(df["Group"] == "short") | (df["Group"] == "long")]["Group"]
+        mapper = {"short": 0, "long": 1}
+    else:
+        mapper = {"short": 0,  "medium": 1, "long": 2}
+
+    return _to_dict(df=df, key="Token ID", column="Group", mapper=mapper, to_index=to_index)
 
 
 def _to_frequency(df_dir, to_index, params):
-    pass
+    df = pd.read_csv(df_dir / "NV.csv")
+    sub = pd.read
+    #todo
+    return _to_dict(df=df, key="Token ID", column="Group", mapper=None, to_index=to_index)
 
 
 def _to_tense(df_dir, to_index, params):

@@ -233,9 +233,10 @@ def _add_ids(df, position_to_id):
         sentence_number = row["sentence"]
         position = row["position"]
         if sentence_number is not None and position != "":  # missing sentence or position
-            print(f"DEBUG senence number {sentence_number}, posititon {position}")
-            token_id = position_to_id[sentence_number][position]
-            df.at[idx, "ID"] = token_id
+            if sentence_number in position_to_id:
+                if position in position_to_id[sentence_number]:
+                    token_id = position_to_id[sentence_number][position]
+                    df.at[idx, "ID"] = token_id
 
     return df
 

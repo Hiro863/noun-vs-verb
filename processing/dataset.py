@@ -254,7 +254,8 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, memmap=True
         if memmap:
             _generate_x_mmap(dst_dir, stc_paths)
         else:
-            _generate_x(dst_dir, stc_paths)
+            _generate_data(dst_dir, stc_paths, events_paths)
+            #_generate_x(dst_dir, stc_paths)
 
     # Generate y array
-    _generate_y(dst_dir, events_paths)
+    #_generate_y(dst_dir, events_paths)

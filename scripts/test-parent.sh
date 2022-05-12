@@ -7,6 +7,7 @@
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
 #SBATCH --mem-per-cpu=1gb
+#SBATCH --output=parent.out
 
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts

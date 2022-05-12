@@ -9,7 +9,7 @@
 #SBATCH --mem-per-cpu=1gb
 #SBATCH --output=test2.out
 
-echo "from test2"$SLURM_ARRAY_TASK_ID
+echo "from test2" $SLURM_ARRAY_TASK_ID
 
 
 

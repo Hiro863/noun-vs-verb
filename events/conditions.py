@@ -7,7 +7,7 @@ import numpy as np
 #
 ########################################################################################################################
 
-def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, params: dict):
+def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: bool, params: dict):
 
     if mode == "nv":
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)
@@ -20,6 +20,9 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, params: dict
 
     elif mode == "tense":
         id_to_cond = _to_tense(df_dir=df_dir, to_index=to_index, params=params)
+
+    elif mode == "person":
+        id_to_cond = _to_person(df_dir=df_dir, to_index=to_index, params=params)
 
     elif mode == "v-number":
         id_to_cond = _to_v_number(df_dir=df_dir, to_index=to_index, params=params)
@@ -39,7 +42,7 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, params: dict
     y, included = _to_arrays(y, id_to_cond)
 
     # Balance the number of items per class
-    if params["balance"]:
+    if balance:
         y, idx = _balance_classes(y)
         included = included[idx]
 
@@ -206,6 +209,8 @@ def _to_length(df_dir, to_index, params):
     else:
         mapper = {"short": 0,  "medium": 1, "long": 2}
 
+    df.dropna(axis=0, inplace=True)
+
     return _to_dict(df=df, key="Token ID", column="Group", mapper=mapper, to_index=to_index)
 
 
@@ -231,25 +236,35 @@ def _to_tense(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
 
-    if params["tense"] not in ["present", "past"]:
-        tense = params["tense"]
-        raise ValueError(f"allowed tenses are 'present' and 'past' but got '{tense}'")
+    if not params["complex"]:
+        v_df = v_df[v_df["Complex"] == False]
 
-    v_df = v_df[v_df["Tense"] == v_df]
-    df = pd.merge(nv_df, v_df, how="right", on="Token ID")
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
     return _to_dict(df=df, key="Token ID", column="Tense", mapper={"present": 0, "past": 1}, to_index=to_index)
+
+
+def _to_person(df_dir, to_index, params):
+    nv_df = pd.read_csv(df_dir / "NV.csv")
+    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
+
+    if not params["complex"]:
+        v_df = v_df[v_df["Complex"] == False]
+
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
+    return _to_dict(df=df, key="Token ID", column="Tense", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
 
 
 def _to_v_number(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
 
-    if params["v-number"] not in ["sg.", "pl."]:
-        number = params["v-number"]
-        raise ValueError(f"allowed numbers are 'sg.' and 'pl.' but got '{number}'")
+    if not params["complex"]:
+        v_df = v_df[v_df["Complex"] == False]
 
-    v_df = v_df[v_df["Number"] == v_df]
-    df = pd.merge(nv_df, v_df, how="right", on="Token ID")
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
     return _to_dict(df=df, key="Token ID", column="Number", mapper={"sg.": 0, "pl.": 1}, to_index=to_index)
 
 
@@ -257,12 +272,8 @@ def _to_voice(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
 
-    if params["voice"] not in ["active", "passive"]:
-        voice = params["voice"]
-        raise ValueError(f"allowed tenses are 'active' and 'passive' but got '{voice}'")
-
-    v_df = v_df[v_df["Voice"] == v_df]
-    df = pd.merge(nv_df, v_df, how="right", on="Token ID")
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
     return _to_dict(df=df, key="Token ID", column="Voice", mapper={"active": 0, "passive": 1}, to_index=to_index)
 
 
@@ -273,12 +284,13 @@ def _to_gender(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
-    if params["gender"] not in ["m.", "f.", "n."]:
-        gender = params["gender"]
-        raise ValueError(f"allowed tenses are 'm.', 'f.' and 'n.' but got '{gender}'")
+    if not params["diminutives"]:
+        n_df = n_df[n_df["Diminutive"] == False]
 
-    n_df = n_df[n_df["Gender"] == n_df]
+    n_df = n_df[n_df["Gender"].isin(["m.", "f.", "n."])]
+
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
+    df.dropna(axis=0, inplace=True)
     return _to_dict(df=df, key="Token ID", column="Gender", mapper={"m.": 0, "f.": 1, "n.": 2}, to_index=to_index)
 
 
@@ -286,10 +298,7 @@ def _to_n_number(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
-    if params["n-number"] not in [1, 2, 3]:
-        number = params["n-number"]
-        raise ValueError(f"allowed numbers are '1', '2' and '3' but got '{number}'")
+    n_df = n_df[n_df["Number"].isin(["sg.", "pl."])]
 
-    n_df = n_df[n_df["Number"] == n_df]
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
     return _to_dict(df=df, key="Token ID", column="Number", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)

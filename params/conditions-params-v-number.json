@@ -1,0 +1,19 @@
+{
+  "root": "/data/home/hiroyoshi/mous_wd",
+  "idx-to-name":"/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
+  "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects",
+  "dir-name": "/data/home/hiroyoshi/mous_wd/dataset-dir",
+  "df-dir": "/data/home/hiroyoshi/mous_wd/param-dir/df-dir",
+  "dst-name": "nv",
+  "to-index": true,
+  "parcellation": "aparc",
+  "hemi": "both",
+  "memmap": false,
+  "mode": "nv",
+  "balance": true,
+  "params":
+  {
+    "complex": false
+  }
+
+}

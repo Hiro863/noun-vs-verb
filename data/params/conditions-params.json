@@ -3,11 +3,21 @@
   "idx-to-name":"/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
   "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects",
   "dir-name": "/data/home/hiroyoshi/mous_wd/dataset-dir",
-  "csv-path": "/data/home/hiroyoshi/mous_wd/param-dir/NV.csv",
+  "df-dir": "/data/home/hiroyoshi/mous_wd/param-dir/df-dir",
   "dst-name": "nv",
-  "dst-dir": "/Users/yamazakihiroyoshi/Desktop",
   "to-index": true,
   "parcellation": "aparc",
   "hemi": "both",
-  "memmap": false
+  "memmap": false,
+  "params":
+  {
+    "number": null,
+    "tense": null,
+    "person": null,
+    "voice": null,
+    "finite": false,
+    "complex": false,
+    "aux": false
+  }
+
 }

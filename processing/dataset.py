@@ -56,9 +56,12 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
 
             # Look for matching cortical area
             stc_dir = subject_path / "stc"                      # e.g. "epochs/sub-V1001/stc"
-            for area_file in os.listdir(stc_dir):               # e.g. "epochs/sub-V1001/stc/..."
-                if area_file.startswith(area_name):             # e.g. "fusiform_1-h.npy"
-                    stc_path_list.append(stc_dir / area_file)   # e.g. "epochs/sub-V1001/stc/fusiform_1-h.npy"
+            if stc_dir.exists():
+                for area_file in os.listdir(stc_dir):               # e.g. "epochs/sub-V1001/stc/..."
+                    if area_file.startswith(area_name):             # e.g. "fusiform_1-h.npy"
+                        stc_path_list.append(stc_dir / area_file)   # e.g. "epochs/sub-V1001/stc/fusiform_1-h.npy"
+            else:
+                print(f"No source reconstruction data for {subject_dir} available. Skipping...")
 
     return stc_path_list
 

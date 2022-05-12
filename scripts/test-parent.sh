@@ -9,8 +9,8 @@
 #SBATCH --mem-per-cpu=1gb
 
 
+curr_dir=pwd
 
+job_id1=$(sbatch curr_dir/test.sh)
 
-job_id1=$(sbatch test.sh)
-
-sbatch  --dependency=afterany:$job_id1 --mem=1g test2.sh
+sbatch  --dependency=afterany:$job_id1 --mem=1g curr_dir/test2.sh

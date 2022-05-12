@@ -4,10 +4,31 @@ import numpy as np
 
 
 ########################################################################################################################
-#
+# Convert generic y to specific y based on conditions given                                                            #
 ########################################################################################################################
 
 def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: bool, params: dict):
+    """
+    Main function for conversion. Calls appropriate conversion function based on the mode given
+    :param y: generic y of the shape (n_events,)
+    :param mode: Type of conversion
+        'nv': nouns vs. verbs
+        'length': short vs. long words
+        'frequency': frequent vs. rare
+        'tense': present vs. past
+        'person': 1 vs. 2 vs 3
+        'v-number': sg. vs. pl. for verbs
+        'voice': active vs. passive
+        'gender': m. vs. n. vs. f.
+        'n-number': sg. vs. p. for nouns
+    :param df_dir: directory containing relevant .csv files
+    :param to_index: bool, if true, converts to an integer instead of the name of the condition
+    :param balance: balance number of items in classes by cropping randomly
+    :param params: parameters specific to conditions
+    :return:
+        y: converted y, (2, n_events) first row corresponds to the class, second to indices
+        included: array of indices corresponding to included events. For indexing corresponding x
+    """
 
     if mode == "nv":
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)
@@ -49,7 +70,16 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: boo
     return y, included
 
 
-def _to_dict(df, key, column, mapper, to_index):
+def _to_dict(df: pd.DataFrame, key: str, column: str, mapper: dict, to_index: bool):
+    """
+    Generate a dictionary from token ID to condition from dataframe
+    :param df: dataframe with relevant information
+    :param key:
+    :param column:
+    :param mapper:
+    :param to_index:
+    :return:
+    """
     # mapper: {"N": 0, "V": 1}
     id_to_cond = {}
 
@@ -61,7 +91,7 @@ def _to_dict(df, key, column, mapper, to_index):
     return id_to_cond
 
 
-def _to_arrays(y, id_to_cond):
+def _to_arrays(y: np.array, id_to_cond: dict):
     conditions = []
     tokens = []
     included = []

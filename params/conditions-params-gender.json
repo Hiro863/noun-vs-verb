@@ -13,6 +13,7 @@
   "balance": true,
   "params":
   {
+    "combine common": false,
     "diminutives": false
   }
 

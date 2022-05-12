@@ -34,4 +34,4 @@ if __name__ == "__main__":
     if not dst_dir.exists():
         os.makedirs(dst_dir)
 
-    generate_dataset(epoch_dir, dst_dir, name, memmap=params["memmap"])
+    generate_dataset(epoch_dir, dst_dir, name, memmap=params["memmap"], max_subjects=params["max"])

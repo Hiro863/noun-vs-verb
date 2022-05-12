@@ -210,7 +210,7 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
             y_list.append(y)
         else:
             print(f"hmm... {event_path}")
-            raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
+            #raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
         break # just for debug todo remove
 
     x = np.vstack(x_list)

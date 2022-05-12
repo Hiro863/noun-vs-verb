@@ -36,7 +36,10 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
 
         if re.match(r"^sub-[AV]\d+$", str(subject_dir)):  # there are hidden files in the directory
             events_path = subject_path / fname
-            events_path_list.append(events_path)
+            if events_path.exists():
+                events_path_list.append(events_path)
+            else:
+                print(f"events file not found in {subject_dir}. Skipping...")
     return events_path_list
 
 

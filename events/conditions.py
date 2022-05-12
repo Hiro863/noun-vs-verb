@@ -3,13 +3,6 @@ import pandas as pd
 import numpy as np
 
 
-modes = {"nv": None,
-         "length": None, "frequency": None,
-         "tense": None, "v-number": None, "voice": None,
-         "gender": None, "n-number": None
-         }
-
-
 def convert_y(y, mode, df_dir, to_index, params):
 
     id_to_cond = None
@@ -41,6 +34,11 @@ def convert_y(y, mode, df_dir, to_index, params):
         raise ValueError(f"Unknown mode \'{mode}\'")
 
     y, included = _to_arrays(y, id_to_cond)
+
+    if params["balance"]:
+        y, idx = _balance_classes(y)
+        included = included[idx]
+
     return y, included
 
 
@@ -68,6 +66,25 @@ def _to_arrays(y, id_to_cond):
             included.append(idx)
 
     return np.array([conditions, tokens]), np.array(included)
+
+
+def _balance_classes(y):
+    classes = list(set(y[0].tolist()))
+
+    # get least frequent class
+    counts = np.bincount(y[0])
+    least_class = counts.argmin()
+    size = counts[least_class]
+
+    idx_list = []
+    for cl in classes:
+        idx = np.where(y[0] == cl)
+        idx = np.random.choice(idx[0], size, replace=False)
+        idx_list.append(idx)
+
+    idx = np.concatenate(idx_list)
+    y = y[:, idx]
+    return y, idx
 
 
 def _to_nv(df_dir, to_index, params):

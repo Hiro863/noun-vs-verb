@@ -11,7 +11,7 @@
 
     "filter params":
     {
-      "filter": false,
+      "filter": true,
       "l_freq": 0.1,
       "h_freq": 45,
       "notch": []

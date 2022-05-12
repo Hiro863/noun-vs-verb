@@ -188,7 +188,7 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
 
     x_list = []
     y_list = []
-    print(event_paths)
+
     for data_path, event_path in zip(data_paths, event_paths):
 
         # Read x
@@ -209,10 +209,11 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
         if n_epochs_y == n_epochs_x:
             x_list.append(x)
             y_list.append(y)
+            break
         else:
             print(f"hmm... {event_path}")
             #raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
-        break # just for debug todo remove
+         # just for debug todo remove
 
     x = np.vstack(x_list)
     y = np.hstack(y_list)

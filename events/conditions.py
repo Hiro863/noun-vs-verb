@@ -70,28 +70,39 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: boo
     return y, included
 
 
-def _to_dict(df: pd.DataFrame, key: str, column: str, mapper: dict, to_index: bool):
+def _to_dict(df: pd.DataFrame, key: str, value: str, mapper: dict, to_index: bool):
     """
     Generate a dictionary from token ID to condition from dataframe
     :param df: dataframe with relevant information
-    :param key:
-    :param column:
-    :param mapper:
-    :param to_index:
+    :param key: column with values which becomes the key for the dictionary
+    :param value: column with values becomes the value for the dictionary
+    :param mapper: dictionary which pairs condition name and value, e.g. 'N': 0
+    :param to_index: if true, convert to numbers rather than name.
     :return:
+        id_to_cond: dictionary mapping from ID to condition
     """
-    # mapper: {"N": 0, "V": 1}
+
     id_to_cond = {}
 
     for idx, row in df.iterrows():
         if to_index:
-            id_to_cond[row[key]] = mapper[row[column]]
+            id_to_cond[row[key]] = mapper[row[value]]
         else:
-            id_to_cond[row[key]] = row[column]
+            id_to_cond[row[key]] = row[value]
     return id_to_cond
 
 
 def _to_arrays(y: np.array, id_to_cond: dict):
+    """
+    Replace y with appropriate conditions
+    :param y: original y
+    :param id_to_cond: dictionary mapping from token ID to condition, Token ID: condition ID
+    :return:
+        y: (2, n_events), first row corresponds to condition ID,
+        second row contains original indices (for recovering wrong items later)
+        included: indices for events included
+    """
+
     conditions = []
     tokens = []
     included = []
@@ -105,14 +116,23 @@ def _to_arrays(y: np.array, id_to_cond: dict):
     return np.array([conditions, tokens]), np.array(included)
 
 
-def _balance_classes(y):
+def _balance_classes(y: np.array):
+    """
+    Balance the number of items per class by dropping randomly.
+    :param y: array to be modified, (2, n_events)
+    :return:
+        y: modified y
+        idx: index used to modify (needed for cropping `included`)
+    """
+
     classes = list(set(y[0].tolist()))
 
-    # get least frequent class
+    # Get least frequent class
     counts = np.bincount(y[0])
     least_class = counts.argmin()
     size = counts[least_class]
 
+    # Randomly sample with same size
     idx_list = []
     for cl in classes:
         idx = np.where(y[0] == cl)
@@ -125,17 +145,42 @@ def _balance_classes(y):
 
 
 ########################################################################################################################
+# Nouns vs. Verbs                                                                                                      #
+########################################################################################################################
 
 
-def _to_nv(df_dir, to_index, params):
+def _to_nv(df_dir: Path, to_index: bool, params: dict):
+    """
+    Noun vs. Verb
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        number: specify number
+        tense: specify tense
+        person: specify person
+        voice: specify voice
+        allow_non_finite: if true, include non-finite words
+        allow_complex: if true, include multiple word verbs
+        allow_aux: if true, include auxiliary verbs
+        allow_ambiguous_gender: if true, include ambiguous gender e.g. m./f.
+        allow_common_gender: if true, include common gender nouns
+        allow_diminutives: if true, include diminutive words
+        allow_uncountables: if true, include uncountalbe nouns
+        allow_proper: if true, include proper nouns
+    :return:
+        dictionary
+    """
+
     nv_df = pd.read_csv(df_dir / "NV.csv")
     v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
+    # Filter verbs
     v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
                          voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
                          allow_aux=params["aux"])
 
+    # Filter nouns
     n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
                          allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
                          allow_proper=params["proper"])
@@ -145,11 +190,24 @@ def _to_nv(df_dir, to_index, params):
     df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
     df = pd.concat([df_v, df_n])
 
-    return _to_dict(df=df, key="Token ID", column="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
 
 
-def _select_verbs(verbs, number=None, tense=None, person=None, voice=None,
+def _select_verbs(verbs: pd.DataFrame, number=None, tense=None, person=None, voice=None,
                   allow_non_finite=False, allow_complex=False, allow_aux=False):
+    """
+    Filter out verbs
+    :param verbs: dataframe with relevant information
+    :param number: specify number
+    :param tense: specify tense
+    :param person: specify person
+    :param voice: specify voice
+    :param allow_non_finite: if true, include non-finite words
+    :param allow_complex: if true, include multiple word verbs
+    :param allow_aux: if true, include auxiliary verbs
+    :return:
+        cropped dataframe
+    """
 
     # Filter by number
     if number is not None:
@@ -194,8 +252,20 @@ def _select_verbs(verbs, number=None, tense=None, person=None, voice=None,
     return verbs
 
 
-def _select_nouns(nouns, allow_ambiguous_gender=False, allow_common_gender=False,
+def _select_nouns(nouns: pd.DataFrame, allow_ambiguous_gender=False, allow_common_gender=False,
                   allow_diminutives=False, allow_uncountables=False, allow_proper=False):
+    """
+    Select appropriate nouns
+    :param nouns: dataframe with relevant information
+    :param allow_ambiguous_gender: if true, include ambiguous gender e.g. m./f.
+    :param allow_common_gender: if true, include common gender nouns
+    :param allow_diminutives: if true, include diminutive words
+    :param allow_uncountables: if true, include uncountalbe nouns
+    :param allow_proper: if true, include proper nouns
+    :return:
+        dictionary
+    """
+
     # Filter ambiguous genders
     if not allow_ambiguous_gender:
         nouns = nouns[~nouns["Gender"].isin(["n./c.", "m./f."])]
@@ -220,9 +290,23 @@ def _select_nouns(nouns, allow_ambiguous_gender=False, allow_common_gender=False
 
 
 ########################################################################################################################
+# Word length                                                                                                          #
+########################################################################################################################
 
 
-def _to_length(df_dir, to_index, params):
+def _to_length(df_dir: Path, to_index: bool, params: dict):
+    """
+    Word length, long vs. short
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        lower: boundary between short and medium
+        upper: boundary between medium and long
+        medium: if true, include medium and group in three groups (instead of two)
+    :return:
+        dictionary
+    """
+
     df = pd.read_csv(df_dir / "NV.csv")
 
     df["Length"] = df["Word"].apply(lambda x: len(x))
@@ -241,10 +325,25 @@ def _to_length(df_dir, to_index, params):
 
     df.dropna(axis=0, inplace=True)
 
-    return _to_dict(df=df, key="Token ID", column="Group", mapper=mapper, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Group", mapper=mapper, to_index=to_index)
 
 
-def _to_frequency(df_dir, to_index, params):
+########################################################################################################################
+# Word frequency                                                                                                       #
+########################################################################################################################
+
+
+def _to_frequency(df_dir: Path, to_index: bool, params: dict):
+    """
+    Frequency, frequent vs. rare
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        mode: either 'frequency' to use log frequency or 'cd' todo
+    :return:
+        dictionary
+    """
+
     df = pd.read_csv(df_dir / "NV.csv")
     sub = pd.read_csv(df_dir / "SUBTLEX-NL.csv")
     df = pd.merge(df, sub, how="left", on="Word")
@@ -256,61 +355,113 @@ def _to_frequency(df_dir, to_index, params):
         df = df[df["POS"]]
 
     #todo
-    return _to_dict(df=df, key="Token ID", column="Group", mapper=None, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Group", mapper=None, to_index=to_index)
+
+
+########################################################################################################################
+# Grammatical aspects for verb                                                                                         #
+########################################################################################################################
+
+
+def _to_tense(df_dir: Path, to_index: bool, params: dict):
+    """
+    Tense, present vs. past
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        complex: if true, allow complex verbs
+    :return:
+        dictionary
+    """
+
+    nv_df = pd.read_csv(df_dir / "NV.csv")
+    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
+
+    if not params["complex"]:
+        v_df = v_df[v_df["Complex"] == False]
+
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
+    return _to_dict(df=df, key="Token ID", value="Tense", mapper={"present": 0, "past": 1}, to_index=to_index)
+
+
+def _to_person(df_dir: Path, to_index: bool, params: dict):
+    """
+    Pers, 1 vs. 2 vs. 3
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        complex: if true, allow complex verbs
+    :return:
+        dictionary
+    """
+
+    nv_df = pd.read_csv(df_dir / "NV.csv")
+    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
+
+    if not params["complex"]:
+        v_df = v_df[v_df["Complex"] == False]
+
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
+    return _to_dict(df=df, key="Token ID", value="Tense", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
+
+
+def _to_v_number(df_dir: Path, to_index: bool, params: dict):
+    """
+    Number singular vs. plural (verbs)
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        complex: if true, allow complex verbs
+    :return:
+        dictionary
+    """
+
+    nv_df = pd.read_csv(df_dir / "NV.csv")
+    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
+
+    if not params["complex"]:
+        v_df = v_df[v_df["Complex"] == False]
+
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
+    return _to_dict(df=df, key="Token ID", value="Number", mapper={"sg.": 0, "pl.": 1}, to_index=to_index)
+
+
+def _to_voice(df_dir: Path, to_index: bool, params: dict):
+    """
+    Voice, active vs. passive
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+        complex: if true, allow complex verbs
+    :return:
+        dictionary
+    """
+
+    nv_df = pd.read_csv(df_dir / "NV.csv")
+    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
+
+    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
+    df.dropna(axis=0, inplace=True)
+    return _to_dict(df=df, key="Token ID", value="Voice", mapper={"active": 0, "passive": 1}, to_index=to_index)
 
 
 ########################################################################################################################
 
 
-def _to_tense(df_dir, to_index, params):
-    nv_df = pd.read_csv(df_dir / "NV.csv")
-    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
+def _to_gender(df_dir: Path, to_index: bool, params: dict):
+    """
+    Gender, m. vs. f. vs. n.
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+    :return:
+        diminutives: if true, include diminutives
+        todo: combine
+    """
 
-    if not params["complex"]:
-        v_df = v_df[v_df["Complex"] == False]
-
-    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
-    df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", column="Tense", mapper={"present": 0, "past": 1}, to_index=to_index)
-
-
-def _to_person(df_dir, to_index, params):
-    nv_df = pd.read_csv(df_dir / "NV.csv")
-    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
-
-    if not params["complex"]:
-        v_df = v_df[v_df["Complex"] == False]
-
-    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
-    df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", column="Tense", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
-
-
-def _to_v_number(df_dir, to_index, params):
-    nv_df = pd.read_csv(df_dir / "NV.csv")
-    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
-
-    if not params["complex"]:
-        v_df = v_df[v_df["Complex"] == False]
-
-    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
-    df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", column="Number", mapper={"sg.": 0, "pl.": 1}, to_index=to_index)
-
-
-def _to_voice(df_dir, to_index, params):
-    nv_df = pd.read_csv(df_dir / "NV.csv")
-    v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
-
-    df = pd.merge(nv_df, v_df, how="left", on="Token ID")
-    df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", column="Voice", mapper={"active": 0, "passive": 1}, to_index=to_index)
-
-
-########################################################################################################################
-
-
-def _to_gender(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
@@ -321,14 +472,23 @@ def _to_gender(df_dir, to_index, params):
 
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
     df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", column="Gender", mapper={"m.": 0, "f.": 1, "n.": 2}, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Gender", mapper={"m.": 0, "f.": 1, "n.": 2}, to_index=to_index)
 
 
-def _to_n_number(df_dir, to_index, params):
+def _to_n_number(df_dir: Path, to_index: bool, params: dict):
+    """
+    Number, singular vs. plural (noun)
+    :param df_dir: directory with .csv files
+    :param to_index: if true, convert to indices rather than names
+    :param params:
+    :return:
+        dictionary
+    """
+
     nv_df = pd.read_csv(df_dir / "NV.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
     n_df = n_df[n_df["Number"].isin(["sg.", "pl."])]
 
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
-    return _to_dict(df=df, key="Token ID", column="Number", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", column="Number", value={1: 0, 2: 1, 3: 2}, to_index=to_index)

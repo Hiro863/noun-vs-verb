@@ -179,7 +179,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
 
     # Save events to file
     fname = "events.npy"
-    np.save(str(dst_dir / fname), events)
+    np.save(str(dst_dir / fname), epochs.events)
 
     return epochs
 

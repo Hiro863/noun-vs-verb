@@ -195,18 +195,15 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
         if sensor:
             epochs = read_epochs(data_path)
             x = epochs.get_data()
-            n_epochs_x = x.shape[0]
         else:
             x = np.load(str(data_path))
-            n_epochs_x = x.shape[0]
 
         # Read y
         events = np.load(str(event_path))
         y = events[:, 2]
-        n_epochs_y = y.shape[0]
 
         # Make sure the shape stays the same
-        if n_epochs_y == n_epochs_x:
+        if x.shape[0] == y.shape[0]:
             x_list.append(x)
             y_list.append(y)
             break

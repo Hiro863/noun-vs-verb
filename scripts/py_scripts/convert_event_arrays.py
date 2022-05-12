@@ -1,6 +1,5 @@
 import sys
-import pandas as pd
-from events.condition_ import convert_to_nv, get_token_to_meaning_dict, generate_id_df
+from events.condition_ import convert_to_nv
 
 name_to_mapper = {"noun-verb": convert_to_nv}
 

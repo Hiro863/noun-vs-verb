@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import numpy as np
 
@@ -8,13 +9,14 @@ modes = {"nv": None,
          "gender": None, "n-number": None
          }
 
+SUBTLEX_PATH = Path("/Users/yamazakihiroyoshi/Desktop/InCog/meg-mvpa/data")
+
 
 def convert_y(y, mode, df_dir, to_index, params):
 
     id_to_cond = None
     if mode == "nv":
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)
-        print(id_to_cond)
 
     elif mode == "length":
         pass
@@ -156,7 +158,10 @@ def _select_nouns(nouns, allow_ambiguous_gender=False, allow_common_gender=False
 
 
 def _to_length(df_dir, to_index, params):
-    pass
+    df = pd.read_csv(df_dir / "NV.csv")
+
+    df["Length"] = df["Word"].apply(lambda x: len(x))
+    #return _to_dict(df=df, key="Token ID", column="Length", mapper=)
 
 
 def _to_frequency(df_dir, to_index, params):

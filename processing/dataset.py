@@ -178,6 +178,41 @@ def _get_reject_list(reject_path: Path):
     return reject_text.splitlines()
 
 
+def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
+
+    x_list = []
+    y_list = []
+    for data_path, event_path in zip(data_paths, event_paths):
+
+        # Read x
+        if sensor:
+            epochs = read_epochs(data_path)
+            x = epochs.get_data()
+            n_epochs_x = x.shape[0]
+        else:
+            x = np.load(str(data_path))
+            n_epochs_x = x.shape[0]
+
+        x_list.append(x)
+
+        # Read y
+        events = np.load(str(event_path))
+        y = events[:, 2]
+        n_epochs_y = y.shape[0]
+        y_list.append(y)
+
+        if n_epochs_y != n_epochs_x:
+            raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
+        break # just for debug todo remove
+
+    x = np.vstack(x_list)
+    y = np.hstack(y_list)
+    fname_x = "x.npy"
+    fname_y = "y.npy"
+    np.save(str(dst_dir / fname_x), x)
+    np.save(str(dst_dir / fname_y), y)
+
+
 def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, memmap=True, reject=None) -> None:
     """
     :param epoch_dir:

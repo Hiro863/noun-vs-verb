@@ -199,16 +199,17 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
             x = np.load(str(data_path))
             n_epochs_x = x.shape[0]
 
-        x_list.append(x)
-
         # Read y
         events = np.load(str(event_path))
         y = events[:, 2]
         n_epochs_y = y.shape[0]
-        y_list.append(y)
 
         # Make sure the shape stays the same
-        if n_epochs_y != n_epochs_x:
+        if n_epochs_y == n_epochs_x:
+            x_list.append(x)
+            y_list.append(y)
+        else:
+            print(f"hmm... {event_path}")
             raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
         break # just for debug todo remove
 

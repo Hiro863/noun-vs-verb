@@ -9,7 +9,7 @@
 #SBATCH --mem-per-cpu=1gb
 
 
-curr_dir=pwd
+curr_dir=$(pwd)
 
 job_id1=$(sbatch $curr_dir/test.sh)
 

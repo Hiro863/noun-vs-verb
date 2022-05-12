@@ -11,5 +11,6 @@
 
 
 echo $SLURM_ARRAY_TASK_ID
+exit 0
 
 

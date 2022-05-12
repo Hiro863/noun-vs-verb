@@ -7,7 +7,7 @@
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs
 #SBATCH --mem-per-cpu=1gb
-#SBATCH --output=test1.sh
+#SBATCH --output=test1.out
 
 
 echo $SLURM_ARRAY_TASK_ID

@@ -335,7 +335,7 @@ def _simplify(events, df_path, mode="index"):
 
 
 def select_conditions(events, mode="both"):
-
+    print(events.shape)
     if mode == "sentence":
         events = events[np.where(events[:, 2] < 4598)]  # 4597 = largest sentence token ID
     elif mode == "list":

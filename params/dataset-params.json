@@ -2,5 +2,6 @@
 
   "parcellation": "aparc",
   "hemi": "both",
-  "memmap": false
+  "memmap": false,
+  "max": 3
 }

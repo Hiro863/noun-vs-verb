@@ -83,9 +83,9 @@ def _to_nv(df_dir, to_index, params):
                          allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
                          allow_proper=params["proper"])
 
-    df_v = pd.merge(nv_df, v_df, how="right", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    df_n = pd.merge(nv_df, n_df, how="outer", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-
+    # Remove items not found in the verb and noun dataframes
+    df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
     df = pd.concat([df_v, df_n])
 
     return _to_dict(df=df, key="Token ID", column="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
@@ -185,7 +185,14 @@ def _to_length(df_dir, to_index, params):
 def _to_frequency(df_dir, to_index, params):
     df = pd.read_csv(df_dir / "NV.csv")
     sub = pd.read_csv(df_dir / "SUBTLEX-NL.csv")
-    df = pd.merge(df, sub, how="left", )
+    df = pd.merge(df, sub, how="left", on="Word")
+    df = df[["Token ID", "Frequency", "CD", "POS"]]
+
+    if params["mode"] == "noun":
+        df = df[df["POS"] == "N"]
+    elif params["mode"] == "verb":
+        df = df[df["POS"]]
+
     #todo
     return _to_dict(df=df, key="Token ID", column="Group", mapper=None, to_index=to_index)
 

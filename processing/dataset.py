@@ -188,6 +188,7 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
 
     x_list = []
     y_list = []
+    print(data_paths)
     for data_path, event_path in zip(data_paths, event_paths):
 
         # Read x

@@ -9,6 +9,7 @@
   "parcellation": "aparc",
   "hemi": "both",
   "memmap": false,
+  "mode": "nv",
   "params":
   {
     "number": null,

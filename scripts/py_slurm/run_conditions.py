@@ -13,7 +13,7 @@ def convert(name, params):
 
     y = np.load(str(dir_name / "y.npy"))
     y, included = convert_y(y, mode=params["mode"],
-                            df_dir=params["df-dir"],
+                            df_dir=Path(params["df-dir"]),
                             to_index=params["to-index"],
                             params=params["params"])
 

@@ -8,7 +8,8 @@ SRC_DIR = Path("/Users/yamazakihiroyoshi/Desktop/events-src")
 DST_DIR = Path("/Users/yamazakihiroyoshi/Desktop/events-dst")
 STIMULI_PATH = Path("/Users/yamazakihiroyoshi/Desktop/Stage/stimuli-processing/stimuli-modified-cropped.txt")
 
-skip = ["sub-V1044", "sub-V1032", "sub-V1086", "sub-V1038", "sub-V1104", "sub-V1033", "sub-V1080"]
+skip = ["sub-V1044", "sub-V1032", "sub-V1086", "sub-V1038", "sub-V1104", "sub-V1033", "sub-V1080",
+        "sub-V1042"]
 
 
 def main():

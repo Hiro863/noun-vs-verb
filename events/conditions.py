@@ -3,9 +3,12 @@ import pandas as pd
 import numpy as np
 
 
-def convert_y(y, mode, df_dir, to_index, params):
+########################################################################################################################
+#
+########################################################################################################################
 
-    id_to_cond = None
+def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, params: dict):
+
     if mode == "nv":
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)
 
@@ -35,6 +38,7 @@ def convert_y(y, mode, df_dir, to_index, params):
 
     y, included = _to_arrays(y, id_to_cond)
 
+    # Balance the number of items per class
     if params["balance"]:
         y, idx = _balance_classes(y)
         included = included[idx]
@@ -85,6 +89,9 @@ def _balance_classes(y):
     idx = np.concatenate(idx_list)
     y = y[:, idx]
     return y, idx
+
+
+########################################################################################################################
 
 
 def _to_nv(df_dir, to_index, params):
@@ -179,6 +186,9 @@ def _select_nouns(nouns, allow_ambiguous_gender=False, allow_common_gender=False
     return nouns
 
 
+########################################################################################################################
+
+
 def _to_length(df_dir, to_index, params):
     df = pd.read_csv(df_dir / "NV.csv")
 
@@ -212,6 +222,9 @@ def _to_frequency(df_dir, to_index, params):
 
     #todo
     return _to_dict(df=df, key="Token ID", column="Group", mapper=None, to_index=to_index)
+
+
+########################################################################################################################
 
 
 def _to_tense(df_dir, to_index, params):
@@ -253,6 +266,9 @@ def _to_voice(df_dir, to_index, params):
     return _to_dict(df=df, key="Token ID", column="Voice", mapper={"active": 0, "passive": 1}, to_index=to_index)
 
 
+########################################################################################################################
+
+
 def _to_gender(df_dir, to_index, params):
     nv_df = pd.read_csv(df_dir / "NV.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
@@ -277,39 +293,3 @@ def _to_n_number(df_dir, to_index, params):
     n_df = n_df[n_df["Number"] == n_df]
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
     return _to_dict(df=df, key="Token ID", column="Number", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
-
-"""
-def load_to_nv(path, to_index=False):
-    df = pd.read_csv(path)
-
-    id_to_nv = {}
-    for idx, row in df.iterrows():
-        if to_index:
-            id_to_nv[row["Token ID"]] = 0 if row["POS"] == "N" else 1
-        else:
-            id_to_nv[row["Token ID"]] = row["POS"]
-    return id_to_nv
-
-
-def generate_frequency_table(tokens_path, subtlex_path):
-    tokens = pd.read_csv(tokens_path)
-    subtlex = pd.read_csv(subtlex_path)
-    merged = pd.merge(subtlex, tokens, how="right", on="Word")
-    merged = merged[["Token ID", "Word", "Meaning", "Frequency", "CD", "Lemma Frequency", "POS"]]
-    return merged
-
-
-def convert_to_nv(y, csv_path, to_index):
-    conditions = []
-    tokens = []
-    included = []
-
-    id_to_nv = load_to_nv(csv_path, to_index)
-    for idx, item in enumerate(y):
-        if item in id_to_nv:
-            conditions.append(id_to_nv[item])
-            tokens.append(item)
-            included.append(idx)
-
-    return np.array([conditions, tokens]), np.array(included)
-"""

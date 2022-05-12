@@ -43,6 +43,7 @@ if __name__ == "__main__":
         idx_to_name = pickle.load(handle)
     subjects_dir = params["subjects-dir"]
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"], subjects_dir=subjects_dir)
+    print(idx_to_name)
     name = idx_to_name[area_id]
 
     convert(name, params)

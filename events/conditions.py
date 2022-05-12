@@ -184,7 +184,8 @@ def _to_length(df_dir, to_index, params):
 
 def _to_frequency(df_dir, to_index, params):
     df = pd.read_csv(df_dir / "NV.csv")
-    sub = pd.read
+    sub = pd.read_csv(df_dir / "SUBTLEX-NL.csv")
+    df = pd.merge(df, sub, how="left", )
     #todo
     return _to_dict(df=df, key="Token ID", column="Group", mapper=None, to_index=to_index)
 

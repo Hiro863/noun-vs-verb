@@ -14,7 +14,8 @@
   "params":
   {
     "combine common": false,
-    "diminutives": false
+    "diminutives": false,
+    "combine": true
   }
 
 }

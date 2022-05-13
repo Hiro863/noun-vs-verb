@@ -336,16 +336,16 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
     return events
 
 
-def _simplify(events, df_path, mode="index"):
+def _simplify(events: np.array, df_path: Path, mode="index"):
     """
     Drop any events not noun or verb.
     :param events: events array
     :param df_path: path to .csv file containing POS information
-    :param mode:
-    :return:
+    :param mode: `index` uses the token ID, `binary` uses `0` (noun) vs `1` (verb)
+    :return: simplified events array
     """
 
-    df = pd.read_csv(df_path)
+    df = pd.read_csv(str(df_path))
     df["POS"] = df["POS"].apply(lambda x: 0 if x == "N" else 1)
 
     event_list = []

@@ -97,10 +97,10 @@ def _validate_paths(stc_paths, events_paths):
     valid_stcs, valid_events = [], []
     for stc_path in stc_paths:
         subject = re.findall(r"sub-[AV]\d+", stc_path)[0]
-
+        print(subject)
         for event_path in events_paths:
             if re.match(r"sub-[AV]\d+", subject):
-                print(subject)
+
                 valid_stcs.append(stc_path)
                 valid_events.append(event_path)
 

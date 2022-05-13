@@ -8,12 +8,8 @@ from mne import read_labels_from_annot
 from processing.dataset import generate_dataset
 from utils.logger import get_logger
 
-logging.getLogger("mne").setLevel(logging.WARNING)
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
-logging.config.dictConfig({
-    'version': 1,
-    'disable_existing_loggers': True,
-})
+
+
 
 if __name__ == "__main__":
 
@@ -23,6 +19,8 @@ if __name__ == "__main__":
     n_cores = int(sys.argv[2])
     param_dir = Path(sys.argv[3])
     logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", f"dateset-{area_id}")
+    logging.getLogger("mne").setLevel(logging.WARNING)
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
     # Get the parameters
     params = read_json(param_dir, "dataset-params.json")

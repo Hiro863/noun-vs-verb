@@ -4,12 +4,12 @@
   "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects",
   "dir-name": "/data/home/hiroyoshi/mous_wd/dataset-dir",
   "df-dir": "/data/home/hiroyoshi/mous_wd/param-dir/df-dir",
-  "dst-name": "nv",
+  "dst-name": "n-number",
   "to-index": true,
   "parcellation": "aparc",
   "hemi": "both",
   "memmap": false,
-  "mode": "nv",
+  "mode": "n-number",
   "balance": true,
   "params":
   {

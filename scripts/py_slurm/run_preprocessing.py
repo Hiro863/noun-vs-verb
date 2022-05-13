@@ -1,20 +1,10 @@
 import os
 import sys
-import logging
 from utils.file_access import read_json, write_json
 from pathlib import Path
 from processing.preprocessing import process_single_subject
 from utils.logger import get_logger
 
-
-
-
-fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
-      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
-
-#logging.basicConfig(level=logging.DEBUG,
-#                    format=fmt,
-#                    handlers=[logging.StreamHandler(sys.stdout)])
 
 if __name__ == "__main__":
 

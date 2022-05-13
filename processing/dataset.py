@@ -1,19 +1,11 @@
 import logging
 import re
 import os
-import sys
 from pathlib import Path
 from typing import List
 import numpy as np
 from utils.file_access import write_json
 
-#fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
-#      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
-
-
-#logging.basicConfig(level=logging.DEBUG,
-#                    format=fmt,
-#                    handlers=[logging.StreamHandler(sys.stdout)])
 logging.getLogger("numpy").setLevel(logging.WARNING)
 ########################################################################################################################
 # DATASET GENERATION                                                                                                   #
@@ -38,8 +30,8 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
             if events_path.exists():
                 events_path_list.append(events_path)
             else:
-                print(f"events file not found in {subject_dir}. Skipping...")
-    print(f"Found {len(events_path_list)}  events found")
+                logging.debug(f"events file not found in {subject_dir}. Skipping...")
+    logging.debug(f"Found {len(events_path_list)}  events found")
     return events_path_list
 
 
@@ -64,9 +56,9 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
                     if area_file.startswith(area_name):             # e.g. "fusiform_1-h.npy"
                         stc_path_list.append(stc_dir / area_file)   # e.g. "epochs/sub-V1001/stc/fusiform_1-h.npy"
             else:
-                print(f"No source reconstruction data for {subject_dir} available. Skipping...")
+                logging.debug(f"No source reconstruction data for {subject_dir} available. Skipping...")
 
-    print(f"Found {len(stc_path_list)} source reconstruction files found")
+    logging.debug(f"Found {len(stc_path_list)} source reconstruction files found")
     return stc_path_list
 
 
@@ -105,22 +97,8 @@ def _validate_paths(stc_paths, events_paths):
                 valid_events.append(event_path)
                 break
 
-    print(f"{len(valid_stcs)} valid subject data found")
+    logging.debug(f"{len(valid_stcs)} valid subject data found")
     return valid_stcs, valid_events
-
-
-#def _generate_x(dst_dir: Path, paths: List[Path]):
-#    x_list = []
-#    for path in paths:
-
-        # Read x
-#        x = np.load(str(path))
-
-#        x_list.append(x)
-
-#    x = np.vstack(x_list)  # todo: won’t work if shape is different
-#    fname = "x.npy"
-#    np.save(str(dst_dir / fname), x)
 
 
 def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):

@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from typing import List
 import numpy as np
-from mne import read_epochs
 from utils.file_access import write_json
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
@@ -91,6 +90,21 @@ def _get_epoch_paths(epoch_dir: Path, reject_list: List[str]):
                     epoch_path_list.append(subject_path / file)   # e.g. "epochs/sub-V1001/sub-V1001-epo.fif"
 
     return epoch_path_list
+
+
+def _validate_paths(stc_paths, events_paths):
+
+    valid_stcs, valid_events = [], []
+    for stc_path in stc_paths:
+        subject = re.findall(r"sub-[AV]\d+", stc_path)[0]
+
+        for event_path in events_paths:
+            if re.match(r"sub-[AV]\d+", subject):
+                valid_stcs.append(stc_path)
+                valid_events.append(event_path)
+
+    print(f"{len(valid_stcs)} valid subject data found")
+    return valid_stcs, valid_events
 
 
 #def _generate_x(dst_dir: Path, paths: List[Path]):
@@ -237,6 +251,7 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     # List of path to event.npy
     events_paths = _get_events_paths(epoch_dir, reject_list)
     stc_paths = _get_stc_paths(epoch_dir, area_name, reject_list)
+    stc_paths, events_paths = _validate_paths(stc_paths, events_paths)
 
     if 0 < max_subjects < len(events_paths):
         events_paths = events_paths[:max_subjects]

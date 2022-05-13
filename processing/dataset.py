@@ -40,6 +40,7 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
                 events_path_list.append(events_path)
             else:
                 print(f"events file not found in {subject_dir}. Skipping...")
+    print(f"Found {len(events_path_list)}  events found")
     return events_path_list
 
 
@@ -66,6 +67,7 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
             else:
                 print(f"No source reconstruction data for {subject_dir} available. Skipping...")
 
+    print(f"Found {len(stc_path_list)} source reconstruction files found")
     return stc_path_list
 
 
@@ -236,9 +238,10 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     events_paths = _get_events_paths(epoch_dir, reject_list)
     stc_paths = _get_stc_paths(epoch_dir, area_name, reject_list)
 
-    if max_subjects > 0:
+    if 0 < max_subjects < len(events_paths):
         events_paths = events_paths[:max_subjects]
         stc_paths = stc_paths[:max_subjects]
+        print(f"Using {max_subjects} subject data")
 
     # Generate x array
     if memmap:

@@ -114,6 +114,15 @@ def remove_artifacts(raw: Raw, n_components: int,
 
 
 def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> Raw:
+    """
+    todo
+    :param raw:
+    :param l_freq:
+    :param h_freq:
+    :param notch:
+    :param n_jobs:
+    :return:
+    """
 
     logging.debug(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
 
@@ -141,15 +150,17 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
     :param subject: name of the subject
     :param raw: raw object
     :param events: events array (possibly downsampled)
-    :param events_id: dictionary of events and names
+    :param mode: whether to use `index` or `binary` noun vs. verb
     :param tmin: start time of epoch
     :param tmax: end time of epoch
     :param reject: rejection criteria
     :param channel_reader: a function for getting a list of relevant channels
+    :param dictionary_path: path to .csv file containing POV information
+    :param simplify_mode: how to select events. `sentence`, `list` or `both`
     :return:
         Non
     """
-    print(f" events, tpye {type(events)}")
+
     # Get events data
     events = _read_events_file(events_dir, events, subject, mode, dictionary_path, simplify_mode)
 

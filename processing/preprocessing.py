@@ -19,7 +19,7 @@ from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
 from utils.logger import get_logger
 
-#log_path = "/data/home/hiroyoshi/mous_wd/logs"
+log_path = "/data/home/hiroyoshi/mous_wd/logs"
 #logger = get_handlers(log_path, "ttttt")
 
 

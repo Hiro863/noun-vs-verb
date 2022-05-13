@@ -48,6 +48,7 @@ def assign_ids(text: str):
         id_to_word: dictionary, key = token ID, value = token string
         position_to_id: dictionary, key = sentence number, value = dictionary {position in sentence: token ID}
     """
+
     ids = 0
     id_to_word = {}
     position_to_id = {}
@@ -72,6 +73,7 @@ def _clean_df(df):
     :param df: original dataframe
     :return: cleaned dataframe with `sample`, `type`, `onset` and `form` column
     """
+
     sample_list = []
     type_list = []
     onset_list = []
@@ -177,7 +179,13 @@ def _match_event(events, sample_list, type_list, onset_list, form_list):
         form_list.append(form)
 
 
-def _add_sentence_column(df, stimuli_text):
+def _add_sentence_column(df: pd.DataFrame, stimuli_text: str):
+    """
+    todo
+    :param df:
+    :param stimuli_text:
+    :return:
+    """
 
     df["sentence"] = ""
     df["position"] = ""
@@ -200,7 +208,9 @@ def _add_sentence_column(df, stimuli_text):
     return df, rejected_list
 
 
-def _modify_df(df, word_list, stimuli_text, rejected_list):
+def _modify_df(df: pd.DataFrame, word_list, stimuli_text, rejected_list):
+    # todo
+
     if word_list is not None:
 
         # Find the sentence that matches the list of words given here
@@ -219,6 +229,7 @@ def _modify_df(df, word_list, stimuli_text, rejected_list):
 
 
 def _find_sentence(word_list, stimuli_text):
+    # todo
 
     stimuli_list = stimuli_text.splitlines()
     for stimulus in stimuli_list:
@@ -240,7 +251,8 @@ def _find_sentence(word_list, stimuli_text):
     return None
 
 
-def _add_ids(df, position_to_id):
+def _add_ids(df: pd.DataFrame, position_to_id: dict):
+    # todo
 
     df["ID"] = ""
 
@@ -257,6 +269,8 @@ def _add_ids(df, position_to_id):
 
 
 def format_event_data(events_path, stimuli_path):
+    # todo
+
     events_df = pd.read_csv(events_path, sep="\t")
     with open(stimuli_path, "r") as f:
         stimuli_text = f.read()
@@ -365,6 +379,7 @@ def select_conditions(events: np.array, mode="both"):
     :param mode: Options. Valid are `both`, `sentence` and `list`
     :return: events with only selected event type
     """
+
     logging.info(f"Selecting {mode}")
 
     if mode == "sentence":

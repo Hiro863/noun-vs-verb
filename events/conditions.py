@@ -355,7 +355,7 @@ def _to_frequency(df_dir: Path, to_index: bool, params: dict):
         df = df[df["POS"]]
 
     #todo
-    return _to_dict(df=df, key="Token ID", value="Group", mapper=None, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Group", mapper={}, to_index=to_index)
 
 
 ########################################################################################################################

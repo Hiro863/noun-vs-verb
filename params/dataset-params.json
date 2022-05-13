@@ -1,5 +1,10 @@
 {
-
+    "directories":
+  {
+    "root": "/data/home/hiroyoshi/mous_wd",
+    "raw-dir": "/data/home/hiroyoshi/data/MOUS",
+    "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle"
+  },
   "parcellation": "aparc",
   "hemi": "both",
   "memmap": false,

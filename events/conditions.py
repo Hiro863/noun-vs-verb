@@ -404,7 +404,7 @@ def _to_person(df_dir: Path, to_index: bool, params: dict):
 
     df = pd.merge(nv_df, v_df, how="left", on="Token ID")
     df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", value="Tense", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Person", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
 
 
 def _to_v_number(df_dir: Path, to_index: bool, params: dict):

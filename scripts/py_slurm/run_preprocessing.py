@@ -6,7 +6,7 @@ from pathlib import Path
 from processing.preprocessing import process_single_subject
 from utils.logger import get_logger
 
-logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", "preprocessing")
+
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
@@ -17,6 +17,8 @@ fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: "
 #                    handlers=[logging.StreamHandler(sys.stdout)])
 
 if __name__ == "__main__":
+
+    logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", "preprocessing")
 
     # Get input from the bash script
     subj_id = sys.argv[1]

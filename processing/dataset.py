@@ -12,7 +12,13 @@ from utils.file_access import write_json
 
 
 def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
-    # todo
+    """
+    Collect list of available events arrays
+    :param epoch_dir: directory containing all epochs
+    :param reject_list: todo
+    :return:
+        list of paths to events array
+    """
 
     fname = "events.npy"
     events_path_list = []
@@ -36,7 +42,14 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
 
 
 def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
-    # todo
+    """
+    ollect list of available source localizations
+    :param epoch_dir: directory containing all epochs
+    :param area_name: name of the area
+    :param reject_list: todo
+    :return:
+        list of source localization
+    """
 
     stc_path_list = []
 

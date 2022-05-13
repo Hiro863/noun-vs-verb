@@ -16,7 +16,7 @@ from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
 from events.formatting import get_event_array, select_conditions
 from utils.exceptions import SubjectNotProcessedError
-from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
+from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw
 
 
 log_path = Path("/data/home/hiroyoshi/mous_wd/logs")
@@ -115,13 +115,13 @@ def remove_artifacts(raw: Raw, n_components: int,
 
 def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> Raw:
     """
-    todo
-    :param raw:
-    :param l_freq:
-    :param h_freq:
-    :param notch:
-    :param n_jobs:
-    :return:
+    Apply band-pass filter and notch filter
+    :param raw: raw file to apply filter to
+    :param l_freq: lower frequency limit
+    :param h_freq: upper frequency limit
+    :param notch: list frequencies
+    :param n_jobs: number of jobs for parallelism
+    :return: filtered raw
     """
 
     logging.debug(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
@@ -293,7 +293,17 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     logging.debug(f"{len(parallel_funcs)} time steps processed")
 
 
-def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, params, morph): # todo
+def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, params, morph):  # todo
+    """
+    Perform source localization on a particular cortical area.
+    :param dst_dir: directory to store the results in
+    :param epochs: epochs object to perform source localization on
+    :param label: cortical area of interest
+    :param inv: inverse operator
+    :param params: should contain `method` and `pick ori`
+    :param morph: todo
+    :return:
+    """
 
     logging.info(f"Processing single subject for {label.name} ")
 
@@ -310,7 +320,14 @@ def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, para
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 
-def _morph_to_common(stcs: list, morph):  # todo
+def _morph_to_common(stcs: list, morph):
+    """
+    Morph the source localization into a common (fsaverge) space
+    :param stcs: list of source localizations (per epoch)
+    :param morph: todo
+    :return:
+    """
+
     logging.info(f"Morphing to fsaverage")
 
     for stc in stcs:
@@ -351,22 +368,23 @@ def _inverse_evoked(evoked: Evoked, fwd_path: str, method="dSPM", snr=3., return
                     loose=0.2, depth=0.8, verbose=False):
     """
     todo
-    :param evoked:
-    :param fwd_path:
+    :param evoked: evoked object
+    :param fwd_path: path to precomputed forward object
     :param method:
-    :param snr:
-    :param return_residual:
-    :param pick_ori:
-    :param inv:
-    :param epochs:
-    :param n_jobs:
-    :param tmax:
-    :param inv_method:
-    :param rank:
-    :param loose:
-    :param depth:
-    :param verbose:
+    :param snr: signal to noise ratio
+    :param return_residual: return residual (see MNE)
+    :param pick_ori: pick orientation (see MNE)
+    :param inv: inverse operator object
+    :param epochs: epochs object
+    :param n_jobs: number of jobs
+    :param tmax: todo
+    :param inv_method: source estimation method
+    :param rank: todo
+    :param loose: todo
+    :param depth: todo
+    :param verbose: verbose
     :return:
+        source estimation
     """
 
     if not inv:
@@ -385,21 +403,22 @@ def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=
                     loose=0.2, depth=0.8, verbose=False):
     """
     todo
-    :param epochs:
-    :param label:
-    :param method:
-    :param snr:
-    :param pick_ori:
-    :param inv:
-    :param n_jobs:
-    :param tmax:
-    :param fwd_path:
-    :param inv_method:
-    :param rank:
-    :param loose:
-    :param depth:
-    :param verbose:
+    :param epochs: epochs object
+    :param label: labels (cortical area)
+    :param method: source estimation method
+    :param snr: signal to noise ratio
+    :param pick_ori: todo
+    :param inv: inverse operator
+    :param n_jobs: number of jobs
+    :param tmax: todo
+    :param fwd_path: path to precomputed forward operator
+    :param inv_method: todo
+    :param rank: todo
+    :param loose: todo
+    :param depth: todo
+    :param verbose: verbosity
     :return:
+        source estiamtion
     """
 
     logging.info(f"Inverting epochs")
@@ -417,16 +436,17 @@ def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", 
             rank=None, loose=0.2, depth=0.8, verbose=False):
     """
     todo
-    :param epochs:
-    :param fwd_path:
-    :param tmax:
-    :param n_jobs:
-    :param method:
-    :param rank:
-    :param loose:
-    :param depth:
-    :param verbose:
+    :param epochs: epochs object
+    :param fwd_path: path to precomputed forward operator
+    :param tmax: todo
+    :param n_jobs: number of jobs for parallelism
+    :param method: todo
+    :param rank: todo
+    :param loose: todo
+    :param depth: todo
+    :param verbose: verbosity
     :return:
+        inverse operator
     """
 
     fwd = read_forward_solution(fwd_path, verbose=verbose)
@@ -437,6 +457,11 @@ def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", 
 
 
 def get_labels_names(params: dict):
+    """
+
+    :param params:
+    :return:
+    """
     # todo
 
     # Generate set of labels

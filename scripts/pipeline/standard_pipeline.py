@@ -20,10 +20,6 @@ def main(param_path):
     logger.info(f"Following parameters are used ----------------------------------------------------------------------")
     logger.info(json.dumps(params, sort_keys=True, indent=4))
 
-
-
-    # todo print parameters here
-
     downsample, epoch, source, dataset, condition, analysis = False
 
     while not all(downsample, epoch, source, dataset, condition, analysis):
@@ -49,8 +45,8 @@ def main(param_path):
         sleep(SLEEP)
 
     end = datetime.now()
-    print(f"Process terminated at {end}")  # todo success
-    print(f"Process took {end - start}")
+    logger.info(f"Process terminated at {end}")  # todo success
+    logger.info(f"Process took {end - start}")
     print(f"")
 
 

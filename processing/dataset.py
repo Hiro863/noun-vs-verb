@@ -12,6 +12,7 @@ from utils.file_access import write_json
 
 
 def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
+    # todo
 
     fname = "events.npy"
     events_path_list = []
@@ -35,6 +36,7 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
 
 
 def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
+    # todo
 
     stc_path_list = []
 
@@ -61,29 +63,35 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
     return stc_path_list
 
 
-def _get_epoch_paths(epoch_dir: Path, reject_list: List[str]):
+# def _get_epoch_paths(epoch_dir: Path, reject_list: List[str]):
 
-    epoch_path_list = []
+#     epoch_path_list = []
 
-    for subject_dir in os.listdir(epoch_dir):  # e.g. "sub-V1001"
+#    for subject_dir in os.listdir(epoch_dir):  # e.g. "sub-V1001"
 
         # Skip rejected subjects
-        if subject_dir in reject_list:
-            continue
+#        if subject_dir in reject_list:
+#            continue
 
-        subject_path = epoch_dir / subject_dir  # "epochs/sub-V1001"
+#        subject_path = epoch_dir / subject_dir  # "epochs/sub-V1001"
 
-        if re.match(r"^sub-[AV]\d+$", str(subject_dir)):  # there are hidden files in the directory
+#        if re.match(r"^sub-[AV]\d+$", str(subject_dir)):  # there are hidden files in the directory
 
             # Look for matching cortical area
-            for file in os.listdir(subject_path):                 # e.g. "epochs/sub-V1001/..."
-                if re.match(r".*epo.fif$", file):                 # e.g. "sub-V1001-epo.fif"
-                    epoch_path_list.append(subject_path / file)   # e.g. "epochs/sub-V1001/sub-V1001-epo.fif"
+#            for file in os.listdir(subject_path):                 # e.g. "epochs/sub-V1001/..."
+#                if re.match(r".*epo.fif$", file):                 # e.g. "sub-V1001-epo.fif"
+#                    epoch_path_list.append(subject_path / file)   # e.g. "epochs/sub-V1001/sub-V1001-epo.fif"
 
-    return epoch_path_list
+#    return epoch_path_list
 
 
-def _validate_paths(stc_paths, events_paths):
+def _validate_paths(stc_paths: list, events_paths: list):
+    """
+    Validate the paths by making sure they are of the same subjectt
+    :param stc_paths: list of paths to stc data
+    :param events_paths: list of paths to events array
+    :return: validated lists of paths
+    """
 
     valid_stcs, valid_events = [], []
     for stc_path in stc_paths:
@@ -101,6 +109,7 @@ def _validate_paths(stc_paths, events_paths):
 
 
 def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
+    # todo
 
     # Get the size of final array
     x_shape = _get_array_size(data_paths)
@@ -139,19 +148,20 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     np.save(str(dst_dir / fname), y)
 
 
-def _generate_y(dst_dir: Path, events_paths: List[Path]):
-    y_list = []
-    for event_path in events_paths:
-        events = np.load(str(event_path))
-        y = events[:, 2]
-        y_list.append(y)
+# def _generate_y(dst_dir: Path, events_paths: List[Path]):
+#    y_list = []
+#    for event_path in events_paths:
+#        events = np.load(str(event_path))
+#        y = events[:, 2]
+#        y_list.append(y)
 
-    y = np.hstack(y_list)
-    fname = "y.npy"
-    np.save(str(dst_dir / fname), y)
+#    y = np.hstack(y_list)
+#    fname = "y.npy"
+#    np.save(str(dst_dir / fname), y)
 
 
 def _get_array_size(paths):
+    # todo
 
     dim_0 = 0
     dim_rest = None
@@ -173,6 +183,7 @@ def _get_array_size(paths):
 
 
 def _get_reject_list(reject_path: Path):
+    # todo
 
     with open(reject_path, "r") as file:
         reject_text = file.read()
@@ -180,7 +191,13 @@ def _get_reject_list(reject_path: Path):
     return reject_text.splitlines()
 
 
-def _generate_data(dst_dir, data_paths, event_paths):
+def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
+    """
+    Generate data by concatenating all arrays
+    :param dst_dir: path to directory to store the results
+    :param data_paths: paths the source localization data
+    :param event_paths: paths to events arrays
+    """
 
     x_list = []
     y_list = []
@@ -225,6 +242,7 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     :param reject:
     :return:
     """
+
     logging.debug(f"Generating dataset for {area_name}")
 
     # Get list of subjects to ignore

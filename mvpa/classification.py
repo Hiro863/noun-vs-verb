@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 from joblib import Parallel, delayed
-from pathlib import Path
+from typing import Tuple
 
 from sklearn.base import clone
 from sklearn.model_selection import KFold
@@ -16,17 +16,36 @@ from sklearn.svm import LinearSVC
 from mne.stats import bootstrap_confidence_interval
 
 
-def _get_indices(times, start, end, sfreq):
+def _get_indices(times: np.array, start: float, end: float, sfreq: float) -> Tuple[int, int]:
+    """
+    Determine indices at which the time window begins and ends.
+    :param times: array of times in seconds
+    :param start: start index for the slice
+    :param end: end index for the slice
+    :param sfreq: sampling frequency
+    :return:
+        start index, end index
+    """
+
     start_idx = int((start - times[0]) / (1 / sfreq))
     end_idx = int((end - times[0]) / (1 / sfreq))
     return start_idx, end_idx
 
 
-def _get_t_steps(window_size, sfreq):
+def _get_t_steps(window_size: int, sfreq: float) -> int:
+    """
+    Calculate the number of steps in indices that correspond to the window size given in ms
+    :param window_size: size of the analysis window in ms
+    :param sfreq: sampling frequency
+    :return:
+        number of time steps to be analysed
+    """
+
     return int(window_size / (1e3 / sfreq))
 
 
 def get_slice(x, t_idx, window_size=-1., sfreq=-1):
+    # todo
 
     if window_size < 0:
         return x[..., t_idx]
@@ -36,6 +55,7 @@ def get_slice(x, t_idx, window_size=-1., sfreq=-1):
 
 
 def classify(x, y, cv, clf: Pipeline, scoring):
+    # todo
 
     kf = KFold(cv)
     scores = np.zeros((cv,))
@@ -65,6 +85,7 @@ def classify(x, y, cv, clf: Pipeline, scoring):
 
 
 def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
+    # todo
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}
 
@@ -79,7 +100,7 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
     # Create parallel functions per time point
     parallel_funcs = []
 
-    for t_idx in range(start_idx, end_idx):
+    for t_idx in range(start_idx, end_idx):  # noqa
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
 
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
@@ -98,6 +119,8 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
 
 
 def format_results(data, params):
+    # todo
+
     scores, lowers, uppers = [], [], []
     d_scores, d_lowers, d_uppers = [], [], []
     for s, l, u, ds, dl, du in data:  # per time step

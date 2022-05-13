@@ -339,7 +339,10 @@ def _to_frequency(df_dir: Path, to_index: bool, params: dict):
     :param df_dir: directory with .csv files
     :param to_index: if true, convert to indices rather than names
     :param params:
-        mode: either 'frequency' to use log frequency or 'cd' todo
+        mode: either `frequency` to use log frequency or `cd` todo
+        lower: boundary between short and medium
+        upper: boundary between medium and long
+        medium: if true, include medium and group in three groups (instead of two)
     :return:
         dictionary
     """
@@ -354,8 +357,22 @@ def _to_frequency(df_dir: Path, to_index: bool, params: dict):
     elif params["mode"] == "verb":
         df = df[df["POS"]]
 
-    #todo
-    return _to_dict(df=df, key="Token ID", value="Group", mapper={}, to_index=to_index)
+    column = "Frequency" if params["mode"] == "frequency" else "CD"
+
+    # Conditions for grouping into 3 groups
+    conditions = [(df[column] < params["lower"]),
+                  (params["lower"] <= df[column]) & (df["Length"] < params["upper"]),
+                  (params["upper"] <= df[column])]
+    df["Group"] = np.select(conditions, ["short", "medium", "long"])
+
+    if not params["medium"]:
+        df["Group"] = df[(df["Group"] == "short") | (df["Group"] == "long")]["Group"]
+        mapper = {"short": 0, "long": 1}
+    else:
+        mapper = {"short": 0,  "medium": 1, "long": 2}
+
+    df.dropna(axis=0, inplace=True)
+    return _to_dict(df=df, key="Token ID", value="Group", mapper=mapper, to_index=to_index)
 
 
 ########################################################################################################################
@@ -459,7 +476,7 @@ def _to_gender(df_dir: Path, to_index: bool, params: dict):
     :param params:
     :return:
         diminutives: if true, include diminutives
-        todo: combine
+        combine: if true, combine `f.` and `m.` into a single class `c.
     """
 
     nv_df = pd.read_csv(df_dir / "NV.csv")
@@ -470,9 +487,15 @@ def _to_gender(df_dir: Path, to_index: bool, params: dict):
 
     n_df = n_df[n_df["Gender"].isin(["m.", "f.", "n."])]
 
+    if params["combine"]:
+        n_df["Gender"] = n_df.apply(lambda x: "c." if "m." or "f." else "n.")
+        mapper = {"c.": 0, "n.": 1}
+    else:
+        mapper = {"m.": 0, "f.": 1, "n.": 2}
+
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
     df.dropna(axis=0, inplace=True)
-    return _to_dict(df=df, key="Token ID", value="Gender", mapper={"m.": 0, "f.": 1, "n.": 2}, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Gender", mapper=mapper, to_index=to_index)
 
 
 def _to_n_number(df_dir: Path, to_index: bool, params: dict):

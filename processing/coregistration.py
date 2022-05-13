@@ -4,6 +4,8 @@ from mne import Info, setup_source_space, make_bem_model, make_bem_solution, mak
 
 
 def get_trans(subject: str, subjects_dir: Path, info: Info):
+    # todo
+
     coreg = Coregistration(info, subject=subject, subjects_dir=subjects_dir, fiducials="auto")
     coreg.fit_icp(n_iterations=6, nasion_weight=2.)
     coreg.omit_head_shape_points(distance=5. / 1000)
@@ -12,6 +14,8 @@ def get_trans(subject: str, subjects_dir: Path, info: Info):
 
 
 def get_forward(info: Info, trans: str, subject: str, subjects_dir: Path, layers):
+    # todo
+
     src = setup_source_space(subject, spacing="ico5", add_dist="patch", subjects_dir=subjects_dir)
 
     if layers == 3:

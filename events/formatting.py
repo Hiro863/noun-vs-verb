@@ -66,6 +66,11 @@ def assign_ids(text: str):
 
 
 def _clean_df(df):
+    """
+    Select relevant information and discard the rest.
+    :param df: original dataframe
+    :return: cleaned dataframe with `sample`, `type`, `onset` and `form` column
+    """
     sample_list = []
     type_list = []
     onset_list = []
@@ -92,6 +97,15 @@ def _clean_df(df):
 
 
 def _match_event(events, sample_list, type_list, onset_list, form_list):
+    """
+    Match relevant information and append to lists
+    :param events: list of rows in the event
+    :param sample_list: list of sample values
+    :param type_list: list of type values
+    :param onset_list: list of onset values
+    :param form_list: list of form values
+    """
+
     matched = False
     event_name = None
     form = None
@@ -308,16 +322,6 @@ def get_event_array(events, event_path, dictionary_path, simplify_mode):
     events = np.array(valid_events)
     events = _simplify(events, dictionary_path, mode=simplify_mode)
     return events
-
-
-# def _simplify_(events, df_path):
-#    df = pd.read_csv(df_path)
-#    df["POS"] = df["POS"].apply(lambda x: 0 if x == "N" else 1)
-#    idx = [df["Idx"].to_numpy()]  # indices of events where = N/V
-
-#    events = events[idx]
-#    events[:, 2] = df["POS"]
-#    return events
 
 
 def _simplify(events, df_path, mode="index"):

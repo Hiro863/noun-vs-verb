@@ -12,7 +12,6 @@ from utils.logger import get_logger
 
 if __name__ == "__main__":
 
-
     # Get input from the bash script
     area_id = int(sys.argv[1])
     n_cores = int(sys.argv[2])

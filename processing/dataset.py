@@ -100,9 +100,7 @@ def _validate_paths(stc_paths, events_paths):
         print(subject)
         for event_path in events_paths:
             print(event_path)
-            if re.match(rf"\.*{subject}\.*", str(event_path)):
-
-
+            if re.search(rf"\.*{subject}\.*", str(event_path)):
                 valid_stcs.append(stc_path)
                 valid_events.append(event_path)
                 break

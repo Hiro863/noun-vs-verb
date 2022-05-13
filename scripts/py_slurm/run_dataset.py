@@ -6,6 +6,10 @@ from pathlib import Path
 from mne import read_labels_from_annot
 from processing.dataset import generate_dataset
 from utils.logger import get_logger
+import logging
+
+logging.getLogger("mne").setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 if __name__ == "__main__":
 

@@ -9,7 +9,7 @@ from processing.dataset import generate_dataset
 from utils.logger import get_logger
 
 
-
+logging.config.dictConfig({"disable_existing_loggers": True})
 
 if __name__ == "__main__":
 

@@ -20,18 +20,21 @@ from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw
 from utils.logger import get_handlers
 
 
-fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
-      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
+#fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
+#      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
 root = get_project_root()
 log_path = root / "meg-mvpa/data/logs"
-
+"""
 handlers = get_handlers(log_path, "test")
 
 logging.basicConfig(level=logging.DEBUG,
-                    format=fmt,
+                    #format=fmt,
                     handlers=handlers)
-                    #handlers=[logging.StreamHandler(sys.stdout)])
+                    #handlers=[logging.StreamHandler(sys.stdout)])"""
+logger = get_handlers(log_path, "ttttt")
+
+logger.debug("hello")
 
 
 ########################################################################################################################

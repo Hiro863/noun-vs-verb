@@ -1,7 +1,7 @@
 import logging
 
 
-def get_handlers(log_path, file_name):
+def get_logger(log_path, file_name):
     fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
           "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 

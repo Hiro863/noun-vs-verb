@@ -189,6 +189,7 @@ def _generate_data(dst_dir, data_paths, event_paths):
     y_list = []
 
     for data_path, event_path in zip(data_paths, event_paths):
+        logging.debug(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))
@@ -238,11 +239,12 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     if 0 < max_subjects < len(events_paths):
         events_paths = events_paths[:max_subjects]
         stc_paths = stc_paths[:max_subjects]
-        print(f"Using {max_subjects} subject data")
+        logging.debug(f"Using {max_subjects} subject data")
 
     # Generate x array
     if memmap:
         _generate_mmap(dst_dir, stc_paths, events_paths)
     else:
         _generate_data(dst_dir, stc_paths, events_paths)
+    logging.debug("Process terminated")
 

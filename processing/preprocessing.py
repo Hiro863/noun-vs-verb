@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Callable, Tuple
 import numpy as np
 from mne import (compute_covariance, read_labels_from_annot,
-                 find_events, Epochs, Label, read_forward_solution,
+                 find_events, Epochs, Evoked, Label, read_forward_solution,
                  read_source_spaces, compute_source_morph)
 
 from joblib import Parallel, delayed
@@ -245,21 +245,31 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
 
 
 def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
-    logging.debug(f"Source localizing {subject} files")
+    """
+
+    :param dst_dir:
+    :param subject:
+    :param epochs:
+    :param params:
+    :param n_jobs:
+    :return:
+    """
+
+    logging.info(f"Source localizing {subject} files")
 
     # Make inverse model
-    logging.debug(f"Making an inverse model for the subject {subject} ")
+    logging.info(f"Making an inverse model for the subject {subject} ")
     inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
 
     # Common source space
-    logging.debug(f"Setting up morph to FS average")
+    logging.info(f"Setting up morph to FS average")
     fsaverage_src_path = Path(params["subjects dir"]) / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
     morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
                                  subjects_dir=params["subjects dir"], verbose=False)
 
     # Generate set of labels
-    logging.debug(f"Reading labels")
+    logging.info(f"Reading labels")
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
 
@@ -275,17 +285,18 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
                                               params=params, morph=morph)
         parallel_funcs.append(func)
 
-    logging.debug(f"Total of {len(parallel_funcs)} parallel functions added")
-    logging.debug(f"Executing {n_jobs} jobs in parallel")
+    logging.info(f"Total of {len(parallel_funcs)} parallel functions added")
+    logging.info(f"Executing {n_jobs} jobs in parallel")
     parallel_pool = Parallel(n_jobs=n_jobs)
     parallel_pool(parallel_funcs)
 
     logging.debug(f"{len(parallel_funcs)} time steps processed")
 
 
-def _process_single_label(dst_dir, epochs, label, inv, params, morph):
-    logging.debug(f"Processing single subject for {label.name} ")
-    # todo this is inefficient
+def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, params, morph): # todo
+
+    logging.info(f"Processing single subject for {label.name} ")
+
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
     stcs = _morph_to_common(stcs, morph)
 
@@ -299,8 +310,8 @@ def _process_single_label(dst_dir, epochs, label, inv, params, morph):
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 
-def _morph_to_common(stcs, morph):
-    logging.debug(f"Morphing to fsaverage")
+def _morph_to_common(stcs: list, morph):  # todo
+    logging.info(f"Morphing to fsaverage")
 
     for stc in stcs:
         fs_stc = morph.apply(stc)
@@ -313,14 +324,13 @@ def _write_array(dst_dir: Path, label: Label, data_array):
     :param dst_dir: path to directory in which results will be saved
     :param label: name of the cortical area
     :param data_array: data array to be saved
-    :return:
-        None
     """
-    logging.debug(f"Writing the data for {label.name} to file")
+
+    logging.info(f"Writing the data for {label.name} to file")
 
     stc_fname = f"{label.name}.npy"
 
-    logging.debug(f"Saving {stc_fname} to file in {dst_dir}")
+    logging.info(f"Saving {stc_fname} to file in {dst_dir}")
 
     stc_dir = dst_dir / "stc"
 
@@ -335,10 +345,29 @@ def _write_array(dst_dir: Path, label: Label, data_array):
         raise SubjectNotProcessedError(e)
 
 
-def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
+def _inverse_evoked(evoked: Evoked, fwd_path: str, method="dSPM", snr=3., return_residual=True, pick_ori=None, inv=None,
                     epochs=None, n_jobs=1, tmax=0.,
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
+    """
+    todo
+    :param evoked:
+    :param fwd_path:
+    :param method:
+    :param snr:
+    :param return_residual:
+    :param pick_ori:
+    :param inv:
+    :param epochs:
+    :param n_jobs:
+    :param tmax:
+    :param inv_method:
+    :param rank:
+    :param loose:
+    :param depth:
+    :param verbose:
+    :return:
+    """
 
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
@@ -350,11 +379,30 @@ def _inverse_evoked(evoked, fwd_path, method="dSPM", snr=3., return_residual=Tru
                          return_residual=return_residual, verbose=False)
 
 
-def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, inv=None,
+def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=None, inv=None,
                     n_jobs=1, tmax=0., fwd_path="",
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
-    logging.debug(f"Inverting epochs")
+    """
+    todo
+    :param epochs:
+    :param label:
+    :param method:
+    :param snr:
+    :param pick_ori:
+    :param inv:
+    :param n_jobs:
+    :param tmax:
+    :param fwd_path:
+    :param inv_method:
+    :param rank:
+    :param loose:
+    :param depth:
+    :param verbose:
+    :return:
+    """
+
+    logging.info(f"Inverting epochs")
 
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
@@ -365,15 +413,31 @@ def _inverse_epochs(epochs, label=None, method="dSPM", snr=3., pick_ori=None, in
                                 method=method, pick_ori=pick_ori, verbose=verbose, return_generator=True)
 
 
-def get_inv(epochs, fwd_path, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
+def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
             rank=None, loose=0.2, depth=0.8, verbose=False):
-    fwd = read_forward_solution(fwd_path, verbose=False)
+    """
+    todo
+    :param epochs:
+    :param fwd_path:
+    :param tmax:
+    :param n_jobs:
+    :param method:
+    :param rank:
+    :param loose:
+    :param depth:
+    :param verbose:
+    :return:
+    """
+
+    fwd = read_forward_solution(fwd_path, verbose=verbose)
     noise_cov = compute_covariance(epochs, tmax=tmax, method=method, rank=rank, n_jobs=n_jobs, verbose=verbose)
     inv = make_inverse_operator(epochs.info, fwd, noise_cov, loose=loose, depth=depth, verbose=verbose)
+
     return inv
 
 
 def get_labels_names(params: dict):
+    # todo
 
     # Generate set of labels
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],

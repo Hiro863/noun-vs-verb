@@ -1,5 +1,6 @@
 import logging
 from math import isnan
+from pathlib import Path
 import re
 import sys
 import numpy as np
@@ -275,11 +276,22 @@ def format_event_data(events_path, stimuli_path):
 ########################################################################################################################
 
 
-def get_event_array(events, event_path, dictionary_path, simplify_mode):
+def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, simplify_mode: str) -> np.array:
+    """
+    Compare MNE events array with dataframe from .csv files. Drop any inconsistent events.
+    :param events: events array generated with mne.find_events
+    :param event_path: path to .csv file
+    :param dictionary_path: path to .csv file containing POS information
+    :param simplify_mode: whether to use token IDs (`index`) or noun (0) vs. verb (1) comparison (`binary`) for event
+        values
+    :return: validated events array
+    """
+
+    logging.info("Verifying the event array against dataframe data")
 
     original_events = events[0]  # at original sfreq
     new_events = events[1]       # downsampled
-    df = pd.read_csv(event_path)
+    df = pd.read_csv(str(event_path))
 
     valid_events = []
     invalid_events = []
@@ -316,8 +328,8 @@ def get_event_array(events, event_path, dictionary_path, simplify_mode):
         else:
             invalid_events.append(o_event)
 
-    logging.debug(f"{len(valid_events) / (len(valid_events) + len(invalid_events)) * 100}% valid")
-    logging.debug(f"Total of {len(valid_events)} events added")
+    logging.info(f"{len(valid_events) / (len(valid_events) + len(invalid_events)) * 100}% valid")
+    logging.info(f"Total of {len(valid_events)} events added")
 
     events = np.array(valid_events)
     events = _simplify(events, dictionary_path, mode=simplify_mode)
@@ -325,6 +337,14 @@ def get_event_array(events, event_path, dictionary_path, simplify_mode):
 
 
 def _simplify(events, df_path, mode="index"):
+    """
+    Drop any events not noun or verb.
+    :param events: events array
+    :param df_path: path to .csv file containing POS information
+    :param mode:
+    :return:
+    """
+
     df = pd.read_csv(df_path)
     df["POS"] = df["POS"].apply(lambda x: 0 if x == "N" else 1)
 
@@ -338,8 +358,15 @@ def _simplify(events, df_path, mode="index"):
     return events
 
 
-def select_conditions(events, mode="both"):
-    print(events.shape)
+def select_conditions(events: np.array, mode="both"):
+    """
+    Selects events based on the condition.
+    :param events: events array
+    :param mode: Options. Valid are `both`, `sentence` and `list`
+    :return: events with only selected event type
+    """
+    logging.info(f"Selecting {mode}")
+
     if mode == "sentence":
         events = events[np.where(events[:, 2] < 4598)]  # 4597 = largest sentence token ID
     elif mode == "list":
@@ -347,66 +374,62 @@ def select_conditions(events, mode="both"):
     return events
 
 
-def get_event_array_(events, event_path):  # todo: tidy
+#def get_event_array_(events: np.array, event_path: Path):  # todo: tidy
 
-    original_events = events[0]
-    new_events = events[1]
-    df = pd.read_csv(event_path)
+#    original_events = events[0]
+#    new_events = events[1]
+#    df = pd.read_csv(str(event_path))
 
-    valid_events = []
-    invalid_events = []
-    id_events = []  # identical to valid_events except instead of event ID, use token ID
-    for idx, o_event in enumerate(original_events):
+#    valid_events = []
+#    invalid_events = []
+#    id_events = []  # identical to valid_events except instead of event ID, use token ID
+#    for idx, o_event in enumerate(original_events):
 
         # Ignore events that are not in the dictionary
-        if o_event[2] in id_to_name:
-            mne_event = id_to_name[o_event[2]]
-        else:
-            continue
+#        if o_event[2] in id_to_name:
+#            mne_event = id_to_name[o_event[2]]
+#        else:
+#            continue
 
-        # Sample value can vary by maximum on 1 on either side
-        if o_event[0] in df["sample"].values:
-            df_event = df.loc[df["sample"] == o_event[0]]
-        elif o_event[0] - 1 in df["sample"].values:
-            df_event = df.loc[df["sample"] == o_event[0] - 1]
-        elif o_event[0] + 1 in df["sample"].values:
-            df_event = df.loc[df["sample"] == o_event[0] + 1]
-        else:
-            invalid_events.append(o_event)
-            continue
+#        # Sample value can vary by maximum on 1 on either side
+#        if o_event[0] in df["sample"].values:
+#            df_event = df.loc[df["sample"] == o_event[0]]
+#        elif o_event[0] - 1 in df["sample"].values:
+#            df_event = df.loc[df["sample"] == o_event[0] - 1]
+#        elif o_event[0] + 1 in df["sample"].values:
+#            df_event = df.loc[df["sample"] == o_event[0] + 1]
+#        else:
+#            invalid_events.append(o_event)
+#            continue
 
         # The event name is identical
-        if df_event["type"].values[0] == mne_event:
-            event = new_events[idx].copy()
-            token = new_events[idx].copy()
-            token[2] = int(df_event["ID"].values[0]) if not isnan(df_event["ID"].values[0]) else -1
-            valid_events.append(event)
-            id_events.append(token)
+#       if df_event["type"].values[0] == mne_event:
+#           event = new_events[idx].copy()
+#            token = new_events[idx].copy()
+#            token[2] = int(df_event["ID"].values[0]) if not isnan(df_event["ID"].values[0]) else -1
+#            valid_events.append(event)
+#            id_events.append(token)
 
         # Check for response, because they reflect response values (1, 2 or 3) rather than event type
-        elif df_event["type"].values[0].startswith("response") and mne_event == "word":
-            value = int(df_event["type"].values[0][-1])  # 1, 2 or 3, e.g. "response/1"
-            if value == o_event[2]:
-                event = new_events[idx].copy()
-                token = new_events[idx].copy()
-                token[2] = int(df_event["ID"].values[0]) if not isnan(df_event["ID"].values[0]) else -1
-                valid_events.append(event)
-                id_events.append(token)
+#        elif df_event["type"].values[0].startswith("response") and mne_event == "word":
+#            value = int(df_event["type"].values[0][-1])  # 1, 2 or 3, e.g. "response/1"
+#            if value == o_event[2]:
+#                event = new_events[idx].copy()
+#                token = new_events[idx].copy()
+#                token[2] = int(df_event["ID"].values[0]) if not isnan(df_event["ID"].values[0]) else -1
+#                valid_events.append(event)
+#                id_events.append(token)
 
         # These are neither valid nor relevant
-        elif mne_event == "word" and df_event["type"].values[0] == "empty":  # blank "words", e.g. 5 300
-            pass
-        else:
-            invalid_events.append(o_event)
+#        elif mne_event == "word" and df_event["type"].values[0] == "empty":  # blank "words", e.g. 5 300
+#            pass
+#        else:
+#            invalid_events.append(o_event)
 
-    logging.debug(f"{len(valid_events) / (len(valid_events) + len(invalid_events)) * 100}% valid")
-    logging.debug(f"Total of {len(valid_events)} events added")
+#    logging.debug(f"{len(valid_events) / (len(valid_events) + len(invalid_events)) * 100}% valid")
+#    logging.debug(f"Total of {len(valid_events)} events added")
 
-    #events = np.array(valid_events)
-    id_events = np.array(id_events)
-
-    #events = _simplify(events)
-    #events = crop_events(id_events)
-    return events
+#    id_events = np.array(id_events)
+#    return events
 
 

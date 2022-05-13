@@ -6,7 +6,7 @@ from utils.file_access import read_json
 from pathlib import Path
 from mne import read_labels_from_annot
 from events.conditions import convert_y
-
+from utils.logger import get_logger
 
 def convert(name, params):
     dir_name = Path(params["dir-name"]) / name
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", f"dateset-{area_id}")
 
     # Get the parameters
-    params = read_json(param_dir, "conditions-params-gender.json")
+    params = read_json(param_dir, "conditions-params-nv.json")
 
     # Set up directories
     root = Path(params["root"])

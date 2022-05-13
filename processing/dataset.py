@@ -7,14 +7,14 @@ from typing import List
 import numpy as np
 from utils.file_access import write_json
 
-fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
-      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
+#fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
+#      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
 
 
-logging.basicConfig(level=logging.DEBUG,
-                    format=fmt,
-                    handlers=[logging.StreamHandler(sys.stdout)])
-
+#logging.basicConfig(level=logging.DEBUG,
+#                    format=fmt,
+#                    handlers=[logging.StreamHandler(sys.stdout)])
+logging.getLogger("numpy").setLevel(logging.WARNING)
 ########################################################################################################################
 # DATASET GENERATION                                                                                                   #
 ########################################################################################################################

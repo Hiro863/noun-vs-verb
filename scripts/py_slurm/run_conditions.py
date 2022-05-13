@@ -5,7 +5,7 @@ import numpy as np
 from utils.file_access import read_json
 from pathlib import Path
 from mne import read_labels_from_annot
-from events.conditions import convert_y  #convert_to_nv
+from events.conditions import convert_y
 
 
 def convert(name, params):
@@ -15,6 +15,7 @@ def convert(name, params):
     y, included = convert_y(y, mode=params["mode"],
                             df_dir=Path(params["df-dir"]),
                             to_index=params["to-index"],
+                            balance=params["balance"],
                             params=params["params"])
 
     dst_dir = dir_name / params["dst-name"]
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     param_dir = Path(sys.argv[3])
 
     # Get the parameters
-    params = read_json(param_dir, "conditions-params.json")
+    params = read_json(param_dir, "conditions-params-nv.json")
 
     # Set up directories
     root = Path(params["root"])

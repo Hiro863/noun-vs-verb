@@ -91,49 +91,57 @@ def _get_epoch_paths(epoch_dir: Path, reject_list: List[str]):
     return epoch_path_list
 
 
-def _generate_x(dst_dir: Path, paths: List[Path], sensor=False):
-    x_list = []
-    for path in paths:
+#def _generate_x(dst_dir: Path, paths: List[Path]):
+#    x_list = []
+#    for path in paths:
 
         # Read x
-        if sensor:
-            epochs = read_epochs(path)
-            x = epochs.get_data()
-        else:
-            x = np.load(str(path))
+#        x = np.load(str(path))
 
-        x_list.append(x)
+#        x_list.append(x)
 
-    x = np.vstack(x_list)  # todo: won’t work if shape is different
-    fname = "x.npy"
-    np.save(str(dst_dir / fname), x)
+#    x = np.vstack(x_list)  # todo: won’t work if shape is different
+#    fname = "x.npy"
+#    np.save(str(dst_dir / fname), x)
 
 
-def _generate_x_mmap(dst_dir: Path, paths: List[Path], sensor=False):
+def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
 
     # Get the size of final array
-    x_shape = _get_array_size(paths, sensor=sensor)
+    x_shape = _get_array_size(data_paths)
     fname = "x.dat"
     x_map = np.memmap(str(dst_dir / fname), dtype="float64", mode="w+", shape=x_shape)
 
+    y_list = []
+
     # Use memory map for x
     curr_idx = 0
-    for idx, path in enumerate(paths):
+    for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
 
         # Read x
-        if sensor:
-            epochs = read_epochs(path)
-            x = epochs.get_data()
-        else:
-            x = np.load(str(path))
+        x = np.load(str(data_path))
 
-        x_map[curr_idx: curr_idx + x.shape[0]] = x
-        curr_idx += x.shape[0]
-        x_map.flush()
+        # Read y
+        events = np.load(str(event_path))
+        y = events[:, 2]
+
+        # Make sure the shape stays the same
+        if x.shape[0] == y.shape[0]:
+            x_map[curr_idx: curr_idx + x.shape[0]] = x
+            curr_idx += x.shape[0]
+            x_map.flush()
+
+            y_list.append(y)
+        else:
+            raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
 
     shape = {"shape": x_shape}
     fname = "x_shape.json"
-    write_json(dst_dir, file_name=fname, data=shape)
+    write_json(dst_dir, file_name=fname, data=shape)  # needed to recover the shape
+
+    y = np.hstack(y_list)
+    fname = "y.npy"
+    np.save(str(dst_dir / fname), y)
 
 
 def _generate_y(dst_dir: Path, events_paths: List[Path]):
@@ -148,23 +156,17 @@ def _generate_y(dst_dir: Path, events_paths: List[Path]):
     np.save(str(dst_dir / fname), y)
 
 
-def _get_array_size(paths, sensor=False):
+def _get_array_size(paths):
 
     dim_0 = 0
     dim_rest = None
     for path in paths:
 
         # Read single x data
-        if sensor:
-            epochs = read_epochs(path)
-            x = epochs.get_data()
-            shape = np.array(x.shape)
-            del x
-        else:
-            print(path)
-            x = np.load(str(path))
-            shape = x.shape
-            del x
+        print(path)
+        x = np.load(str(path))
+        shape = x.shape
+        del x
 
         dim_0 += shape[0]
         if dim_rest is None:
@@ -184,7 +186,7 @@ def _get_reject_list(reject_path: Path):
     return reject_text.splitlines()
 
 
-def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
+def _generate_data(dst_dir, data_paths, event_paths):
 
     x_list = []
     y_list = []
@@ -192,11 +194,7 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
     for data_path, event_path in zip(data_paths, event_paths):
 
         # Read x
-        if sensor:
-            epochs = read_epochs(data_path)
-            x = epochs.get_data()
-        else:
-            x = np.load(str(data_path))
+        x = np.load(str(data_path))
 
         # Read y
         events = np.load(str(event_path))
@@ -208,9 +206,7 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
             y_list.append(y)
             break
         else:
-            print(f"hmm... {event_path}")
-            #raise ValueError(f"The numbers of epochs for x {n_epochs_x} and y {n_epochs_y} are different")
-         # just for debug todo remove
+            raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
 
     x = np.vstack(x_list)
     y = np.hstack(y_list)
@@ -220,7 +216,8 @@ def _generate_data(dst_dir, data_paths, event_paths, sensor=False):
     np.save(str(dst_dir / fname_y), y)
 
 
-def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, memmap=True, reject=None) -> None:
+def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subjects=-1,
+                     memmap=True, reject=None) -> None:
     """
     :param epoch_dir:
     :param dst_dir:
@@ -239,26 +236,15 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, memmap=True
 
     # List of path to event.npy
     events_paths = _get_events_paths(epoch_dir, reject_list)
+    stc_paths = _get_stc_paths(epoch_dir, area_name, reject_list)
 
-    # Sensor space dataset
-    if area_name == "sensor":
-        epoch_paths = _get_epoch_paths(epoch_dir, reject_list)
+    if max_subjects > 0:
+        events_paths = events_paths[:max_subjects]
+        stc_paths = stc_paths[:max_subjects]
 
-        if memmap:
-            _generate_x_mmap(dst_dir, epoch_paths, sensor=True)
-        else:
-            _generate_x(dst_dir, epoch_paths, sensor=True)
-
-    # Source space dataset
+    # Generate x array
+    if memmap:
+        _generate_mmap(dst_dir, stc_paths)
     else:
-        stc_paths = _get_stc_paths(epoch_dir, area_name, reject_list)
+        _generate_data(dst_dir, stc_paths, events_paths)
 
-        # Generate x array
-        if memmap:
-            _generate_x_mmap(dst_dir, stc_paths)
-        else:
-            _generate_data(dst_dir, stc_paths, events_paths)
-            #_generate_x(dst_dir, stc_paths)
-
-    # Generate y array
-    #_generate_y(dst_dir, events_paths)

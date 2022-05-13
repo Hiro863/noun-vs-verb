@@ -13,7 +13,10 @@
   "balance": true,
   "params":
   {
-    "mode": "noun"
+    "mode": "frequency",
+    "lower": 0.1,
+    "upper": 1,
+    "medium": 0.5
   }
 
 }

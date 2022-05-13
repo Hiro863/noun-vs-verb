@@ -491,4 +491,4 @@ def _to_n_number(df_dir: Path, to_index: bool, params: dict):
     n_df = n_df[n_df["Number"].isin(["sg.", "pl."])]
 
     df = pd.merge(nv_df, n_df, how="right", on="Token ID")
-    return _to_dict(df=df, key="Token ID", value="Number", mapper={1: 0, 2: 1, 3: 2}, to_index=to_index)
+    return _to_dict(df=df, key="Token ID", value="Number", mapper={"sg.": 0, "pl.": 1}, to_index=to_index)

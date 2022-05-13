@@ -163,7 +163,6 @@ def _get_array_size(paths):
     for path in paths:
 
         # Read single x data
-        print(path)
         x = np.load(str(path))
         shape = x.shape
         del x
@@ -204,7 +203,6 @@ def _generate_data(dst_dir, data_paths, event_paths):
         if x.shape[0] == y.shape[0]:
             x_list.append(x)
             y_list.append(y)
-            break
         else:
             raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
 
@@ -244,7 +242,7 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
 
     # Generate x array
     if memmap:
-        _generate_mmap(dst_dir, stc_paths)
+        _generate_mmap(dst_dir, stc_paths, events_paths)
     else:
         _generate_data(dst_dir, stc_paths, events_paths)
 

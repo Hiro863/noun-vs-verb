@@ -34,7 +34,7 @@ if __name__ == "__main__":
     param_dir = Path(sys.argv[3])
 
     # Get the parameters
-    params = read_json(param_dir, "conditions-params-v-number.json")
+    params = read_json(param_dir, "conditions-params-tense.json")
 
     # Set up directories
     root = Path(params["root"])

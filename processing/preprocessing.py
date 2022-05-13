@@ -17,7 +17,7 @@ from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse
 from events.formatting import get_event_array, select_conditions
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
-from utils.logger import get_handlers
+from utils.logger import get_logger
 
 #log_path = "/data/home/hiroyoshi/mous_wd/logs"
 #logger = get_handlers(log_path, "ttttt")

@@ -17,6 +17,7 @@ from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse
 from events.formatting import get_event_array, select_conditions
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw, get_project_root
+from utils.logger import get_handlers
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
@@ -25,9 +26,12 @@ fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: "
 root = get_project_root()
 log_path = root / "meg-mvpa/data/logs"
 
+handlers = get_handlers(log_path, "test")
+
 logging.basicConfig(level=logging.DEBUG,
                     format=fmt,
-                    handlers=[logging.StreamHandler(sys.stdout)])
+                    handlers=handlers)
+                    #handlers=[logging.StreamHandler(sys.stdout)])
 
 
 ########################################################################################################################

@@ -3,7 +3,8 @@
   {
     "root": "/data/home/hiroyoshi/mous_wd",
     "raw-dir": "/data/home/hiroyoshi/data/MOUS",
-    "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle"
+    "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
+    "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects"
   },
   "parcellation": "aparc",
   "hemi": "both",

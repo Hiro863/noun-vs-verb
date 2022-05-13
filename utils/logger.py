@@ -18,6 +18,6 @@ def get_logger(log_path, file_name):
     console_handler.setFormatter(formatter)
     root_logger.addHandler(console_handler)
 
-    return root_logger#file_handler, console_handler
+    return root_logger
 
 

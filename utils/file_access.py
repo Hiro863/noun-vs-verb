@@ -41,6 +41,12 @@ def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None,
     return raw
 
 
+def load_json(json_path: Path):
+    with open(json_path) as file:
+        data = json.load(file)
+    return data
+
+
 def read_json(dir_path: Path, file_name: str):
     # later: comment
 

@@ -65,7 +65,7 @@ def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
 def classify(x, y, cv, clf: Pipeline, scoring):
     # todo
 
-    kf = KFold(cv)
+    kf = KFold(cv, shuffle=False)
     scores = np.zeros((cv,))
     dummy_scores = np.zeros((cv,))
 

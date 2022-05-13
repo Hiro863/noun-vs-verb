@@ -8,6 +8,7 @@ from mne import read_labels_from_annot
 from events.conditions import convert_y
 from utils.logger import get_logger
 
+
 def convert(name, params):
     dir_name = Path(params["dir-name"]) / name
 

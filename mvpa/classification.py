@@ -44,7 +44,15 @@ def _get_t_steps(window_size: int, sfreq: float) -> int:
     return int(window_size / (1e3 / sfreq))
 
 
-def get_slice(x, t_idx, window_size=-1., sfreq=-1):
+def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
+    """
+
+    :param x:
+    :param t_idx:
+    :param window_size:
+    :param sfreq:
+    :return:
+    """
     # todo
 
     if window_size < 0:

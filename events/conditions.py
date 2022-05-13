@@ -339,7 +339,7 @@ def _to_frequency(df_dir: Path, to_index: bool, params: dict):
     :param df_dir: directory with .csv files
     :param to_index: if true, convert to indices rather than names
     :param params:
-        mode: either `frequency` to use log frequency or `cd` todo
+        mode: either `frequency` to use log frequency or `cd` to use contextual diversity
         lower: boundary between short and medium
         upper: boundary between medium and long
         medium: if true, include medium and group in three groups (instead of two)

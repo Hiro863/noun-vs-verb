@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #SBATCH --job-name=classification
-#SBATCH --array=0 ## -68  ## parcel ID
+#SBATCH --array=0-68  ## parcel ID
 #SBATCH --ntasks-per-node=30   ## number of cores per parcel
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs/classification
-#SBATCH --mem-per-cpu=3gb
+#SBATCH --mem-per-cpu=10gb
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
 param_dir=/data/home/hiroyoshi/mous_wd/param-dir                    # parameter directory

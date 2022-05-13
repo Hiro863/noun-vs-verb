@@ -235,11 +235,12 @@ def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
 def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subjects=-1,
                      memmap=True, reject=None) -> None:
     """
-    :param epoch_dir:
-    :param dst_dir:
-    :param area_name:
-    :param memmap:
-    :param reject:
+    :param epoch_dir: directory in which stc and epochs are stored
+    :param dst_dir: directory in which to save the results
+    :param area_name: name of the cortical area
+    :param memmap: if true, use memmap to store the results
+    :param max_subjects: maximum number of subjects to include, if negative use all available data
+    :param reject: allows specific to reject subjects
     :return:
     """
 
@@ -259,12 +260,12 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     if 0 < max_subjects < len(events_paths):
         events_paths = events_paths[:max_subjects]
         stc_paths = stc_paths[:max_subjects]
-        logging.debug(f"Using {max_subjects} subject data")
+        logging.info(f"Using {max_subjects} subject data")
 
     # Generate x array
     if memmap:
         _generate_mmap(dst_dir, stc_paths, events_paths)
     else:
         _generate_data(dst_dir, stc_paths, events_paths)
-    logging.debug("Process terminated")
+    logging.info("Process terminated")
 

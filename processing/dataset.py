@@ -187,7 +187,7 @@ def _generate_data(dst_dir, data_paths, event_paths):
 
     added = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
-        logging.info(f"{idx} / {len(data_paths)}")
+        logging.debug(f"{idx} / {len(data_paths)}")
         logging.debug(f"Appending {data_path}")
 
         # Read x

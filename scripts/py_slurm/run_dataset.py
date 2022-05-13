@@ -10,7 +10,10 @@ from utils.logger import get_logger
 
 logging.getLogger("mne").setLevel(logging.WARNING)
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
-
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': True,
+})
 
 if __name__ == "__main__":
 

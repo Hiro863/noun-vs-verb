@@ -203,7 +203,6 @@ def _generate_data(dst_dir, data_paths, event_paths):
             added += 1
         else:
             logging.debug(f"Number of events don’t match, skipping")
-            #raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
 
     x = np.vstack(x_list)
     y = np.hstack(y_list)

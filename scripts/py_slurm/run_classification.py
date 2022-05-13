@@ -4,16 +4,11 @@ import pickle
 import sys
 
 import numpy as np
-from joblib import Parallel, delayed
 from pathlib import Path
 
-from sklearn.metrics import balanced_accuracy_score, roc_auc_score
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import LinearSVC
-
-from mvpa.classification import classify, classify_temporal
+from mvpa.classification import classify_temporal
 from utils.file_access import read_json
+from utils.logger import get_logger
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
@@ -57,6 +52,8 @@ if __name__ == "__main__":
     label_id = int(sys.argv[1])
     n_cores = int(sys.argv[2])
     param_dir = Path(sys.argv[3])
+
+    logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", f"dateset-{label_id}")
 
     # Get the parameters
     params = read_json(param_dir, "classification-params.json")

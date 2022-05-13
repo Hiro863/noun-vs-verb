@@ -185,6 +185,7 @@ def _generate_data(dst_dir, data_paths, event_paths):
     x_list = []
     y_list = []
 
+    added = 0
     for data_path, event_path in zip(data_paths, event_paths):
         logging.debug(f"Appending {data_path}")
 
@@ -199,8 +200,10 @@ def _generate_data(dst_dir, data_paths, event_paths):
         if x.shape[0] == y.shape[0]:
             x_list.append(x)
             y_list.append(y)
+            added += 1
         else:
-            raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
+            logging.debug(f"Number of events don’t match, skipping")
+            #raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
 
     x = np.vstack(x_list)
     y = np.hstack(y_list)
@@ -208,6 +211,7 @@ def _generate_data(dst_dir, data_paths, event_paths):
     fname_y = "y.npy"
     np.save(str(dst_dir / fname_x), x)
     np.save(str(dst_dir / fname_y), y)
+    logging.debug(f"{added} subject data added")
 
 
 def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subjects=-1,

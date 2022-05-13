@@ -205,6 +205,7 @@ def _generate_data(dst_dir, data_paths, event_paths):
         else:
             logging.debug(f"Number of events don’t match, skipping")
 
+    # todo: add exception
     x = np.vstack(x_list)
     y = np.hstack(y_list)
     fname_x = "x.npy"

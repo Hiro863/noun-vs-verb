@@ -6,9 +6,6 @@ from typing import List
 import numpy as np
 from utils.file_access import write_json
 
-logging.getLogger("numpy").setLevel(logging.WARNING)
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
-logging.getLogger("mne").setLevel(logging.WARNING)
 ########################################################################################################################
 # DATASET GENERATION                                                                                                   #
 ########################################################################################################################

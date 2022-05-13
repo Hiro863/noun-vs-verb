@@ -5,9 +5,10 @@ from utils.file_access import read_json
 from pathlib import Path
 from mne import read_labels_from_annot
 from processing.dataset import generate_dataset
-
+from utils.logger import get_logger
 
 if __name__ == "__main__":
+    logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", "dateset")
 
     # Get input from the bash script
     area_id = int(sys.argv[1])

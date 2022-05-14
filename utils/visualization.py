@@ -2,6 +2,19 @@ import numpy as np
 import seaborn as sns
 
 from matplotlib import pyplot as plt
+from matplotlib import gridspec
+
+
+def _get_times(meta):
+
+    # Convert to ms
+    tmin = meta["classification-tmin"] * 1e3
+    tmax = meta["classification-tmax"] * 1e3
+
+    # Get time step size
+    step = 1e3 / meta["sfreq"]
+    times = np.arange(tmin, tmax, step)
+    return tmin, tmax, step, times
 
 
 def plot_single_area(results, stats, area, figsize=(15, 5), fill_alpha=.3,
@@ -13,13 +26,8 @@ def plot_single_area(results, stats, area, figsize=(15, 5), fill_alpha=.3,
     # Split data and meta data
     meta, data = results["meta"], results["data"]
 
-    # Convert to ms
-    tmin = meta["classification-tmin"] * 1e3
-    tmax = meta["classification-tmax"] * 1e3
-
-    # Get time step size
-    step = 1e3 / meta["sfreq"]
-    times = np.arange(tmin, tmax, step)
+    # Get times
+    tmin, tmax, step, times = _get_times(meta)
 
     fig, ax = plt.subplots(figsize=figsize)
 
@@ -92,3 +100,74 @@ def _add_significance(ax, stats, times, loc, scale, subdivide=-1, p_thresh=.05):
             # Write p-values next to the points
             ax.text(times[idx][-1] + buffer_x, loc + buffer_y, f"p={np.round(p, decimals=2)}")
 
+
+def plot_multiple_areas(result_list, stats, figsize=(15, 5), alpha=.9,
+                        hspace=-.9, y_max=.8, colors=None, mode="percentage"):
+    n_areas = len(result_list)
+
+    fig = plt.figure(figsize=figsize)
+
+    if not colors:
+        colors = sns.color_palette("husl", n_areas)
+
+    # Make them overlap
+    gs = (gridspec.GridSpec(n_areas, 1))
+    gs.update(hspace=hspace)
+
+    # Mode percentage or score
+    if mode == "percentage":
+        rescale = 100
+        measure = "(%)"
+    else:
+        rescale = 1
+        measure = "(out of 1)"
+
+    axes = []
+    for i, results in enumerate(result_list):
+        axes.append(fig.add_subplot(gs[i: i + 1, 0:]))
+
+        tmin, tmax, step, times = _get_times(results["meta"])
+
+        # Plot
+        scores = results["data"]["scores"].mean(axis=0)
+        axes[i].plot(times, scores * rescale, color="k", linewidth=.2)
+        axes[i].fill_between(times, [.5 * rescale] * times.size, scores * rescale, color=colors[i], alpha=alpha)
+
+        # Y-lim
+        axes[i].set_ylim(.5 * rescale, y_max * rescale)
+
+        # Transparent background
+        rect = axes[i].patch
+        rect.set_alpha(0)
+
+        if i < n_areas - 1:
+
+            # Remove ticks
+            axes[i].set_xticks([])
+            axes[i].set_yticks([])
+
+            # Remove borders
+            spines = ["top", "right", "left", "bottom"]
+            for s in spines:
+                axes[i].spines[s].set_visible(False)
+        else:
+            # Set ticks
+            axes[i].set_xticks(np.arange(tmin, tmax, 100))
+            axes[i].set_yticks(np.arange(.5 * rescale, 1.2 * rescale, .1 * rescale))
+
+            spines = ["top", "right", "bottom"]
+            for s in spines:
+                axes[i].spines[s].set_visible(False)
+
+            # Set axis length
+            axes[i].spines["left"].set_bounds(.5 * rescale, 1. * rescale)
+            axes[i].get_yticklabels()[-1].set_visible(False)
+            axes[i].get_yticklines()[-1].set_visible(False)
+
+    # Annotate
+    condition_name = {"nv": "Noun vs. Verb"}
+    conditions = result_list[0]["meta"]["conditions"]
+    axes[0].set_title(f"Classification accuracy, Condition={conditions}")
+    axes[-1].set_xlabel(f"Time (ms)")
+    axes[-1].set_ylabel(f"Accuracy {measure}")
+    return fig

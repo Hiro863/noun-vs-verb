@@ -1,5 +1,6 @@
+import argparse
 import logging
-import sys
+import os
 
 from pathlib import Path
 from typing import Tuple
@@ -9,7 +10,8 @@ from mne import find_events
 from mne.io import Raw
 
 from utils.exceptions import SubjectNotProcessedError
-from utils.file_access import read_raw_format
+from utils.file_access import read_raw_format, load_json
+
 
 ########################################################################################################################
 # DOWNSAMPLING                                                                                                         #
@@ -48,23 +50,56 @@ def downsample(raw: Raw, sfreq: int, n_jobs) -> Tuple[Raw, np.array, np.array]:
         return raw, events, events
 
 
+def get_args():
+
+    # Parse arguments
+    parser = argparse.ArgumentParser(description="Downsample raw file and save the results")
+
+    # Read parameter from JSON
+    parser.add_argument("--json_path", type=str, required=False, help="Path to JSON containing parameters")
+
+    # Read individual arguments
+    parser.add_argument("--raw_path", type=str, required=False, help="Path to raw file")
+    parser.add_argument("--format", type=str, required=False, default="fif", help="Raw file format. Default is .fif")
+    parser.add_argument("--sfreq", type=float, required=False, help="Sampling frequency")
+    parser.add_argument("--n_jobs", type=int, required=False, default=1, help="Number of jobs to use. Default is 1.")
+    parser.add_argument("--dst_dir", type=str, required=False, help="Directory to save the results in")
+    parser.add_argument("--name", type=str, required=False, default="", help="File name. Default is empty.")
+
+    args = parser.parse_args()
+
+    # Either from JSON or one by one
+    if args.json_path:
+        params = load_json(args.json_path)
+        raw_path, format, sfreq = params["raw-path"], params["format"], params["sfreq"]
+        n_jobs, dst_dir, name = params["n-jobs"], params["dst-dir"], params["name"]
+    else:
+        raw_path, format, sfreq, n_jobs, dst_dir, name = \
+            args.raw_path, args.format, args.sfreq, args.n_jobs, args.dst_dir, args.name
+
+    # Convert to path object
+    raw_path = Path(raw_path)
+    dst_dir = Path(dst_dir)
+
+    # Make sure the directory exists
+    if not dst_dir.exists():
+        os.makedirs(dst_dir)
+
+    return raw_path, format, sfreq, n_jobs, dst_dir, name
+
+
 if __name__ == "__main__":
 
     # Read parameters
-    raw_path = sys.argv[1]
-    format = sys.argv[2]
-    sfreq = int(sys.argv[3])
-    n_jobs = int(sys.argv[4])
-    dst_dir = Path(sys.argv[5])
-    file_name = sys.argv[6]
+    raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()
 
     # Read raw
     raw = read_raw_format(raw_path, format)
 
     # Downsample
-    raw, events, new_events = downsample(raw=raw, sfreq=sfreq)
+    raw, events, new_events = downsample(raw=raw, sfreq=sfreq, n_jobs=n_jobs)
 
     # Save to file
-    raw.save(dst_dir / f"{file_name}-downsampled-{sfreq}Hz-raw.fif")
-    np.save(dst_dir / f"{file_name}-downsampled-{sfreq}Hz-original-events.npy")
-    np.save(dst_dir / f"{file_name}-downsampled-{sfreq}Hz-new-events.npy")
+    raw.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-raw.fif", overwrite=True)
+    np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-original-events.npy", events)
+    np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-new-events.npy", new_events)

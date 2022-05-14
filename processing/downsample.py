@@ -2,8 +2,8 @@ import logging
 import sys
 
 from pathlib import Path
-
 from typing import Tuple
+
 import numpy as np
 from mne import find_events
 from mne.io import Raw
@@ -65,6 +65,6 @@ if __name__ == "__main__":
     raw, events, new_events = downsample(raw=raw, sfreq=sfreq)
 
     # Save to file
-    raw.save(dst_dir / f"{file_name}-downsampled-{sfreq}-raw.fif")
-    np.save(dst_dir / f"{file_name}-downsampled-{sfreq}-original-events.npy")
-    np.save(dst_dir / f"{file_name}-downsampled-{sfreq}-new-events.npy")
+    raw.save(dst_dir / f"{file_name}-downsampled-{sfreq}Hz-raw.fif")
+    np.save(dst_dir / f"{file_name}-downsampled-{sfreq}Hz-original-events.npy")
+    np.save(dst_dir / f"{file_name}-downsampled-{sfreq}Hz-new-events.npy")

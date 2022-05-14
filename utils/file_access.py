@@ -7,7 +7,7 @@ from typing import Union, Callable
 from pathlib import Path
 from mne.io import read_raw_ctf, Raw
 
-
+# todo: tidy this file
 def get_project_root() -> Path:
     return Path(__file__).parent.parent.parent
 
@@ -130,6 +130,10 @@ def get_mous_meg_channels(channels: list):
 
 def read_raw_format(path, format):
 
-    if format == "ctf":
+    if format == "fif":
+        raw = read_raw(path)
+        return raw
+    elif format == "ctf":
         raw = read_raw_ctf(path)
         return raw
+

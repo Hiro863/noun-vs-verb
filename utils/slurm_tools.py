@@ -1,14 +1,40 @@
 import os
 import pickle
 from pathlib import Path
+from datetime import datetime
+
+# These are not valid subject numbers
+not_subject = [14, 15, 18, 21, 23, 41, 43, 47, 51, 56, 60, 67, 82, 91, 112]
+
+# Technical problems
+prob_subjects = []
+
+def get_subject_list():
+    return []
+
+def get_subject_id_list():
+    return []
+
+def get_area_id_list(parcellation="aparc"):
+    return []
 
 
-def make_status(path: Path):
+def init_status(name: str, n_tasks: int, mem: int, id_list: list):
 
-    # Submission time
+    array = []
+    for item_id in id_list:
+        item_status = {"ID": item_id, "submitted": False, "submission-success": False, "completed": False,
+                       "submission-time": None, "completion-time": None, "elapsed": None}
+        array.append(item_status)
 
-    # Done
-    pass
+    return {"name": name, "n-tasks": n_tasks, "mem": mem, "completed": False, "array": array}
+
+
+def update_status(status, success: bool):
+
+    status["submitted"] = True
+    status["submission-success"] = success
+    status["submission-time"] = datetime.now()
 
 
 def check_status(path: Path):
@@ -21,8 +47,15 @@ def check_status(path: Path):
         return None
 
 
+def save_status(status, path: Path):
+    if not path.exists():
+        os.makedirs(path)
+    with open(path, "wb") as handle:
+        pickle.dump(status, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
 def make_job_file(script: str, script_dir: Path, log_dir: Path, job_dir: Path,
-                  name: str, array_str: str, output: str,
+                  name: str, array_str: str, output: str, params: list,
                   n_tasks_per_node=1, mem_per_cpu=1):
 
     logs_dir = log_dir / name
@@ -45,13 +78,11 @@ def make_job_file(script: str, script_dir: Path, log_dir: Path, job_dir: Path,
     job_file += f"export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa\n"
     job_file += f"python $scripts_dir/{script}"
 
-    params = []
     for param in params:
         job_file += f"{param} "
     job_file += "\n"
 
     job_path = job_dir / f"{name}.job"
-    print(job_file)
 
     with open(job_path, "w") as f:
         f.write(job_file)

@@ -126,3 +126,10 @@ def get_mous_meg_channels(channels: list):
         if re.match(r"M.*4304", channel):  # Select MEG gradiometers
             picks.append(channel)
     return picks
+
+
+def read_raw_format(path, format):
+
+    if format == "ctf":
+        raw = read_raw_ctf(path)
+        return raw

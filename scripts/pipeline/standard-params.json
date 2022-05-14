@@ -1,0 +1,53 @@
+{
+  "name": "",
+  "log-dir": "",
+  "log-name": "",
+  "downsample":
+  {
+    "slurm":
+    {
+      "n-tasks": 1,
+      "mem": 1
+    }
+  },
+  "epoching":
+  {
+    "slurm":
+    {
+      "n-tasks": 1,
+      "mem": 1
+    }
+  },
+  "source-localization":
+  {
+    "slurm":
+    {
+      "n-tasks": 1,
+      "mem": 1
+    }
+  },
+  "dataset":
+  {
+    "slurm":
+    {
+      "n-tasks": 1,
+      "mem": 1
+    }
+  },
+  "condition":
+  {
+    "slurm":
+    {
+      "n-tasks": 1,
+      "mem": 1
+    }
+  },
+  "classification":
+  {
+    "slurm":
+    {
+      "n-tasks": 1,
+      "mem": 1
+    }
+  }
+}

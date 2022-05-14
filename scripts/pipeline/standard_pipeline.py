@@ -69,7 +69,7 @@ def main(param_path):
 
         # Downsample
         submit_downsample(status_dir=params["status-dir"], script_dir=params["script-dir"], job_dir=params["job-dir"],
-                          log_dir=params["log-dir"], status=root_status["downsample"])
+                          log_dir=params["log-dir"], status=root_status["downsample"], params=params["downsample"])
 
         # downsample = submit_downsample(params["downsample"], status)
 

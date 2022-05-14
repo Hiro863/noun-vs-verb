@@ -62,10 +62,10 @@ def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
         return x[..., t_idx - t_steps + 1: t_idx + 1].reshape(x.shape[0], -1)
 
 
-def classify(x, y, cv, clf: Pipeline, scoring):
+def classify(x: np.array, y: np.array, cv: int, clf: Pipeline, scoring):
     # todo
 
-    kf = KFold(cv, shuffle=False)
+    kf = KFold(cv, shuffle=True)
     scores = np.zeros((cv,))
     dummy_scores = np.zeros((cv,))
 

@@ -39,6 +39,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     """
 
     sfreq = params["sfreq"]
+    logging.info(f"Downsampling to {sfreq} Hz")
 
     # Find events (needed whether or not downsampled)
     try:
@@ -74,6 +75,8 @@ def remove_artifacts(raw: Raw, n_components: int,
     :param n_jobs: number of jobs for parallelism
     :return: raw: repaired raw
     """
+
+    logging.info("Removing artifacts")
 
     if eog_channels is None and ecg_channel is None:
         logging.debug("Skipping artifact repair")
@@ -124,7 +127,7 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
     :return: filtered raw
     """
 
-    logging.debug(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
+    logging.info(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
 
     raw = raw.filter(l_freq=l_freq, h_freq=h_freq)
 

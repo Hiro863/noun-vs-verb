@@ -76,17 +76,21 @@ def classify(x: np.array, y: np.array, cv: int, clf: Pipeline, scoring):
 
         x_train, x_test = x[train_idx], x[test_idx]
         y_train, y_test = y[train_idx], y[test_idx]
-        clf = clone(clf)
 
+        # Train
+        clf = clone(clf)
         clf.fit(x_train, y_train)
 
+        # Test
         y_pred = clf.predict(x_test)
         scores[i] = scoring(y_test, y_pred)
 
+        # Dummy test
         dummy_clf.fit(x_train, y_train)
         y_pred = dummy_clf.predict(x_test)
         dummy_scores[i] = scoring(y_test, y_pred)
 
+    # Estimate confidence intervals
     lower, upper = bootstrap_confidence_interval(scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
     dummy_lower, dummy_upper = bootstrap_confidence_interval(dummy_scores, ci=.95, n_bootstraps=2000, stat_fun="mean")
     return scores, lower, upper, dummy_scores, dummy_lower, dummy_upper
@@ -107,7 +111,6 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
 
     # Create parallel functions per time point
     parallel_funcs = []
-
     for t_idx in range(start_idx, end_idx):  # noqa
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
 
@@ -127,6 +130,12 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
 
 
 def format_results(data, params):
+    """
+
+    :param data:
+    :param params:
+    :return:
+    """
     # todo
 
     scores, lowers, uppers = [], [], []

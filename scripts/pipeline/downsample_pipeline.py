@@ -69,5 +69,3 @@ if __name__ == "__main__":
 
     submit_downsample(status_dir=params["status-dir"], script_dir=params["script-dir"], job_dir=params["job-dir"],
                       log_dir=params["log-dir"], status=status, params=params["params"])
-
-

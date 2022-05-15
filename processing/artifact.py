@@ -29,9 +29,9 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
     :param n_components: number of components to use for ICA
     :param eog_channels: list of channel names to be used as EOG channels
     :param ecg_channel: the name of the channel to be used as the ECG channel
-    :param save_ica: todo
-    :param apply: todo
-    :param dst_dir: todo
+    :param save_ica: if true, save the ICA object
+    :param apply: if true, apply ICA reconstruction to the raw
+    :param dst_dir: path to directory to save the results in
     :param n_jobs: number of jobs for parallelism
     :return: raw: repaired raw
     """
@@ -45,7 +45,7 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
     # Perform ICA
     logging.info(f"Starting ICA with {n_components} components")
 
-    n_jobs = min(5, n_jobs)  # to avoid running out of memory
+    # Needs to be high-pass filtered first
     filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
 
     ica = ICA(n_components=n_components)
@@ -69,10 +69,10 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
         logging.info(f"Total of {len(ica.exclude)} components removed")
 
         ica.apply(raw)
-        raw.save(dst_dir / f"ica-raw.fif")
+        raw.save(dst_dir / f"ica-raw.fif", overwrite=True)
 
     if save_ica:
-        ica.save(dst_dir / f"ica.fif")
+        ica.save(dst_dir / f"ica.fif", overwrite=True)
     return raw
 
 

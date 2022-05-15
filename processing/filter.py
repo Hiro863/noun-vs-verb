@@ -1,12 +1,18 @@
 import argparse
 import logging
 import os
+import sys
+import traceback
 
 from pathlib import Path
 
 from mne.io import Raw
 
 from utils.file_access import read_raw_format, load_json
+from utils.logger import get_logger
+
+logger = get_logger(file_name="filter")
+logger.setLevel(logging.INFO)
 
 
 ########################################################################################################################
@@ -79,14 +85,26 @@ def get_args():
 
 if __name__ == "__main__":
 
-    # Read parameters
-    raw_path, format, l_freq, h_freq, notch, dst_dir, name, n_jobs = get_args()
+    try:
+        # Read parameters
+        raw_path, format, l_freq, h_freq, notch, dst_dir, name, n_jobs = get_args()
 
-    # Read raw
-    raw = read_raw_format(path=raw_path, format=format).load_data()
+        # Read raw
+        raw = read_raw_format(path=raw_path, format=format).load_data()
 
-    # Filter
-    raw = apply_filter(raw=raw, l_freq=l_freq, h_freq=h_freq, notch=notch, n_jobs=n_jobs)
+        # Filter
+        raw = apply_filter(raw=raw, l_freq=l_freq, h_freq=h_freq, notch=notch, n_jobs=n_jobs)
 
-    # Save to file
-    raw.save(dst_dir / f"{name}-filtered-raw.fif")
+        # Save to file
+        raw.save(dst_dir / f"{name}-filtered-raw.fif", overwrite=True)
+
+    except FileNotFoundError as e:
+        logger.exception(e.strerror)
+        sys.exit(-1)
+
+    except Exception as e:  # noqa
+
+        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        sys.exit(-1)
+
+    logging.info(f"Filtering finished.")

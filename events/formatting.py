@@ -20,16 +20,16 @@ id_to_name = {1: "word",
               5: "word",
               6: "word",
               7: "word",
-              8: "word",
-              10: "block",
-              15: "offset",
-              20: "fixation",
-              30: "pause",
-              40: "question",
-              # Re-assigned IDs (these are assigned 1-3 which overlaps with word conditions)
-              50: "response/1",
-              60: "response/2",
-              70: "response/3"}
+              8: "word"}
+#             10: "block",
+#             15: "offset",
+#             20: "fixation",
+#             30: "pause",
+#             40: "question",
+#             Re-assigned IDs (these are assigned 1-3 which overlaps with word conditions)
+#             50: "response/1",
+#             60: "response/2",
+#             70: "response/3"}
 
 ########################################################################################################################
 # STIMULI PROCESSING                                                                                                   #
@@ -290,7 +290,8 @@ def format_event_data(events_path, stimuli_path):
 ########################################################################################################################
 
 
-def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, simplify_mode: str) -> np.array:
+def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, simplify_mode: str,
+                    strict=False, threshold=30) -> np.array:
     """
     Compare MNE events array with dataframe from .csv files. Drop any inconsistent events.
     :param events: events array generated with mne.find_events
@@ -298,6 +299,8 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
     :param dictionary_path: path to .csv file containing POS information
     :param simplify_mode: whether to use token IDs (`index`) or noun (0) vs. verb (1) comparison (`binary`) for event
         values
+    :param strict: todo
+    :param threshold: todo
     :return: validated events array
     """
 
@@ -324,11 +327,18 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
             df_event = df.loc[df["sample"] == o_event[0] - 1]
         elif o_event[0] + 1 in df["sample"].values:
             df_event = df.loc[df["sample"] == o_event[0] + 1]
+        elif not strict:
+            below_threshold, df_event = _check_difference(o_event, df, threshold=threshold)
+            if not below_threshold:
+                invalid_events.append(o_event)
+                continue
         else:
             invalid_events.append(o_event)
             continue
 
         # The event name is identical
+        if df_event["type"].values.size == 0:
+            print()
         if df_event["type"].values[0] == mne_event:
 
             if not isnan(df_event["ID"].values[0]):
@@ -348,6 +358,13 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
     events = np.array(valid_events)
     events = _simplify(events, dictionary_path, mode=simplify_mode)
     return events
+
+
+def _check_difference(o_event, df, threshold):
+    if len(df.loc[abs(df["sample"] - o_event[0]) < threshold]) > 0:  # if minimum error less than threshold
+        return True, df.loc[abs(df["sample"] - o_event[0]) < threshold]
+    else:
+        return False, None
 
 
 def _simplify(events: np.array, df_path: Path, mode="index"):

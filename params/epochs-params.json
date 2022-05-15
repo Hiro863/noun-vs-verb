@@ -1,0 +1,17 @@
+{
+  "dst-dir": "/Users/hiro/Desktop/sub-V1101",
+  "raw-path": "/Users/hiro/Desktop/sub-V1101/test-downsampled-100Hz-raw.fif",
+  "format": "fif",
+  "events-dir": "/Users/hiro/Desktop/events-dst",
+  "subject": "sub-V1101",
+  "events-arr-dir": "/Users/hiro/Desktop/sub-V1101",
+  "mode": "index",
+  "tmin": -0.5,
+  "tmax": 1.5,
+  "reject": 4e-12,
+  "channel-reader": "mous",
+  "dictionary-path": "/Users/hiro/Desktop/NV.csv",
+  "simplify-mode": "sentence",
+  "strict": false,
+  "threshold": 30
+}

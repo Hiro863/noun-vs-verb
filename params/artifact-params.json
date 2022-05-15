@@ -1,0 +1,11 @@
+{
+  "raw-path": "/Users/hiro/Desktop/sub-V1101/test-downsampled-100Hz-raw.fif",
+  "format": "fif",
+  "n-components": 0.99,
+  "eog-channels": ["EEG057", "EEG058"],
+  "ecg-channel": "EEG059",
+  "save-ica": true,
+  "apply": true,
+  "n-jobs": 6,
+  "dst-dir": "/Users/hiro/Desktop/sub-V1101/"
+}

@@ -1,8 +1,11 @@
 import numpy as np
 import seaborn as sns
 
+from mne import read_source_spaces, SourceEstimate
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
+
+from utils.file_access import read_labels
 
 
 def _get_times(meta):
@@ -18,7 +21,7 @@ def _get_times(meta):
 
 
 def plot_single_area(results, stats, area, figsize=(15, 5), fill_alpha=.3,
-                     x_tick=100, scale=10, subdivide=10, loc=.4, mode="percentage", p_thresh=.05):
+                     plot_dummy=False, x_tick=100, subdivide=10, loc=.4, mode="percentage", p_thresh=.05):
 
     # R like color
     colors = sns.color_palette("husl", 2)  # two colours, svc vs dummy
@@ -47,13 +50,14 @@ def plot_single_area(results, stats, area, figsize=(15, 5), fill_alpha=.3,
     ax.plot(times, data["scores"].mean(axis=0) * rescale, label="LinearSVC", color=colors[0])
     ax.fill_between(times, data["lowers"] * rescale, data["uppers"] * rescale, color=colors[0], alpha=fill_alpha)
 
-    # Plot scores for the dummy classifier
-    ax.set_xticks(np.arange(tmin, tmax, 100))
-    ax.plot(times, data["dummy-scores"].mean(axis=0) * rescale, label="Dummy", color=colors[1])
-    ax.fill_between(times, data["dummy-lowers"] * rescale, data["dummy-uppers"] * rescale,
-                    color=colors[1], alpha=fill_alpha)
+    if plot_dummy:
+        # Plot scores for the dummy classifier
+        ax.set_xticks(np.arange(tmin, tmax, 100))
+        ax.plot(times, data["dummy-scores"].mean(axis=0) * rescale, color=colors[1])
+        ax.fill_between(times, data["dummy-lowers"] * rescale, data["dummy-uppers"] * rescale,
+                        color=colors[1], alpha=fill_alpha)
 
-    ax.legend(title="Classifiers", loc="upper right")
+        ax.legend(title="Classifiers", loc="upper right")
 
     # Annotate
     condition_name = {"nv": "Noun vs. Verb"}
@@ -62,11 +66,12 @@ def plot_single_area(results, stats, area, figsize=(15, 5), fill_alpha=.3,
     ax.set_ylabel(f"Accuracy {measure}")
 
     # Add significance
-    _add_significance(ax, stats, times, loc=loc * rescale, scale=scale, subdivide=subdivide, p_thresh=p_thresh)
+    _add_significance(ax, stats, np.arange(tmin, tmax + step, step), loc=loc * rescale,
+                      subdivide=subdivide, p_thresh=p_thresh)
     return fig
 
 
-def _add_significance(ax, stats, times, loc, scale, subdivide=-1, p_thresh=.05):
+def _add_significance(ax, stats, times, loc, subdivide=-1, p_thresh=.05):
 
     # Results of cluster test
     _, clusters, p_values, _ = stats
@@ -81,8 +86,8 @@ def _add_significance(ax, stats, times, loc, scale, subdivide=-1, p_thresh=.05):
         subdivide = 1
 
     # Hard code relative place to avoid overlap
-    buffer_x = 10
-    buffer_y = -.5
+    buffer_x = -10
+    buffer_y = -2
 
     # Plot
     for i, (cluster, p) in enumerate(zip(clusters, p_values)):
@@ -95,10 +100,10 @@ def _add_significance(ax, stats, times, loc, scale, subdivide=-1, p_thresh=.05):
             idx = np.arange(cluster[0][0] * subdivide, (cluster[0][-1] + 1) * subdivide)
 
             # Plot, scale based on the p-values
-            ax.scatter(times[idx], [loc] * n_steps, s=[1 / p * scale] * n_steps, color=colors[i])
+            ax.scatter(times[idx], [loc] * n_steps, color=colors[i])
 
             # Write p-values next to the points
-            ax.text(times[idx][-1] + buffer_x, loc + buffer_y, f"p={np.round(p, decimals=2)}")
+            ax.text((times[idx][0] + times[idx][-1]) / 2 + buffer_x, loc + buffer_y, f"p={np.round(p, decimals=5)}")
 
 
 def plot_multiple_areas(result_list, stats, figsize=(15, 5), alpha=.9,
@@ -171,3 +176,44 @@ def plot_multiple_areas(result_list, stats, figsize=(15, 5), alpha=.9,
     axes[-1].set_xlabel(f"Time (ms)")
     axes[-1].set_ylabel(f"Accuracy {measure}")
     return fig
+
+
+def _make_source_estimate(meta, data, src_path, parc, hemi, subjects_dir, center_chance=True, percentage=True):
+    src = read_source_spaces(src_path)
+    labels = read_labels(parc=parc, subject="fsvaverage", hemi=hemi, subjects_dir=subjects_dir)
+
+    n_times = data.shape[1]
+    accuracy = np.zeros((src[0]["np"] * 2, n_times))  # 2 (hemispheres) x number sources, time steps
+
+    center = .5 if center_chance else 0.
+    rescale = 100 if percentage else 1
+
+    for i, label in enumerate(labels):
+        if label.name.startswith("unknown"):
+            continue
+
+        vertices = label.get_vertices_used(np.arange(src[0]["np"]))
+        accuracy[vertices] = (data.mean(axis=0)[:, i] - center) * rescale
+
+    tstep = 1e3 / meta["sfreq"]
+    stc = SourceEstimate(accuracy, tmin=0, tstep=tstep, vertices=[np.arange(src[0]["np"]), np.arange(src[0]["np"])],
+                         subject="fsaverage")
+    return stc
+
+
+def plot_spatiotemporal_accuracy(meta, data, src_path, parc, hemi, subjects_dir, center_chance=True, percentage=True):
+    stc = _make_source_estimate(meta=meta, data=data, src_path=src_path, parc=parc, hemi=hemi,
+                                subjects_dir=subjects_dir, center_chance=center_chance, percentage=percentage)
+
+
+def plot_pie(df, key, labels, title, colors, figsize=(5, 5)):
+    fig, ax = plt.subplots(figsize=figsize)
+
+    ax.pie(df.groupby([key]).size(), labels=labels, autopct="%1.0f%%", colors=colors)
+
+    # Hollow out the middle
+    ax.set_title(title)
+
+    circle = plt.Circle((0, 0), 0.7, color="white")
+    p = plt.gcf()
+    p.gca().add_artist(circle)

@@ -1,0 +1,17 @@
+{
+  "name": "",
+  "n-tasks": 1,
+  "mem": 1,
+  "status-dir": "",
+  "script-dir": "",
+  "job-dir": "",
+  "log-dir": "",
+  "params":
+  {
+    "raw-path": "",
+    "format": "ctf",
+    "n-jobs": 32,
+    "dst-dir": "",
+    "name": "test"
+  }
+}

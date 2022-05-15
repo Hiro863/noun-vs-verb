@@ -8,10 +8,11 @@
   "log-dir": "",
   "params":
   {
-    "raw-path": "",
+    "raw_path": "",
     "format": "ctf",
-    "n-jobs": 32,
+    "sfreq": 100,
+    "n-jobs": 30,
     "dst-dir": "",
-    "name": "test"
+    "name": ""
   }
 }

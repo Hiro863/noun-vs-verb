@@ -1,6 +1,8 @@
 import argparse
 import logging
 import os
+import sys
+import traceback
 
 from pathlib import Path
 
@@ -8,6 +10,11 @@ from mne.io import Raw
 from mne.preprocessing import ICA
 
 from utils.file_access import read_raw_format, load_json
+from utils.logger import get_logger
+
+logger = get_logger(file_name="artifact")
+logger.setLevel(logging.INFO)
+
 
 ########################################################################################################################
 # ARTIFACT REMOVAL                                                                                                     #
@@ -119,13 +126,25 @@ def get_args():
 
 if __name__ == "__main__":
 
-    # Read parameters
-    raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
+    try:
+        # Read parameters
+        raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
 
-    # Read raw
-    raw = read_raw_format(path=raw_path, format=format).load_data()
+        # Read raw
+        raw = read_raw_format(path=raw_path, format=format).load_data()
 
-    # ICA
-    raw = remove_artifacts(raw=raw, n_components=n_components,
-                           eog_channels=eog_channels, ecg_channel=ecg_channel,
-                           save_ica=save_ica, apply=apply, n_jobs=n_jobs, dst_dir=dst_dir)
+        # ICA
+        raw = remove_artifacts(raw=raw, n_components=n_components,
+                               eog_channels=eog_channels, ecg_channel=ecg_channel,
+                               save_ica=save_ica, apply=apply, n_jobs=n_jobs, dst_dir=dst_dir)
+
+    except FileNotFoundError as e:
+        logger.exception(e.strerror)
+        sys.exit(-1)
+
+    except Exception as e:  # noqa
+
+        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        sys.exit(-1)
+
+    logging.info(f"ICA artifact removal finished.")

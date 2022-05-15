@@ -1,0 +1,10 @@
+{
+  "raw-path": "/Users/hiro/Desktop/sub-V1101/test-downsampled-100Hz-raw.fif",
+  "format": "fif",
+  "l-freq": 0.5,
+  "h-freq": 45,
+  "notch": [],
+  "n-jobs": 6,
+  "dst-dir": "/Users/hiro/Desktop/sub-V1101/",
+  "name": "test"
+}

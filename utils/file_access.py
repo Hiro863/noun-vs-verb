@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 import re
+import mne
 from typing import Union, Callable
 from pathlib import Path
 from mne.io import read_raw_ctf, Raw
@@ -131,7 +132,7 @@ def get_mous_meg_channels(channels: list):
 def read_raw_format(path, format):
 
     if format == "fif":
-        raw = read_raw(path)
+        raw = mne.io.read_raw(path)
         return raw
     elif format == "ctf":
         raw = read_raw_ctf(path)

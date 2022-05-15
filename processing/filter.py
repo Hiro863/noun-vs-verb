@@ -1,11 +1,12 @@
+import argparse
 import logging
-import sys
+import os
 
 from pathlib import Path
 
 from mne.io import Raw
 
-from utils.file_access import read_raw_format
+from utils.file_access import read_raw_format, load_json
 
 
 ########################################################################################################################
@@ -34,23 +35,58 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
     return raw
 
 
+def get_args():
+
+    # Parse arguments
+    parser = argparse.ArgumentParser(description="Filter raw file and save the results")
+
+    # Read parameter from JSON
+    parser.add_argument("--json_path", type=str, required=False, help="Path to JSON containing parameters")
+
+    # Add arguments
+    parser.add_argument("--raw_path", type=str, required=False, help="Path to raw file")
+    parser.add_argument("--format", type=str, required=False, default="fif", help="Raw file format. Default is .fif")
+    parser.add_argument("--l_freq", type=float, required=False, help="High pass frequency")
+    parser.add_argument("--h_freq", type=float, required=False, help="Low pass frequency")
+    parser.add_argument("--notch", nargs="+", type=float, required=False, help="List of notch filter frequencies")
+    parser.add_argument("--dst_dir", type=str, required=False, help="Directory to save the results in")
+    parser.add_argument("--name", type=str, required=False, default="", help="File name. Default is empty.")
+    parser.add_argument("--n_jobs", type=int, required=False, default=1, help="Number of jobs to use. Default is 1")
+
+    args = parser.parse_args()
+
+    # Either from JSON or one by one
+    if args.json_path:
+
+        params = load_json(args.json_path)
+
+        raw_path, format, l_freq, h_freq = params["raw-path"], params["format"], params["l-freq"], params["h-freq"]
+        notch, dst_dir, name, n_jobs = params["notch"], params["dst-dir"], params["name"], params["n-jobs"]
+    else:
+        raw_path, format, l_freq, h_freq, notch, dst_dir, name, n_jobs = \
+            args.raw_path, args.format, args.l_freq, args.h_freq, args.notch, args.dst_dir, args.name, args.n_jobs
+
+    # Convert to path objects
+    raw_path = Path(raw_path)
+    dst_dir = Path(dst_dir)
+
+    # Make sure the directory exists
+    if not dst_dir.exists():
+        os.makedirs(dst_dir)
+
+    return raw_path, format, l_freq, h_freq, notch, dst_dir, name, n_jobs
+
+
 if __name__ == "__main__":
 
     # Read parameters
-    raw_path = sys.argv[1]
-    format = sys.argv[2]
-    l_freq = int(sys.argv[3])
-    h_freq = int(sys.argv[4])
-    notch = int(sys.argv[5])  # todo, pass list
-    dst_dir = Path(sys.argv[6])
-    file_name = sys.argv[7]
-    n_jobs = int(sys.argv[8])
+    raw_path, format, l_freq, h_freq, notch, dst_dir, name, n_jobs = get_args()
 
     # Read raw
-    raw = read_raw_format(raw_path, format)
+    raw = read_raw_format(path=raw_path, format=format).load_data()
 
     # Filter
-    raw = apply_filter(raw=raw, l_freq=l_freq, h_freq=h_freq, notch=[notch], n_jobs=n_jobs)
+    raw = apply_filter(raw=raw, l_freq=l_freq, h_freq=h_freq, notch=notch, n_jobs=n_jobs)
 
     # Save to file
-    raw.save(dst_dir / f"{file_name}-filtered-{l_freq}-{h_freq}Hz-raw.fif")
+    raw.save(dst_dir / f"{name}-filtered-raw.fif")

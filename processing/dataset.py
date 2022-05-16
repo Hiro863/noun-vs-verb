@@ -127,6 +127,7 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Get the size of final array
     x_shape = _get_array_size(data_paths)
     fname = "x.dat"
+    print(dst_dir / fname)
     x_map = np.memmap(str(dst_dir / fname), dtype="float64", mode="w+", shape=x_shape)
 
     y_list = []

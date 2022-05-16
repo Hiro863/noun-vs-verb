@@ -11,10 +11,10 @@ logger.setLevel(logging.INFO)
 
 
 # These are not valid subject numbers
-not_subject = [14, 15, 18, 21, 23, 41, 43, 47, 51, 56, 60, 67, 82, 91, 112]
+NOT_SUBJECT = [14, 15, 18, 21, 23, 41, 43, 47, 51, 56, 60, 67, 82, 91, 112]
 
 # Technical problems
-prob_subjects = []
+PROB_SUBJECTS = []
 
 MAX_ID = 117
 
@@ -25,7 +25,7 @@ MAX_ID = 117
 
 
 def get_subject_list(n_max=MAX_ID):
-    ignore_list = not_subject.extend(prob_subjects)
+    ignore_list = NOT_SUBJECT.extend(PROB_SUBJECTS)
 
     id_list, name_list = [], []
     for subject_id in range(MAX_ID):
@@ -84,7 +84,7 @@ def save_status(status, path: Path):
 
     if not path.exists():
         os.makedirs(path)
-        
+
     with open(path, "wb") as handle:
         pickle.dump(status, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

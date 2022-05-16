@@ -9,7 +9,7 @@
 #SBATCH --mem-per-cpu=3gb
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
-param_dir=/data/home/hiroyoshi/mous_wd/param-dir                    # parameter directory
+param_dir=/data/home/hiroyoshi/mous_wd/param-dir/conditions                    # parameter directory
 
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa

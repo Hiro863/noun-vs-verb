@@ -9,5 +9,5 @@
   "parcellation": "aparc",
   "hemi": "both",
   "memmap": true,
-  "max": 10
+  "max": 15
 }

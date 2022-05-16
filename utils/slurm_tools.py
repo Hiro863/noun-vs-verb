@@ -16,14 +16,40 @@ not_subject = [14, 15, 18, 21, 23, 41, 43, 47, 51, 56, 60, 67, 82, 91, 112]
 # Technical problems
 prob_subjects = []
 
-def get_subject_list():
-    return []
+MAX_ID = 117
 
-def get_subject_id_list():
-    return []
+
+########################################################################################################################
+# SLURM UTILITY TOOLS                                                                                                  #
+########################################################################################################################
+
+
+def get_subject_list(n_max=MAX_ID):
+    ignore_list = not_subject.extend(prob_subjects)
+
+    id_list, name_list = [], []
+    for subject_id in range(MAX_ID):
+        if subject_id in ignore_list:
+            continue
+
+        subject_name = f"sub-V1{str(subject_id).zfill(3)}"
+
+        id_list.append(subject_id)
+        name_list.append(subject_name)
+
+        if len(id_list) > n_max:
+            break
+
+    return id_list, name_list
+
 
 def get_area_id_list(parcellation="aparc"):
     return []
+
+
+########################################################################################################################
+# STATUS                                                                                                               #
+########################################################################################################################
 
 
 def init_status(name: str, n_tasks: int, mem: int, id_list: list):
@@ -55,8 +81,10 @@ def check_status(path: Path):
 
 
 def save_status(status, path: Path):
+
     if not path.exists():
         os.makedirs(path)
+        
     with open(path, "wb") as handle:
         pickle.dump(status, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

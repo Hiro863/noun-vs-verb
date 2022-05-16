@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import sys
 import traceback
@@ -7,8 +8,8 @@ from pathlib import Path
 from subprocess import call
 
 from utils.file_access import load_json
-from utils.slurm_tools import (check_status, save_status, update_status, init_status, make_job_file, get_subject_list,
-                               get_subject_id_list)
+from utils.slurm_tools import check_status, save_status, update_status, init_status, make_job_file, get_subject_list
+
 from utils.logger import get_logger
 
 logger = get_logger(file_name="downsample-slurm")
@@ -18,8 +19,9 @@ logger.setLevel(logging.INFO)
 def submit_downsample(status_dir: Path, script_dir: Path, job_dir: Path, log_dir: Path,
                       status: dict, params: dict):
 
-    subjects = get_subject_list()
+    subjects = get_subject_list(params["n-max"])
 
+    results = {}
     for idx, (subject_id, subject) in enumerate(subjects):
 
         # Check status is necessary
@@ -39,14 +41,17 @@ def submit_downsample(status_dir: Path, script_dir: Path, job_dir: Path, log_dir
             out = call(["sbatch", job_path])
             if out.returncode == 0:
                 update_status(status["array"][idx], success=True)
+                results["subject"] = "success"
             else:
                 update_status(status["array"][idx], success=False)
+                results["subject"] = "failure"
 
             # Save details
             save_status(status["array"][idx], path=subject_file)
+    return results
 
 
-def get_args():
+def get_params():
 
     # Parse arguments
     parser = argparse.ArgumentParser(description="Submit downsampling job to slurm")
@@ -60,12 +65,31 @@ def get_args():
 
 if __name__ == "__main__":
 
-    # Get parameters
-    params = get_args()
+    results = {}
+    try:
+        # Get parameters
+        params = get_params()
 
-    # Launch submission
-    status = init_status(name=params["name"], n_tasks=params["n-tasks"],
-                         mem=params["mem"], id_list=get_subject_id_list())
+        # Launch submission
+        status = init_status(name=params["name"], n_tasks=params["n-tasks"],
+                             mem=params["mem"], subject_list=get_subject_list(params["n-max"])[0])
 
-    submit_downsample(status_dir=params["status-dir"], script_dir=params["script-dir"], job_dir=params["job-dir"],
-                      log_dir=params["log-dir"], status=status, params=params["params"])
+        results = submit_downsample(status_dir=params["status-dir"], script_dir=params["script-dir"],
+                                    job_dir=params["job-dir"], log_dir=params["log-dir"],
+                                    status=status, params=params["params"])
+
+        logger.info(json.dumps(params, sort_keys=True, indent=4))
+
+    except FileNotFoundError as e:
+        logger.exception(e.strerror)
+        sys.exit(-1)
+
+    except Exception as e:  # noqa
+
+        logger.error(f"Unexpected exception during downsample job submission. \n {traceback.format_exc()}")
+        sys.exit(-1)
+
+    successes = [k for k, v in results.items() if v == "success"]
+    failures = [k for k, v in results.items() if v == "failure"]
+    logger.info(f"{len(successes)} / {len(successes) + len(failures)} downsample jobs submitted.")
+

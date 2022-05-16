@@ -7,7 +7,7 @@ import numpy as np
 from pathlib import Path
 
 from mvpa.classification import classify_temporal
-from utils.file_access import read_json
+from utils.file_access import read_json, read_data
 from utils.logger import get_logger
 
 
@@ -32,7 +32,7 @@ def run_classification(label_name, params, n_cores):
     x_path = Path(params["dataset-dir"]) / label_name / "x.npy"
     y_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "y.npy"
     included_path = Path(params["dataset-dir"]) / label_name / params["conditions"] / "included.npy"
-    x = np.load(str(x_path))
+    x = read_data(x_path) # np.load(str(x_path))
     y = np.load(str(y_path))
     included = np.load(str(included_path))
     x = x[included]

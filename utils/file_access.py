@@ -194,3 +194,27 @@ def read_scores(results_dir: Path):
     data = np.stack(data, axis=2)
     return meta, data
 
+
+def read_data(data_dir: Path):
+
+    json_path = data_dir / "x_shape.json"
+    if json_path.exists():
+
+        x_path = data_dir / "x.dat"
+
+        if x_path.exists():
+            json_data = load_json(data_dir / "x_shape.json")
+            x = np.memmap(x_path, dtype="float64", mode="r+", shape=json_data["shape"])
+            return x
+        else:
+            raise FileNotFoundError(f"'x.dat' file was not found in {data_dir}")
+    else:
+        x_path = data_dir / "x.npy"
+
+        if x_path.exists():
+            x = np.load(x_path)
+            return x
+        else:
+            raise FileNotFoundError(f"Neither JSON file nor 'x.npy' file was found in {data_dir}")
+
+

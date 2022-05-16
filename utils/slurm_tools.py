@@ -1,8 +1,10 @@
 import logging
 import os
 import pickle
+
 from pathlib import Path
 from datetime import datetime
+from subprocess import call
 
 from utils.logger import get_logger
 
@@ -134,3 +136,38 @@ def make_job_file(script: str, script_dir: Path, log_dir: Path, job_dir: Path,
     logger.info(f"The job file was added to the job directory \n {job_file}")
 
     return job_path
+
+
+def submit_subject_jobs(params: dict):
+
+    ids, subjects = get_subject_list(params["n-max"])
+    status = init_status(name=params["name"], n_tasks=params["n-tasks"], mem=params["mem"], id_list=subjects)
+
+    results = {}
+    for idx, (subject_id, subject) in enumerate(zip(ids, subjects)):
+
+        # Check status is necessary
+        subject_file = params["status-dir"] / params["name"] / f"{subject}-status.pickle"
+        subject_status = check_status(subject_file)
+
+        # Make job file
+        if not subject_status:
+            job_path = make_job_file(script=params["script"],
+                                     script_dir=params["script-dir"], log_dir=params["log-dir"],
+                                     job_dir=params["job-dir"], name=f"{params['name']}-{subject}",
+                                     array_str=subject_id, output=f"{params['name']}-{subject}.out",
+                                     params=params["params"],  # only python 3.6 < keeps original order
+                                     n_tasks_per_node=params["slurm"]["n-tasks"], mem_per_cpu=params["slurm"]["mem"])
+
+            # Submit job
+            out = call(["sbatch", job_path])
+            if out.returncode == 0:
+                update_status(status["array"][idx], success=True)
+                results["subject"] = "success"
+            else:
+                update_status(status["array"][idx], success=False)
+                results["subject"] = "failure"
+
+            # Save details
+            save_status(status["array"][idx], path=subject_file)
+    return results

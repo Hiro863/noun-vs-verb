@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import os
@@ -218,3 +219,13 @@ def read_data(data_dir: Path):
             raise FileNotFoundError(f"Neither JSON file nor 'x.npy' file was found in {data_dir}")
 
 
+def get_params(description: str):
+
+    # Parse arguments
+    parser = argparse.ArgumentParser(description=description)
+
+    # Read parameter from JSON
+    parser.add_argument("--json_path", type=str, required=True, help="Path to JSON containing parameters")
+
+    args = parser.parse_args()
+    return load_json(Path(args.json_path))

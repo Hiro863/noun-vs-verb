@@ -1,0 +1,9 @@
+{
+  "dst-dir": "/Users/hiro/Desktop/sub-V1101/stc",
+  "subject": "sub-V1101",
+  "epochs-path": "/Users/hiro/Desktop/sub-V1101/sub-V1101-epo.fif",
+  "parc": "aparc",
+  "subjects-dir": "/Applications/freesurfer/subjects",
+  "hemi": "lh",
+  "fwd-dir": "/Users/hiro/Desktop/fwds"
+}

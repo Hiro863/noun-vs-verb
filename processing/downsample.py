@@ -1,6 +1,8 @@
 import argparse
 import logging
 import os
+import sys
+import traceback
 
 from pathlib import Path
 from typing import Tuple
@@ -11,6 +13,10 @@ from mne.io import Raw
 
 from utils.exceptions import SubjectNotProcessedError
 from utils.file_access import read_raw_format, load_json
+from utils.logger import get_logger
+
+logger = get_logger(file_name="downsample")
+logger.setLevel(logging.INFO)
 
 
 ########################################################################################################################
@@ -41,7 +47,7 @@ def downsample(raw: Raw, sfreq: int, n_jobs) -> Tuple[Raw, np.array, np.array]:
 
     # If sampling frequency is specified, downsample
     if sfreq > 0 and not None:
-        logging.debug(f"Resampling at {sfreq} Hz")
+        logging.info(f"Resampling at {sfreq} Hz")
 
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
@@ -90,16 +96,28 @@ def get_args():
 
 if __name__ == "__main__":
 
-    # Read parameters
-    raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()
+    try:
+        # Read parameters
+        raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()
 
-    # Read raw
-    raw = read_raw_format(raw_path, format)
+        # Read raw
+        raw = read_raw_format(raw_path, format)
 
-    # Downsample
-    raw, events, new_events = downsample(raw=raw, sfreq=sfreq, n_jobs=n_jobs)
+        # Downsample
+        raw, events, new_events = downsample(raw=raw, sfreq=sfreq, n_jobs=n_jobs)
 
-    # Save to file
-    raw.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-raw.fif", overwrite=True)
-    np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-original-events.npy", events)
-    np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-new-events.npy", new_events)
+        # Save to file
+        raw.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-raw.fif", overwrite=True)
+        np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-original-events.npy", events)
+        np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-new-events.npy", new_events)
+
+    except FileNotFoundError as e:
+        logger.exception(e.strerror)
+        sys.exit(-1)
+
+    except Exception as e:  # noqa
+
+        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        sys.exit(-1)
+
+    logging.info(f"Downsampling finished.")

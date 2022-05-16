@@ -1,16 +1,25 @@
 import json
 import logging
 import os
+import pickle
 import sys
 import re
+
 import mne
+import numpy as np
+
 from typing import Union, Callable
+from collections import OrderedDict
 from pathlib import Path
+
 from mne.io import read_raw_ctf, Raw
+from mne import read_labels_from_annot, morph_labels
 
 # todo: tidy this file
+
+
 def get_project_root() -> Path:
-    return Path(__file__).parent.parent.parent
+    return Path(__file__).parent.parent
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
@@ -137,4 +146,75 @@ def read_raw_format(path, format):
     elif format == "ctf":
         raw = read_raw_ctf(path)
         return raw
+
+
+def _get_file_names(results_dir: Path):
+
+    name_to_file = {}
+    for file in os.listdir(results_dir):
+        if re.match(r"^\..*", file):  # skip hidden files, e.g. .DS_Store...
+            continue
+
+        name = re.sub(r"\.pickle", "", file)
+        name_to_file[name] = file
+
+    name_to_file = OrderedDict(sorted(name_to_file.items()))
+    return name_to_file
+
+
+def read_dict(path):
+    with open(path, "rb") as handle:
+        data = pickle.load(handle)
+    return data
+
+
+def read_labels(parc, subject, hemi, subjects_dir):
+    labels = read_labels_from_annot("fsaverage", parc=parc, hemi=hemi, subjects_dir=subjects_dir)
+
+    if subject is not "fsaverage":
+        labels = morph_labels(labels, subject_to=subject, subject_from="fsaverage",
+                              subjects_dir=subjects_dir, surf_name="white")
+    return labels
+
+
+def read_scores(results_dir: Path):
+    name_to_file = _get_file_names(results_dir)  # ordered dict to load in correct order
+
+    meta, data = None, []
+    for name, file in name_to_file.items():
+
+        with open(results_dir / file, "rb") as handle:
+            results = pickle.load(handle)
+
+        if not meta:  # metadata is the same for all
+            mata = results["meta"]
+
+        data.append(results["data"]["scores"])
+
+    data = np.stack(data, axis=2)
+    return meta, data
+
+
+def read_data(data_dir: Path):
+
+    json_path = data_dir / "x_shape.json"
+    if json_path.exists():
+
+        x_path = data_dir / "x.dat"
+
+        if x_path.exists():
+            json_data = load_json(data_dir / "x_shape.json")
+            x = np.memmap(x_path, dtype="float64", mode="r+", shape=json_data["shape"])
+            return x
+        else:
+            raise FileNotFoundError(f"'x.dat' file was not found in {data_dir}")
+    else:
+        x_path = data_dir / "x.npy"
+
+        if x_path.exists():
+            x = np.load(x_path)
+            return x
+        else:
+            raise FileNotFoundError(f"Neither JSON file nor 'x.npy' file was found in {data_dir}")
+
 

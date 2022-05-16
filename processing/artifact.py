@@ -1,6 +1,8 @@
 import argparse
 import logging
 import os
+import sys
+import traceback
 
 from pathlib import Path
 
@@ -8,6 +10,11 @@ from mne.io import Raw
 from mne.preprocessing import ICA
 
 from utils.file_access import read_raw_format, load_json
+from utils.logger import get_logger
+
+logger = get_logger(file_name="artifact")
+logger.setLevel(logging.INFO)
+
 
 ########################################################################################################################
 # ARTIFACT REMOVAL                                                                                                     #
@@ -22,9 +29,9 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
     :param n_components: number of components to use for ICA
     :param eog_channels: list of channel names to be used as EOG channels
     :param ecg_channel: the name of the channel to be used as the ECG channel
-    :param save_ica: todo
-    :param apply: todo
-    :param dst_dir: todo
+    :param save_ica: if true, save the ICA object
+    :param apply: if true, apply ICA reconstruction to the raw
+    :param dst_dir: path to directory to save the results in
     :param n_jobs: number of jobs for parallelism
     :return: raw: repaired raw
     """
@@ -38,7 +45,7 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
     # Perform ICA
     logging.info(f"Starting ICA with {n_components} components")
 
-    n_jobs = min(5, n_jobs)  # to avoid running out of memory
+    # Needs to be high-pass filtered first
     filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
 
     ica = ICA(n_components=n_components)
@@ -62,10 +69,10 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
         logging.info(f"Total of {len(ica.exclude)} components removed")
 
         ica.apply(raw)
-        raw.save(dst_dir / f"ica-raw.fif")
+        raw.save(dst_dir / f"ica-raw.fif", overwrite=True)
 
     if save_ica:
-        ica.save(dst_dir / f"ica.fif")
+        ica.save(dst_dir / f"ica.fif", overwrite=True)
     return raw
 
 
@@ -119,13 +126,25 @@ def get_args():
 
 if __name__ == "__main__":
 
-    # Read parameters
-    raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
+    try:
+        # Read parameters
+        raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
 
-    # Read raw
-    raw = read_raw_format(path=raw_path, format=format).load_data()
+        # Read raw
+        raw = read_raw_format(path=raw_path, format=format).load_data()
 
-    # ICA
-    raw = remove_artifacts(raw=raw, n_components=n_components,
-                           eog_channels=eog_channels, ecg_channel=ecg_channel,
-                           save_ica=save_ica, apply=apply, n_jobs=n_jobs, dst_dir=dst_dir)
+        # ICA
+        raw = remove_artifacts(raw=raw, n_components=n_components,
+                               eog_channels=eog_channels, ecg_channel=ecg_channel,
+                               save_ica=save_ica, apply=apply, n_jobs=n_jobs, dst_dir=dst_dir)
+
+    except FileNotFoundError as e:
+        logger.exception(e.strerror)
+        sys.exit(-1)
+
+    except Exception as e:  # noqa
+
+        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        sys.exit(-1)
+
+    logging.info(f"ICA artifact removal finished.")

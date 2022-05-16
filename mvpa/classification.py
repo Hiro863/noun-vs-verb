@@ -115,7 +115,7 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
 
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
-                                 clf=clf, scoring=balanced_accuracy_score)
+                                 clf=clf, scoring=roc_auc_score)
         parallel_funcs.append(func)
 
     logging.info(f"Total of {len(parallel_funcs)} parallel functions added")

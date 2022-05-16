@@ -22,7 +22,7 @@ def get_logger(file_name, log_path=None):
         os.makedirs(log_path)
 
     # Print to file
-    file_handler = logging.FileHandler(f"{log_path}/{file_name}.log")
+    file_handler = logging.FileHandler(log_path / f"{file_name}.log")
     file_handler.setFormatter(formatter)
     root_logger.addHandler(file_handler)
 

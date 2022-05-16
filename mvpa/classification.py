@@ -4,16 +4,16 @@ from joblib import Parallel, delayed
 from typing import Tuple
 
 from sklearn.base import clone
-from sklearn.model_selection import KFold
-from sklearn.pipeline import Pipeline, make_pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedKFold
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import balanced_accuracy_score, roc_auc_score
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
 from mne.stats import bootstrap_confidence_interval
+
+name_to_func = {"balanced": balanced_accuracy_score, "roc-auc": roc_auc_score}
 
 
 def _get_indices(times: np.array, start: float, end: float, sfreq: float) -> Tuple[int, int]:
@@ -65,14 +65,14 @@ def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
 def classify(x: np.array, y: np.array, cv: int, clf: Pipeline, scoring):
     # todo
 
-    kf = KFold(cv, shuffle=True)
+    kf = StratifiedKFold(cv, shuffle=True)
     scores = np.zeros((cv,))
     dummy_scores = np.zeros((cv,))
 
-    y = y[0].reshape(-1,) # todo tmp
+    y = y[0].reshape(-1,)  # todo tmp
     dummy_clf = make_pipeline(StandardScaler(), DummyClassifier(strategy="stratified"))
 
-    for i, (train_idx, test_idx) in enumerate(kf.split(x)):
+    for i, (train_idx, test_idx) in enumerate(kf.split(x, y)):
 
         x_train, x_test = x[train_idx], x[test_idx]
         y_train, y_test = y[train_idx], y[test_idx]
@@ -115,7 +115,7 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
         x_slice = get_slice(x=x, t_idx=t_idx, window_size=params["window-size"], sfreq=params["sfreq"])
 
         func = delayed(classify)(x=x_slice, y=y, cv=params["cv"],
-                                 clf=clf, scoring=balanced_accuracy_score)
+                                 clf=clf, scoring=roc_auc_score)
         parallel_funcs.append(func)
 
     logging.info(f"Total of {len(parallel_funcs)} parallel functions added")

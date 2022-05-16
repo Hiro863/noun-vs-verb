@@ -127,6 +127,8 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Get the size of final array
     x_shape = _get_array_size(data_paths)
     fname = "x.dat"
+    print(dst_dir / fname)
+    print(x_shape)
     x_map = np.memmap(str(dst_dir / fname), dtype="float64", mode="w+", shape=x_shape)
 
     y_list = []
@@ -134,6 +136,8 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Use memory map for x
     curr_idx = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
+        logging.debug(f"{idx} / {len(data_paths)}")
+        logging.debug(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))

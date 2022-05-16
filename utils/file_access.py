@@ -204,6 +204,8 @@ def read_data(data_dir: Path):
 
         if x_path.exists():
             json_data = load_json(data_dir / "x_shape.json")
+            print(json_data)
+            print(x_path)
             x = np.memmap(str(x_path), dtype="float64", mode="r+", shape=json_data["shape"])
             return x
         else:

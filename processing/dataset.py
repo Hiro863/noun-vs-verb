@@ -36,8 +36,8 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
             if events_path.exists():
                 events_path_list.append(events_path)
             else:
-                logging.debug(f"events file not found in {subject_dir}. Skipping...")
-    logging.debug(f"Found {len(events_path_list)}  events found")
+                logging.info(f"events file not found in {subject_dir}. Skipping...")
+    logging.info(f"Found {len(events_path_list)}  events found")
     return events_path_list
 
 
@@ -70,9 +70,9 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
                     if area_file.startswith(area_name):             # e.g. "fusiform_1-h.npy"
                         stc_path_list.append(stc_dir / area_file)   # e.g. "epochs/sub-V1001/stc/fusiform_1-h.npy"
             else:
-                logging.debug(f"No source reconstruction data for {subject_dir} available. Skipping...")
+                logging.info(f"No source reconstruction data for {subject_dir} available. Skipping...")
 
-    logging.debug(f"Found {len(stc_path_list)} source reconstruction files found")
+    logging.info(f"Found {len(stc_path_list)} source reconstruction files found")
     return stc_path_list
 
 
@@ -106,6 +106,8 @@ def _validate_paths(stc_paths: list, events_paths: list):
     :return: validated lists of paths
     """
 
+    logging.info(f"Validating the paths")
+
     valid_stcs, valid_events = [], []
     for stc_path in stc_paths:
         subject = re.findall(r"sub-[AV]\d+", str(stc_path))[0]
@@ -117,7 +119,7 @@ def _validate_paths(stc_paths: list, events_paths: list):
                 valid_events.append(event_path)
                 break
 
-    logging.debug(f"{len(valid_stcs)} valid subject data found")
+    logging.info(f"{len(valid_stcs)} valid subject data found")
     return valid_stcs, valid_events
 
 
@@ -127,8 +129,7 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Get the size of final array
     x_shape = _get_array_size(data_paths)
     fname = "x.dat"
-    print(dst_dir / fname)
-    print(x_shape)
+
     x_map = np.memmap(str(dst_dir / fname), dtype="float64", mode="w+", shape=x_shape)
 
     y_list = []
@@ -136,8 +137,8 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Use memory map for x
     curr_idx = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
-        logging.debug(f"{idx} / {len(data_paths)}")
-        logging.debug(f"Appending {data_path}")
+        logging.info(f"{idx} / {len(data_paths)}")
+        logging.info(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))

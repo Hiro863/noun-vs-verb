@@ -136,6 +136,8 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Use memory map for x
     curr_idx = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
+        logging.debug(f"{idx} / {len(data_paths)}")
+        logging.debug(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))

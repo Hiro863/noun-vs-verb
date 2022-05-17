@@ -10,8 +10,8 @@
   "sfreq": 100,
   "classification-tmin": 0.0,
   "classification-tmax": 1.0,
-  "cv": 20,
+  "cv": 30,
   "window-size": 100,
-  "max-iter": 1e3,
+  "max-iter": 5e4,
   "clf": "LinearSVC"
 }

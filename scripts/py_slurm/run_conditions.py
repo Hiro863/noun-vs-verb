@@ -38,7 +38,7 @@ if __name__ == "__main__":
     logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", f"dateset-{area_id}")
 
     # Get the parameters
-    params = read_json(param_dir, "conditions-params-length.json")
+    params = read_json(param_dir, "conditions-params-frequency.json")
 
     # Set up directories
     root = Path(params["root"])

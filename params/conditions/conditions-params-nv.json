@@ -7,7 +7,7 @@
   "dst-name": "nv",
   "to-index": true,
   "parcellation": "aparc",
-  "hemi": "both",
+  "hemi": "lh",
   "memmap": false,
   "mode": "nv",
   "balance": false,

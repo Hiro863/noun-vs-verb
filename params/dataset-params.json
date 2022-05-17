@@ -7,7 +7,7 @@
     "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects"
   },
   "parcellation": "aparc",
-  "hemi": "both",
+  "hemi": "lh",
   "memmap": true,
   "max": 1
 }

@@ -204,7 +204,8 @@ def read_data(data_dir: Path):
 
         if x_path.exists():
             json_data = load_json(data_dir / "x_shape.json")
-            x = np.memmap(x_path, dtype="float64", mode="r+", shape=json_data["shape"])
+            print(tuple(json_data["shape"]))
+            x = np.memmap(x_path, dtype="float64", mode="r+", shape=tuple(json_data["shape"]))
             return x
         else:
             raise FileNotFoundError(f"'x.dat' file was not found in {data_dir}")

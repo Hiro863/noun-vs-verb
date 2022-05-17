@@ -10,7 +10,7 @@
   "hemi": "lh",
   "memmap": false,
   "mode": "nv",
-  "balance": false,
+  "balance": true,
   "params":
   {
     "number": null,

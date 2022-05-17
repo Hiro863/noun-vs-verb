@@ -5,6 +5,7 @@
   "n-jobs": 30,
   "n-tasks": 1,
   "mem": 1,
+  "n-max": 1,
   "dst-dir": "~/MOUS/test-dir",
   "name": "test"
 }

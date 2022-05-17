@@ -1,17 +1,14 @@
 {
-  "root": "/data/home/hiroyoshi/mous_wd",
-  "idx-to-name":"/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
-  "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects",
-  "dir-name": "/data/home/hiroyoshi/mous_wd/dataset-dir",
-  "df-dir": "/data/home/hiroyoshi/mous_wd/param-dir/df-dir",
+  "data-dir": "/Users/yamazakihiroyoshi/Desktop/data-dir/parstriangularis-lh",
+  "df-dir": "/Users/yamazakihiroyoshi/Desktop/df-dir",
   "dst-name": "nv",
   "to-index": true,
   "parcellation": "aparc",
   "hemi": "both",
   "memmap": false,
   "mode": "nv",
-  "balance": false,
-  "params":
+  "balance": true,
+  "mode-params":
   {
     "number": null,
     "tense": null,

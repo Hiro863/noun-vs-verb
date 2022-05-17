@@ -76,9 +76,9 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: boo
     y, included = _to_arrays(y, id_to_cond)
 
     # Balance the number of items per class
-    if balance:
-        y, idx = _balance_classes(y)
-        included = included[idx]
+    #if balance:
+    #    y, idx = _balance_classes(y)
+    #    included = included[idx]
 
     return y, included
 
@@ -189,20 +189,20 @@ def _to_nv(df_dir: Path, to_index: bool, params: dict):
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
     # Filter verbs
-    v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
-                         voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
-                         allow_aux=params["aux"])
+    # v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
+    #                     voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
+    #                     allow_aux=params["aux"])
 
     # Filter nouns
-    n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
-                         allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
-                         allow_proper=params["proper"])
+    #n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
+    #                      allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
+    #                     allow_proper=params["proper"])
 
     # Remove items not found in the verb and noun dataframes
-    df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    df = pd.concat([df_v, df_n])
-
+    #df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    #df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    #df = pd.concat([df_v, df_n])
+    df = nv_df
     return _to_dict(df=df, key="Token ID", value="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
 
 

@@ -1,8 +1,8 @@
 {
-  "raw-path": "/Users/hiro/Downloads/sub-V1046/meg/sub-V1046_task-visual_meg.ds",
+  "raw-path": "~/MOUS/sub-V1001/sub-V1001_task-visual_meg.ds",
   "format": "ctf",
   "sfreq": 100,
-  "n-jobs": 1,
-  "dst-dir": "/Users/hiro/Desktop/sub-V1046",
+  "n-jobs": 30,
+  "dst-dir": "~/MOUS/test-dir",
   "name": "test"
 }

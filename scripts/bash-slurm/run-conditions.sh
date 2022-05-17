@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=conditions
-#SBATCH --array=0,5,7,8,15,18,19,20,29,30,31,32   ##0-67     ##1-447          ## cortical area IDs, for aparc_sub
+#SBATCH --array=0,10,14,16,30,36,38,40,58,60,62,64   ##0-67     ##1-447          ## cortical area IDs, for aparc_sub
 #SBATCH --ntasks-per-node=1   ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr

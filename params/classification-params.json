@@ -9,7 +9,7 @@
   "parcellation": "aparc",
   "sfreq": 100,
   "classification-tmin": 0.0,
-  "classification-tmax": 0.8,
+  "classification-tmax": 0.7,
   "cv": 30,
   "window-size": 100,
   "max-iter": 1e3,

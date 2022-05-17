@@ -5,7 +5,8 @@ import numpy as np
 from utils.file_access import read_json
 from pathlib import Path
 from mne import read_labels_from_annot
-from events.conditions import convert_y
+#from events.conditions import convert_y
+from processing.condition import convert_y
 from utils.logger import get_logger
 
 

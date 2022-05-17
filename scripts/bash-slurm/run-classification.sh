@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=classification
 #SBATCH --array=0,14,30,40,64   ##0,10,14,16,30,36,38,40,58,60,62,64   ###0-68  ## parcel ID
-#SBATCH --ntasks-per-node=30   ## number of cores per parcel
+#SBATCH --ntasks-per-node=25   ## number of cores per parcel
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs/classification

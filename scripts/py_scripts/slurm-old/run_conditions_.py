@@ -16,7 +16,7 @@ def convert_y(params):
 
 if __name__ == "__main__":
 
-    param_dir = Path("/Users/yamazakihiroyoshi/Desktop/InCog/meg-mvpa/data")
+    param_dir = Path("/data")
     params = read_json(param_dir, "conditions-params-nv.json")
 
     convert_y(params)

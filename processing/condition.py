@@ -1,7 +1,5 @@
 import argparse
 import logging
-import re
-import os
 import sys
 import traceback
 
@@ -184,24 +182,24 @@ def _to_nv(df_dir: Path, to_index: bool, params: dict):
         dictionary
     """
 
-    nv_df = pd.read_csv(df_dir / "NV.csv")
+    df = pd.read_csv(df_dir / "NV.csv")
     v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
     # Filter verbs
-    v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
-                         voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
-                         allow_aux=params["aux"])
+    #v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
+    #                     voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
+    #                     allow_aux=params["aux"])
 
     # Filter nouns
-    n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
-                         allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
-                         allow_proper=params["proper"])
+    #n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
+    #                     allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
+    #                     allow_proper=params["proper"])
 
     # Remove items not found in the verb and noun dataframes
-    df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    df = pd.concat([df_v, df_n])
+    #df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    #df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    #df = pd.concat([df_v, df_n])
 
     return _to_dict(df=df, key="Token ID", value="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
 
@@ -544,6 +542,16 @@ if __name__ == "__main__":
     try:
         # Read parameters
         get_args()
+
+        y= np.load("/Users/hiro/Desktop/dataset/y.npy")
+        df_dir = Path("/Users/hiro/Desktop/df-dir")
+        p = {"number": None, "tense": None, "person": None, "voice": None, "finite": True, "complex": False, "aux": False,
+             "ambiguous": False, "common": False, "diminutive": False, "uncountable": False, "proper": False}
+        y, i = convert_y(y=y, mode="nv", df_dir=df_dir, to_index=True, balance=True, params=p)
+        np.save("/Users/hiro/Desktop/dataset/nv.npy", y)
+        np.save("/Users/hiro/Desktop/dataset/inc.npy", i)
+
+
 
     except FileNotFoundError as e:
         logger.exception(e.strerror)

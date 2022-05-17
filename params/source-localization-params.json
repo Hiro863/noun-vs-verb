@@ -1,9 +1,11 @@
 {
-  "dst-dir": "/Users/hiro/Desktop/sub-V1101/stc",
-  "subject": "sub-V1101",
-  "epochs-path": "/Users/hiro/Desktop/sub-V1101/sub-V1101-epo.fif",
+  "dst-dir": "/Users/hiro/Desktop/sub-V1046/stc",
+  "subject": "sub-V1046",
+  "epochs-path": "/Users/hiro/Desktop/sub-V1046/sub-V1046-epo.fif",
   "parc": "aparc",
   "subjects-dir": "/Applications/freesurfer/subjects",
   "hemi": "lh",
-  "fwd-dir": "/Users/hiro/Desktop/fwds"
+  "fwd-dir": "/Users/hiro/Desktop/fwds",
+  "method": "dSPM",
+  "pick-ori": null
 }

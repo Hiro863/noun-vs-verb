@@ -1,8 +1,8 @@
 {
-  "raw-path": "/Volumes/DATASET/sub-V1101/meg/sub-V1101_task-visual_meg.ds",
+  "raw-path": "/Users/hiro/Downloads/sub-V1046/meg/sub-V1046_task-visual_meg.ds",
   "format": "ctf",
   "sfreq": 100,
-  "n-jobs": 6,
-  "dst-dir": "/Users/hiro/Desktop",
+  "n-jobs": 1,
+  "dst-dir": "/Users/hiro/Desktop/sub-V1046",
   "name": "test"
 }

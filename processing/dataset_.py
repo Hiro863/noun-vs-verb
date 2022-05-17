@@ -29,6 +29,7 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
         list of paths to events array
     """
 
+    logger.info(f"Finding events paths")
     fname = "events.npy"
     events_path_list = []
 
@@ -41,18 +42,20 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
         subject_path = epoch_dir / subject_dir  # "epochs/sub-V1001"
 
         if re.match(r"^sub-[AV]\d+$", str(subject_dir)):  # there are hidden files in the directory
+
             events_path = subject_path / fname
             if events_path.exists():
                 events_path_list.append(events_path)
             else:
-                logging.debug(f"events file not found in {subject_dir}. Skipping...")
-    logging.debug(f"Found {len(events_path_list)}  events found")
+                logging.info(f"events file not found in {subject_dir}. Skipping...")
+
+    logging.info(f"Found {len(events_path_list)}  events found")
     return events_path_list
 
 
 def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
     """
-    ollect list of available source localizations
+    collect list of available source localizations
     :param epoch_dir: directory containing all epochs
     :param area_name: name of the area
     :param reject_list: todo
@@ -79,15 +82,15 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
                     if area_file.startswith(area_name):             # e.g. "fusiform_1-h.npy"
                         stc_path_list.append(stc_dir / area_file)   # e.g. "epochs/sub-V1001/stc/fusiform_1-h.npy"
             else:
-                logging.debug(f"No source reconstruction data for {subject_dir} available. Skipping...")
+                logger.info(f"No source reconstruction data for {subject_dir} available. Skipping...")
 
-    logging.debug(f"Found {len(stc_path_list)} source reconstruction files found")
+    logger.info(f"Found {len(stc_path_list)} source reconstruction files found")
     return stc_path_list
 
 
 def _validate_paths(stc_paths: list, events_paths: list):
     """
-    Validate the paths by making sure they are of the same subjectt
+    Validate the paths by making sure they are of the same subject
     :param stc_paths: list of paths to stc data
     :param events_paths: list of paths to events array
     :return: validated lists of paths
@@ -95,26 +98,27 @@ def _validate_paths(stc_paths: list, events_paths: list):
 
     valid_stcs, valid_events = [], []
     for stc_path in stc_paths:
-        subject = re.findall(r"sub-[AV]\d+", str(stc_path))[0]
+        subject = re.findall(r"sub-[AV]\d+", str(stc_path))[0]  # subject name, e.g. sub-V1001
 
         for event_path in events_paths:
 
-            if re.search(rf"\.*{subject}\.*", str(event_path)):
+            if re.search(rf"\.*{subject}\.*", str(event_path)):  # find subject name in the event paths until match
                 valid_stcs.append(stc_path)
                 valid_events.append(event_path)
                 break
 
-    logging.debug(f"{len(valid_stcs)} valid subject data found")
+    logger.info(f"{len(valid_stcs)} valid subject data found")
     return valid_stcs, valid_events
 
 
 def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # todo
 
+    logger.info("Generating dataset in memmap format")
+
     # Get the size of final array
     x_shape = _get_array_size(data_paths)
-    fname = "x.dat"
-    x_map = np.memmap(str(dst_dir / fname), dtype="float64", mode="w+", shape=x_shape)
+    x_map = np.memmap(str(dst_dir / "x.dat"), dtype="float64", mode="w+", shape=x_shape)
 
     y_list = []
 
@@ -139,18 +143,22 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
         else:
             raise ValueError(f"The numbers of epochs for x {x.shape[0]} and y {y.shape[0]} are different")
 
+    # Save shape in JSON to be able to read later
     shape = {"shape": x_shape}
     fname = "x_shape.json"
     write_json(dst_dir, file_name=fname, data=shape)  # needed to recover the shape
 
     y = np.hstack(y_list)
-    fname = "y.npy"
-    np.save(str(dst_dir / fname), y)
+    np.save(str(dst_dir / "y.npy"), y)
+    logger.info("Memmap dataset generation finished")
+
 
 def _get_array_size(paths):
     # todo
 
-    dim_0 = 0
+    logger.info("Precomputing the array size to open memmap object")
+
+    dim_0 = 0  # number of samples (events)
     dim_rest = None
     for path in paths:
 
@@ -166,6 +174,7 @@ def _get_array_size(paths):
     x_shape = [dim_0]
     x_shape.extend(dim_rest)
 
+    logger.info(f"The shape of x is {x_shape}")
     return tuple(x_shape)
 
 
@@ -191,8 +200,8 @@ def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
 
     added = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
-        logging.debug(f"{idx} / {len(data_paths)}")
-        logging.debug(f"Appending {data_path}")
+        logger.info(f"{idx} / {len(data_paths)}")
+        logger.info(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))
@@ -207,16 +216,16 @@ def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
             y_list.append(y)
             added += 1
         else:
-            logging.debug(f"Number of events don’t match, skipping")
+            logger.info(f"Number of events don’t match, skipping")
 
     # todo: add exception
     x = np.vstack(x_list)
     y = np.hstack(y_list)
-    fname_x = "x.npy"
-    fname_y = "y.npy"
-    np.save(str(dst_dir / fname_x), x)
-    np.save(str(dst_dir / fname_y), y)
-    logging.debug(f"{added} subject data added")
+
+    np.save(str(dst_dir / "x.npy"), x)
+    np.save(str(dst_dir / "y.npy"), y)
+
+    logging.info(f"{added} subject data added")
 
 
 def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subjects=-1,
@@ -266,7 +275,7 @@ def get_args():
 
     # Read individual arguments
     parser.add_argument("--epoch_dir", type=str, required=False, help="Path to epoch directory")
-    parser.add_argument("--dst_dir", type=str, required=False, elp="Directory to save the results in")
+    parser.add_argument("--dst_dir", type=str, required=False, help="Directory to save the results in")
     parser.add_argument("--area_name", type=str, required=False, help="Name of the cortical area")
     parser.add_argument("--max_subjects", type=int, required=False, default=-1,
                         help="Number of subjects to use")
@@ -295,3 +304,6 @@ def get_args():
 
 if __name__ == "__main__":
     epoch_dir, dst_dir, area_name, max_subjects, memmap, reject = get_args()
+
+    generate_dataset(epoch_dir=epoch_dir, dst_dir=dst_dir, area_name=area_name, max_subjects=max_subjects,
+                     memmap=memmap, reject=reject)

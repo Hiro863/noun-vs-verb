@@ -40,7 +40,7 @@ def downsample(raw: Raw, sfreq: int, n_jobs) -> Tuple[Raw, np.array, np.array]:
 
     # Find events (needed whether or not downsampled)
     try:
-        events = find_events(raw, stim_channel=["UPPT001", "UPPT002"])
+        events = find_events(raw, stim_channel=["UPPT001", "UPPT002"], min_duration=2 / raw.info["sfreq"])  # todo: check
     except ValueError as e:
         logging.exception(f"Issue with shortest event. Needs manual inspection {e}")
         raise SubjectNotProcessedError(e)

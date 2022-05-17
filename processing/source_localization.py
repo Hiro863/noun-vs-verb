@@ -88,7 +88,7 @@ def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, para
 
     logging.info(f"Processing single subject for {label.name} ")
 
-    stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
+    stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick-ori"])
     stcs = _morph_to_common(stcs, morph)
 
     data_list = []
@@ -276,7 +276,7 @@ def get_args():
     parser.add_argument("--subjects_dir", type=str, required=False, help="Path to subjects_dir")
     parser.add_argument("--hemi", type=str, required=False, help="Hemisphere, `lh`, `rh` or `both`")
     parser.add_argument("--fwd_dir", type=str, required=False, help="Directory containing all forward models")
-
+    #todo method, pickori
     args = parser.parse_args()
 
     # Either from JSON or one by one
@@ -284,9 +284,10 @@ def get_args():
         params = load_json(args.json_path)
         dst_dir, subject, epochs_path = params["dst-dir"], params["subject"], params["epochs-path"]
         parc, subjects_dir, hemi, fwd_dir = params["parc"], params["subjects-dir"], params["hemi"], params["fwd-dir"]
+        method, pick_ori = params["method"], params["pick-ori"]
     else:
-        dst_dir, subject, epochs_path, parc, subjects_dir, hemi, fwd_dir = \
-            args.dst_dir, args.subject, args.epochs_path, args.parc, args.subjects_dir, args.hemi, args.fwd_dir
+        dst_dir, subject, epochs_path, parc, subjects_dir, hemi, fwd_dir, method, pick_ori = \
+            args.dst_dir, args.subject, args.epochs_path, args.parc, args.subjects_dir, args.hemi, args.fwd_dir, args.method, args.pick_ori
 
     # Convert to Path object
     dst_dir = Path(dst_dir)
@@ -297,7 +298,9 @@ def get_args():
         os.makedirs(dst_dir)
 
     # Convert to appropriate format
-    params = {"parcellation": parc, "hemi": hemi, "subjects-dir": subjects_dir, "fwd-dir": fwd_dir}
+    params = {"parcellation": parc, "hemi": hemi,
+              "subjects-dir": subjects_dir, "fwd-dir": fwd_dir,
+              "method": method, "pick-ori": pick_ori}
 
     return dst_dir, subject, epochs_path, params
 

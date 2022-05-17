@@ -13,9 +13,9 @@ def get_logger(file_name, log_path=None):
     root_logger = logging.getLogger()
 
     # Log path
-    log_path = Path(log_path)
     if not log_path:
         log_path = Path(__file__).parent.parent / "logs"
+    log_path = Path(log_path)
 
     # Make sure the path exists
     if not log_path.exists():

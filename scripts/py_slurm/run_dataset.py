@@ -26,7 +26,7 @@ if __name__ == "__main__":
     root = Path(params["directories"]["root"])
     epoch_dir = root / "epochs-dir"
     dataset_dir = root / "dataset-dir-tmp"  # todo: only debug
-    if not dataset_dir.exists():
+    if not dataset_dir.exists(): # todo remove this
         os.makedirs(dataset_dir)
 
     with open(params["directories"]["idx-to-name"], "rb") as handle:

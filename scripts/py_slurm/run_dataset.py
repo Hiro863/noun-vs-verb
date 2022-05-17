@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 
     # Get the parameters
-    params = read_json(param_dir, "dataset-params-frequency.json")
+    params = read_json(param_dir, "dataset-params.json")
 
     # Set up directories
     root = Path(params["directories"]["root"])

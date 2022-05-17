@@ -8,6 +8,6 @@
   },
   "parcellation": "aparc",
   "hemi": "both",
-  "memmap": true,
+  "memmap": false,
   "max": 1
 }

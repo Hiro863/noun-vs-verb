@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import sys
 import traceback
 
@@ -9,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from utils.logger import get_logger
+from utils.file_access import load_json
 
 logger = get_logger(file_name="condition")
 logger.setLevel(logging.INFO)
@@ -536,22 +538,35 @@ def get_args():
     # Read parameter from JSON
     parser.add_argument("--json_path", type=str, required=True, help="Path to JSON containing parameters")
 
+    args = parser.parse_args()
+
+    params = load_json(args.json_path)
+
+    data_dir, df_dir, mode = params["data-dir"], params["df-dir"], params["mode"]
+    to_index, balance, mode_params = params["to-index"], params["balance"], params["mode-params"]
+
+    # Convert to path objects
+    data_dir = Path(data_dir)
+    df_dir = Path(df_dir)
+
+    return data_dir, df_dir, mode, to_index, balance, mode_params
+
 
 if __name__ == "__main__":
 
     try:
         # Read parameters
-        get_args()
-        #from events.conditions import convert_y
-        y= np.load("/Users/hiro/Desktop/dataset/y.npy")
-        df_dir = Path("/Users/hiro/Desktop/df-dir")
-        p = {"number": None, "tense": None, "person": None, "voice": None, "finite": True, "complex": False, "aux": False,
-             "ambiguous": False, "common": False, "diminutive": False, "uncountable": False, "proper": False}
-        y, i = convert_y(y=y, mode="nv", df_dir=df_dir, to_index=True, balance=True, params=p)
-        np.save("/Users/hiro/Desktop/dataset/nv.npy", y)
-        np.save("/Users/hiro/Desktop/dataset/inc.npy", i)
+        data_dir, df_dir, mode, to_index, balance, mode_params = get_args()
 
+        y = np.load(data_dir / "y.npy")
+        y, included = convert_y(y=y, mode=mode, df_dir=df_dir, to_index=to_index, balance=balance, params=mode_params)
 
+        mode_dir = data_dir / mode
+        if not mode_dir.exists():
+            os.makedirs(mode_dir)
+
+        np.save(mode_dir / "y.npy", y)
+        np.save(mode_dir / "included.npy", included)
 
     except FileNotFoundError as e:
         logger.exception(e.strerror)

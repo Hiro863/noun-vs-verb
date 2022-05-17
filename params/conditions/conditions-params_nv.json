@@ -1,0 +1,22 @@
+{
+  "data-dir": "/Users/hiro/Desktop/dataset",
+  "df-dir": "/Users/hiro/Desktop/df-dir",
+  "mode": "nv",
+  "to-index": true,
+  "balance": true,
+  "mode-params":
+  {
+    "number": null,
+    "tense": null,
+    "person": null,
+    "voice": null,
+    "finite": false,
+    "complex": false,
+    "aux": false,
+    "ambiguous": false,
+    "common": false,
+    "diminutive": false,
+    "uncountable": false,
+    "proper": false
+  }
+}

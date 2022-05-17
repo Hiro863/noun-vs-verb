@@ -383,7 +383,7 @@ def _to_frequency(df_dir: Path, to_index: bool, params: dict):
         mapper = {"short": 0, "long": 1}
     else:
         mapper = {"short": 0,  "medium": 1, "long": 2}
-
+    print(mapper)
     df.dropna(axis=0, inplace=True)
     return _to_dict(df=df, key="Token ID", value="Group", mapper=mapper, to_index=to_index)
 

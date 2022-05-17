@@ -239,7 +239,7 @@ def _select_verbs(verbs: pd.DataFrame, number=None, tense=None, person=None, voi
 
     # Filter by finiteness
     if allow_non_finite:
-        verbs = verbs[verbs["Complex"] == "finite"]
+        verbs = verbs[verbs["Finite"] == "finite"]
 
     # Filter by simple (single word) vs complex (multiple word)
     if not allow_complex:

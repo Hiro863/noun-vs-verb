@@ -182,24 +182,24 @@ def _to_nv(df_dir: Path, to_index: bool, params: dict):
         dictionary
     """
 
-    df = pd.read_csv(df_dir / "NV.csv")
+    nv_df = pd.read_csv(df_dir / "NV.csv")
     v_df = pd.read_csv(df_dir / "Verbs-Grammatical.csv")
     n_df = pd.read_csv(df_dir / "Nouns-Grammatical.csv")
 
     # Filter verbs
-    #v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
-    #                     voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
-    #                     allow_aux=params["aux"])
+    v_df = _select_verbs(v_df, number=params["number"], tense=params["tense"], person=params["person"],
+                         voice=params["voice"], allow_non_finite=params["finite"], allow_complex=params["complex"],
+                         allow_aux=params["aux"])
 
     # Filter nouns
-    #n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
-    #                     allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
-    #                     allow_proper=params["proper"])
+    n_df = _select_nouns(n_df, allow_ambiguous_gender=params["ambiguous"], allow_common_gender=params["common"],
+                         allow_diminutives=params["diminutive"], allow_uncountables=params["uncountable"],
+                         allow_proper=params["proper"])
 
     # Remove items not found in the verb and noun dataframes
-    #df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    #df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
-    #df = pd.concat([df_v, df_n])
+    df_v = pd.merge(nv_df, v_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    df_n = pd.merge(nv_df, n_df, how="left", on="Token ID").dropna(axis=0)[["Token ID", "POS"]]
+    df = pd.concat([df_v, df_n])
 
     return _to_dict(df=df, key="Token ID", value="POS", mapper={"N": 0, "V": 1}, to_index=to_index)
 
@@ -250,7 +250,7 @@ def _select_verbs(verbs: pd.DataFrame, number=None, tense=None, person=None, voi
 
     # Filter by finiteness
     if allow_non_finite:
-        verbs = verbs[verbs["Complex"] == "finite"]
+        verbs = verbs[verbs["Finite"] == "finite"]
 
     # Filter by simple (single word) vs complex (multiple word)
     if not allow_complex:
@@ -542,7 +542,7 @@ if __name__ == "__main__":
     try:
         # Read parameters
         get_args()
-
+        #from events.conditions import convert_y
         y= np.load("/Users/hiro/Desktop/dataset/y.npy")
         df_dir = Path("/Users/hiro/Desktop/df-dir")
         p = {"number": None, "tense": None, "person": None, "voice": None, "finite": True, "complex": False, "aux": False,

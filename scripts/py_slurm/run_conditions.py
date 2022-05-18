@@ -11,6 +11,7 @@ from utils.logger import get_logger
 
 
 def convert(name, params):
+    print(params)
     dir_name = Path(params["dir-name"]) / name
 
     y = np.load(str(dir_name / "y.npy"))

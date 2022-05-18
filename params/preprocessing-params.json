@@ -1,7 +1,7 @@
 {
   "directories":
   {
-    "root": "/data/home/hiroyoshi/mous_wd",
+    "root": "/data/home/hiroyoshi/semi-final",
     "raw-dir": "/data/home/hiroyoshi/data/MOUS"
   },
   "downsample params":
@@ -42,7 +42,7 @@
         "mag": 4e-12
       },
       "mode": "sentence",
-      "dictionary-path": "/data/home/hiroyoshi/mous_wd/param-dir/df-dir/NV.csv",
+      "dictionary-path": "/data/home/hiroyoshi/semi-final/param-dir/df-dir/NV.csv",
       "simplify-mode": "index"
     },
 

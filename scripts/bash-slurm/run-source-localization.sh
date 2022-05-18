@@ -19,14 +19,14 @@ do
 done
 
 # Skip problematic subjects
-#prob_subjects=(3 4 5 6 9 10 11 14 17 26 30 33 44 90 97 97 107 109)  # some technical issues with these subjects
-#for i in "${prob_subjects[@]}"
-#do
-#  if [[ "$i" =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
-#    echo "Subject ${SLURM_ARRAY_TASK_ID} has technical problems"
-#    exit 0
-#  fi
-#done
+prob_subjects=(6 10 17 46 74 90 96)  # some technical issues with these subjects
+for i in "${prob_subjects[@]}"
+do
+  if [[ "$i" =~ ^${SLURM_ARRAY_TASK_ID}$ ]]; then
+    echo "Subject ${SLURM_ARRAY_TASK_ID} has technical problems"
+    exit 0
+  fi
+done
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
 param_dir=/data/home/hiroyoshi/mous_wd/param-dir                    # parameter directory

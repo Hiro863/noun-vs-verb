@@ -11,7 +11,6 @@ from utils.logger import get_logger
 
 
 def convert(name, params):
-    print(params)
     dir_name = Path(params["dir-name"]) / name
 
     y = np.load(str(dir_name / "y.npy"))
@@ -40,7 +39,8 @@ if __name__ == "__main__":
 
     # Get the parameters
     params = read_json(param_dir, "conditions-params-nv.json")
-
+    print(param_dir)
+    print(params)
     # Set up directories
     root = Path(params["root"])
     dataset_dir = root / "dataset-dir"

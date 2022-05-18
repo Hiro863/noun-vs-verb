@@ -1,7 +1,7 @@
 {
   "directories":
   {
-    "root": "/data/home/hiroyoshi/semi-final",
+    "root": "/data/home/hiroyoshi/high-res",
     "raw-dir": "/data/home/hiroyoshi/data/MOUS"
   },
   "downsample params":

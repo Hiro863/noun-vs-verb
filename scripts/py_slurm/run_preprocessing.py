@@ -24,7 +24,7 @@ if __name__ == "__main__":
     root = Path(params["directories"]["root"])
     raw_dir = Path(params["directories"]["raw-dir"]) / subj_name
     epochs_dir = root / "epochs-dir" / subj_name
-    events_dir = root / "events-dst"  # todo remove this, it should be events-dir
+    events_dir = root / "events-dir" 
 
     if not epochs_dir.exists():
         os.makedirs(epochs_dir)

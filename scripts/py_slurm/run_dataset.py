@@ -16,7 +16,7 @@ if __name__ == "__main__":
     area_id = int(sys.argv[1])
     n_cores = int(sys.argv[2])
     param_dir = Path(sys.argv[3])
-    logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", f"dateset-{area_id}")
+    logger = get_logger("/data/home/hiroyoshi/semi-final/logs", f"dateset-{area_id}")
 
 
     # Get the parameters
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # Set up directories
     root = Path(params["directories"]["root"])
     epoch_dir = root / "epochs-dir"
-    dataset_dir = root / "dataset-dir-tmp"  # todo: only debug
+    dataset_dir = root / "dataset-dir"  # todo: only debug
     if not dataset_dir.exists(): # todo remove this
         os.makedirs(dataset_dir)
 

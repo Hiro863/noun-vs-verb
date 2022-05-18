@@ -1,7 +1,7 @@
 {
     "directories":
   {
-    "root": "/data/home/hiroyoshi/mous_wd",
+    "root": "/data/home/hiroyoshi/semi-final",
     "raw-dir": "/data/home/hiroyoshi/data/MOUS",
     "idx-to-name": "/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
     "subjects-dir": "/data/home/hiroyoshi/freesurfer/subjects"
@@ -9,5 +9,5 @@
   "parcellation": "aparc",
   "hemi": "lh",
   "memmap": true,
-  "max": 50
+  "max": 117
 }

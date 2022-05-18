@@ -1,8 +1,8 @@
 
 {
-  "dataset-dir": "/data/home/hiroyoshi/mous_wd/dataset-dir",
+  "dataset-dir": "/data/home/hiroyoshi/semi-final/dataset-dir",
   "idx-to-name":"/data/home/hiroyoshi/scripts/meg-mvpa/data/aparc-idx_to_name.pickle",
-  "dst-dir": "/data/home/hiroyoshi/mous_wd/results",
+  "dst-dir": "/data/home/hiroyoshi/semi-final/results",
   "conditions": "length",
   "epochs-tmin": -0.5,
   "epochs-tmax": 1.5,

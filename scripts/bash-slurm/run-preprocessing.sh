@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=preprocessing
 #SBATCH --array=1-117  ## subject IDs
-#SBATCH --ntasks-per-node=30    ## number of cores per subject
+#SBATCH --ntasks-per-node=3    ## number of cores per subject
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=hiroyoshi.yamasaki@etu.univ-amu.fr
 #SBATCH --chdir=/data/home/hiroyoshi/logs/preprocessing

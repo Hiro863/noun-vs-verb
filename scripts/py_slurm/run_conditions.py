@@ -35,7 +35,7 @@ if __name__ == "__main__":
     n_cores = int(sys.argv[2])
     param_dir = Path(sys.argv[3])
 
-    logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", f"dateset-{area_id}")
+    logger = get_logger("/data/home/hiroyoshi/semi-final/logs", f"dateset-{area_id}")
 
     # Get the parameters
     params = read_json(param_dir, "conditions-params-gender.json")

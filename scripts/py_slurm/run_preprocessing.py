@@ -8,7 +8,7 @@ from utils.logger import get_logger
 
 if __name__ == "__main__":
 
-    logger = get_logger("/data/home/hiroyoshi/mous_wd/logs", "preprocessing")
+    logger = get_logger("/data/home/hiroyoshi/high-res/logs", "preprocessing")
 
     # Get input from the bash script
     subj_id = sys.argv[1]
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     root = Path(params["directories"]["root"])
     raw_dir = Path(params["directories"]["raw-dir"]) / subj_name
     epochs_dir = root / "epochs-dir" / subj_name
-    events_dir = root / "events-dir" 
+    events_dir = root / "events-dir"
 
     if not epochs_dir.exists():
         os.makedirs(epochs_dir)

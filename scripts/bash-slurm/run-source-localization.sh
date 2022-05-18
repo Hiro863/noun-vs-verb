@@ -29,7 +29,7 @@ do
 done
 
 scripts_dir=/data/home/hiroyoshi/scripts/meg-mvpa/scripts/py_slurm  # scripts directory
-param_dir=/data/home/hiroyoshi/mous_wd/param-dir                    # parameter directory
+param_dir=/data/home/hiroyoshi/semi-final/param-dir                    # parameter directory
 
 export PYTHONPATH=$PYTHONPATH:/data/home/hiroyoshi/scripts/meg-mvpa
 python $scripts_dir/run_source_localization.py $SLURM_ARRAY_TASK_ID $SLURM_NTASKS_PER_NODE $param_dir

@@ -49,7 +49,7 @@
     "stc params":
     {
       "fwd_path": "/data/home/hiroyoshi/data/MOUS/fwds",
-      "parcellation": "aparc",
+      "parcellation": "aparc_sub",
       "hemi": "both",
       "subjects dir": "/data/home/hiroyoshi/freesurfer/subjects",
       "method": "dSPM",

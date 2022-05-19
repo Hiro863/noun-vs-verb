@@ -16,7 +16,7 @@ if __name__ == "__main__":
     area_id = int(sys.argv[1])
     n_cores = int(sys.argv[2])
     param_dir = Path(sys.argv[3])
-    logger = get_logger("/data/home/hiroyoshi/semi-final/logs", f"dateset-{area_id}")
+    logger = get_logger("/data/home/hiroyoshi/high-res/logs", f"dateset-{area_id}")
 
 
     # Get the parameters

@@ -6,7 +6,7 @@
   },
   "downsample params":
     {
-      "sfreq": 500
+      "sfreq": 250
     },
 
     "filter params":

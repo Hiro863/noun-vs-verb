@@ -17,13 +17,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/scripts/slurm-old/id-to-word.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
       </map>
     </option>
   </component>

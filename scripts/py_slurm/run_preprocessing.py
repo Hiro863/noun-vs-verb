@@ -9,6 +9,7 @@ from utils.logger import get_logger
 if __name__ == "__main__":
 
     logger = get_logger("/data/home/hiroyoshi/final/logs", "preprocessing")
+    print("hello?")
 
     # Get input from the bash script
     subj_id = sys.argv[1]

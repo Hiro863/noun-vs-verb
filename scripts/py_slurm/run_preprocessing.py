@@ -8,7 +8,7 @@ from utils.logger import get_logger
 
 if __name__ == "__main__":
 
-    logger = get_logger("/data/home/hiroyoshi/high-res/logs", "preprocessing")
+    logger = get_logger("/data/home/hiroyoshi/final/logs", "preprocessing")
 
     # Get input from the bash script
     subj_id = sys.argv[1]

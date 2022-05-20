@@ -1,12 +1,12 @@
 {
   "directories":
   {
-    "root": "/data/home/hiroyoshi/high-res",
+    "root": "/data/home/hiroyoshi/final",
     "raw-dir": "/data/home/hiroyoshi/data/MOUS"
   },
   "downsample params":
     {
-      "sfreq": 250
+      "sfreq": 100
     },
 
     "filter params":

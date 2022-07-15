@@ -1,4 +1,4 @@
-# MVPA-MEG (Master’s project)
+# Master’s project Noun and Verb Decoding Gives Insight into the Spatio-Temporal Dynamics of Sentential Meaning Construction
 
 ## Top level workflow
 * Preprocessing (per subject)

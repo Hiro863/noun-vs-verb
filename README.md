@@ -1,4 +1,7 @@
-# Master’s project Noun and Verb Decoding Gives Insight into the Spatio-Temporal Dynamics of Sentential Meaning Construction
+# Master’s project: Noun and Verb Decoding Gives Insight into the Spatio-Temporal Dynamics of Sentential Meaning Construction
+
+## Abstract
+
 
 ## Top level workflow
 * Preprocessing (per subject)

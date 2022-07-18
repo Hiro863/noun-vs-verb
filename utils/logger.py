@@ -5,6 +5,12 @@ from pathlib import Path
 
 
 def get_logger(file_name, log_path=None):
+    """
+    todo: comment
+    :param file_name:
+    :param log_path:
+    :return:
+    """
 
     fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
           "%(funcName)s() :: Line %(lineno)d :: %(message)s"

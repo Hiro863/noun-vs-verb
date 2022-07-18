@@ -2,16 +2,14 @@ import logging
 from math import isnan
 from pathlib import Path
 import re
-import sys
 import numpy as np
 import pandas as pd
 
-fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
-      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
+from utils.logger import get_logger
 
-logging.basicConfig(level=logging.DEBUG,
-                    format=fmt,
-                    handlers=[logging.StreamHandler(sys.stdout)])
+logger = get_logger(file_name="artifact")
+logger.setLevel(logging.INFO)
+# todo: logging
 
 id_to_name = {1: "word",
               2: "word",
@@ -361,6 +359,14 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
 
 
 def _check_difference(o_event, df, threshold):
+    """
+    todo:
+    :param o_event:
+    :param df:
+    :param threshold:
+    :return:
+    """
+
     if len(df.loc[abs(df["sample"] - o_event[0]) < threshold]) > 0:  # if minimum error less than threshold
         return True, df.loc[abs(df["sample"] - o_event[0]) < threshold]
     else:
@@ -391,7 +397,7 @@ def _simplify(events: np.array, df_path: Path, mode="index"):
 
 def select_conditions(events: np.array, mode="both"):
     """
-    Selects events based on the condition.
+    Selects events based on the condition. There are sentence and word list conditions.
     :param events: events array
     :param mode: Options. Valid are `both`, `sentence` and `list`
     :return: events with only selected event type
@@ -406,7 +412,7 @@ def select_conditions(events: np.array, mode="both"):
     return events
 
 
-#def get_event_array_(events: np.array, event_path: Path):  # todo: tidy
+#def get_event_array_(events: np.array, event_path: Path):  # todo: remove
 
 #    original_events = events[0]
 #    new_events = events[1]

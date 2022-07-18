@@ -127,7 +127,7 @@ def _balance_classes(y: np.array):
 
     classes = list(set(y[0].tolist()))
 
-    # Get least frequent class
+    # Get the least frequent class
     counts = np.bincount(y[0])
     least_class = counts.argmin()
     size = counts[least_class]

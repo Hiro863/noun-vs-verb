@@ -1,6 +1,7 @@
 import traceback
 
-
+########################################################################################################################
+#
 class SubjectNotProcessedError(Exception):
     def __init__(self, error, message=""):
         self.error = error

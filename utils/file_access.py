@@ -1,9 +1,8 @@
 import json
-import logging
 import os
 import pickle
-import sys
 import re
+
 
 import mne
 import numpy as np
@@ -15,49 +14,62 @@ from pathlib import Path
 from mne.io import read_raw_ctf, Raw
 from mne import read_labels_from_annot, morph_labels
 
+from utils.logger import get_logger
+
 # todo: tidy this file
 
 
-def get_project_root() -> Path:
-    return Path(__file__).parent.parent
-
-
-fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
-      "%(funcName)s() :: Line %(lineno)d :: %(message)s"
-
-logging.basicConfig(level=logging.DEBUG,
-                    format=fmt,
-                    handlers=[logging.StreamHandler(sys.stdout)])
+logger = get_logger(file_name="artifact")
+logger.setLevel(logging.INFO)
 
 
 def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None, Raw]:
+    """
 
-    logging.debug(f"Reading raw file")
+    :param src_dir:
+    :param dst_dir:
+    :param file_reader:
+    :return:
+    """
+
+    logger.debug(f"Reading raw file")
 
     raw = None
 
     try:
         raw = file_reader(src_dir)
     except FileNotFoundError as e:
-        logging.exception(f"File {src_dir} was not found. Skipping this subject. {e.strerror}")
+        logger.exception(f"File {src_dir} was not found. Skipping this subject. {e.strerror}")
 
         # Remove dst_dir so as not to propagate errors
         try:
             if dst_dir.exists():
                 os.remove(dst_dir)
         except OSError as e:
-            logging.exception(f"Error: {e.strerror}")
+            logger.exception(f"Error: {e.strerror}")
 
     return raw
 
 
 def load_json(json_path: Path):
+    """
+    For reading the JSON files from path
+    :param: json_path: path to the JSON file
+    """
+
     with open(json_path) as file:
         data = json.load(file)
     return data
 
 
 def read_json(dir_path: Path, file_name: str):
+    """
+    A legacy method for reading JSON. Takes path to the parent directory and file.
+    :param dir_path: Path to the directory containing the JSON file
+    :param file_name: name of the JSON file
+    :return: content of the JSON file in dictionary format
+    """
+
     # later: comment
 
     json_dir = dir_path / file_name
@@ -69,6 +81,13 @@ def read_json(dir_path: Path, file_name: str):
 
 
 def write_json(dir_path: Path, file_name: str, data):
+    """
+    Write the python dictionary content to a JSON fiůe
+    :param dir_path: Path to the directory in which to save the file
+    :param file_name: Name of the JSON file
+    :param data: data to save
+    :return: None
+    """
 
     json_file = json.dumps(data, indent=4, ensure_ascii=False)
 
@@ -82,24 +101,29 @@ def write_json(dir_path: Path, file_name: str, data):
 
 
 def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
+    """
 
-    logging.debug(f"Reading MOUS dataset paths from {data_dir}")
+    :param data_dir:
+    :return:
+    """
+
+    logger.debug(f"Reading MOUS dataset paths from {data_dir}")
 
     path_list = []
     for file in os.listdir(data_dir):
 
         if re.match(r"^sub-[AV]\d+$", file):  # e.g. sub-V1001
 
-            logging.debug(f"File {file} matched")
+            logger.debug(f"File {file} matched")
 
             subject_path = data_dir / file
 
             if os.path.isdir(subject_path):
-                logging.debug(f"adding {subject_path} to the list")
+                logger.debug(f"adding {subject_path} to the list")
                 path_list.append((subject_path, file))  # Path and subject name
             else:
                 msg = f"Expected a directory but got a file for the path {subject_path}."
-                logging.exception(msg)
+                logger.exception(msg)
                 raise TypeError(msg)
 
     return path_list
@@ -107,25 +131,25 @@ def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
 
 def read_mous_subject(subject_dir: Path, preload=True):
     # later comment
-    logging.debug(f"Parsing {subject_dir}")
+    logger.debug(f"Parsing {subject_dir}")
 
     meg_dir = subject_dir / "meg"
     ctf_dir = None
 
     for file_name in os.listdir(meg_dir):
-        logging.debug(f"Parsing {meg_dir} {file_name}")
+        logger.debug(f"Parsing {meg_dir} {file_name}")
 
         if re.match(r"^sub-[AV]\d+_task-visual_meg\.ds$", file_name):
             ctf_dir = meg_dir / file_name
 
     if ctf_dir is None:
         msg = f"The CTF directory in {meg_dir} was not found."
-        logging.exception(msg)
+        logger.exception(msg)
         raise FileNotFoundError(msg)
 
     raw = read_raw_ctf(str(ctf_dir), preload=preload)
 
-    logging.debug(f"File {ctf_dir} successfully read")
+    logger.debug(f"File {ctf_dir} successfully read")
     return raw
 
 

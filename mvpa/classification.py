@@ -58,7 +58,7 @@ def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
     if window_size < 0:
         return x[..., t_idx]
     else:
-        t_steps = _get_t_steps(window_size, sfreq)
+        t_steps = _get_t_steps(int(window_size), sfreq)
         return x[..., t_idx - t_steps + 1: t_idx + 1].reshape(x.shape[0], -1)
 
 

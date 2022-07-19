@@ -107,9 +107,9 @@ if __name__ == "__main__":
         raw, events, new_events = downsample(raw=raw, sfreq=sfreq, n_jobs=n_jobs)
 
         # Save to file
-        raw.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-raw.fif", overwrite=True)
-        np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-original-events.npy", events)
-        np.save(dst_dir / f"{name}-downsampled-{sfreq}Hz-new-events.npy", new_events)
+        raw.save(str(dst_dir / f"{name}-downsampled-{sfreq}Hz-raw.fif"), overwrite=True)
+        np.save(str(dst_dir / f"{name}-downsampled-{sfreq}Hz-original-events.npy"), events)
+        np.save(str(dst_dir / f"{name}-downsampled-{sfreq}Hz-new-events.npy"), new_events)
 
     except FileNotFoundError as e:
         logger.exception(e.strerror)

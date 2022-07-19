@@ -3,7 +3,6 @@ import os
 import pickle
 import re
 
-
 import mne
 import numpy as np
 
@@ -102,7 +101,7 @@ def write_json(dir_path: Path, file_name: str, data):
 
 def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
     """
-
+    todo
     :param data_dir:
     :return:
     """
@@ -154,7 +153,12 @@ def read_mous_subject(subject_dir: Path, preload=True):
 
 
 def get_mous_meg_channels(channels: list):
-    # later comment
+    """
+    todo
+    :param channels: List of channels to incluce (string)
+    :return: todo
+    """
+
     picks = []
     for channel in channels:
         if re.match(r"M.*4304", channel):  # Select MEG gradiometers
@@ -162,12 +166,18 @@ def get_mous_meg_channels(channels: list):
     return picks
 
 
-def read_raw_format(path, format):
+def read_raw_format(path, file_format):
+    """
+    Read MEG data in a specific data format (FIF or CTF)
+    :param path: path to the data
+    :param file_format: name of the format (`fif` or `ctf`)
+    :return: Raw object
+    """
 
-    if format == "fif":
+    if file_format == "fif":
         raw = mne.io.read_raw(path)
         return raw
-    elif format == "ctf":
+    elif file_format == "ctf":
         raw = read_raw_ctf(path)
         return raw
 

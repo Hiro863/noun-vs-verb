@@ -107,7 +107,8 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str, mode,
 
     # Validate events by comparing against .csv file
     event_path = events_dir / events_file
-    events = get_event_array(events, event_path, dictionary_path, simplify_mode, strict=strict, threshold=threshold)
+    events = get_event_array(events, event_path, Path(dictionary_path),
+                             simplify_mode, strict=strict, threshold=threshold)
 
     # Filter conditions (sentence vs word list)
     events = select_conditions(events, mode=mode)
@@ -172,13 +173,13 @@ def get_args():
 
         params = load_json(args.json_path)
 
-        dst_dir, raw_path, format = params["dst-dir"], params["raw-path"], params["format"]
+        dst_dir, raw_path, file_format = params["dst-dir"], params["raw-path"], params["format"]
         events_dir, subject, events_arr_dir = params["events-dir"], params["subject"], params["events-arr-dir"]
         mode, tmin, tmax, reject = params["mode"], params["tmin"], params["tmax"], params["reject"]
         channel_reader, dictionary_path = params["channel-reader"], params["dictionary-path"]
         simplify_mode, strict, threshold = params["simplify-mode"], params["strict"], params["threshold"]
     else:
-        dst_dir, raw_path, format, events_dir = args.dst_dir, args.raw_path, args.format, args.events_dir
+        dst_dir, raw_path, file_format, events_dir = args.dst_dir, args.raw_path, args.format, args.events_dir
         subject, events_arr_dir, mode, tmin, tmax = args.subject, args.events_arr_dir, args.mode, args.tmin, args.tmax
         reject, channel_reader, dictionary_path = args.reject, args.channel_reader, args.dictionary_path
         simplify_mode, strict, threshold = args.simplify_mode, args.strict, args.threshold
@@ -202,27 +203,27 @@ def get_args():
     else:
         raise ValueError(f"Unknown channel reader name {args.channel_reader}")
 
-    return dst_dir, raw_path, format, events_dir, subject, events_arr_dir, mode, tmin, tmax, reject, channel_reader, \
-           dictionary_path, simplify_mode, strict, threshold
+    return dst_dir, raw_path, file_format, events_dir, subject, events_arr_dir, mode, tmin, tmax, reject, \
+           channel_reader, dictionary_path, simplify_mode, strict, threshold
 
 
 if __name__ == "__main__":
 
     try:
         # Read parameter
-        dst_dir, raw_path, format, events_dir, subject, events_arr_dir, mode, tmin, tmax, reject, channel_reader, \
-            dictionary_path, simplify_mode, strict, threshold = get_args()
+        dst_dir, raw_path, file_format, events_dir, subject, events_arr_dir, mode, tmin, tmax, reject, channel_reader, \
+        dictionary_path, simplify_mode, strict, threshold = get_args()
 
         # Read data
-        raw = read_raw_format(path=raw_path, format=format)
-        events = np.load(events_arr_dir / "events.npy")
-        new_events = np.load(events_arr_dir / "new-events.npy")
+        raw = read_raw_format(path=raw_path, file_format=format)
+        events = np.load(str(events_arr_dir / "events.npy"))
+        new_events = np.load(str(events_arr_dir / "new-events.npy"))
 
         # Epoch
         epoch(dst_dir=dst_dir, events_dir=events_dir, subject=subject,
               raw=raw, events=(events, new_events), mode=mode,
               tmin=tmin, tmax=tmax, reject=reject, channel_reader=channel_reader,
-              dictionary_path=dictionary_path, simplify_mode=simplify_mode, strict=strict, threshold=threshold)
+              dictionary_path=str(dictionary_path), simplify_mode=simplify_mode, strict=strict, threshold=threshold)
 
     except FileNotFoundError as e:
         logger.exception(e.strerror)

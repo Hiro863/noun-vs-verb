@@ -62,13 +62,13 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: boo
         id_to_cond = _to_v_number(df_dir=df_dir, to_index=to_index, params=params)
 
     elif mode == "voice":
-        id_to_cond = _to_voice(df_dir=df_dir, to_index=to_index, params=params)
+        id_to_cond = _to_voice(df_dir=df_dir, to_index=to_index)
 
     elif mode == "gender":
         id_to_cond = _to_gender(df_dir=df_dir, to_index=to_index, params=params)
 
     elif mode == "n-number":
-        id_to_cond = _to_n_number(df_dir=df_dir, to_index=to_index, params=params)
+        id_to_cond = _to_n_number(df_dir=df_dir, to_index=to_index)
 
     else:
         raise ValueError(f"Unknown mode \'{mode}\'")

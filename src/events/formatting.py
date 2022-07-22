@@ -7,9 +7,8 @@ import pandas as pd
 
 from src.utils.logger import get_logger
 
-logger = get_logger(file_name="artifact")
+logger = get_logger(file_name="formatting")
 logger.setLevel(logging.INFO)
-# todo: logging
 
 id_to_name = {1: "word",
               2: "word",
@@ -151,7 +150,7 @@ def _match_event(events, sample_list, type_list, onset_list, form_list):
                 break
 
             elif row["value"] in ["blank", "pause", "ISI", "PULSE MODE 0", "PULSE MODE 1", "PULSE MODE 2",
-                                  "PULSE MODE 3", "PULSE MODE 4", "PULSE MODE 5"]:  # ignore, TODO CHECK OUT PULSE MODES
+                                  "PULSE MODE 3", "PULSE MODE 4", "PULSE MODE 5"]:  # ignore
                 break
 
             # Word
@@ -181,7 +180,7 @@ def _match_event(events, sample_list, type_list, onset_list, form_list):
 
 def _add_sentence_column(df: pd.DataFrame, stimuli_text: str):
     """
-    todo
+    todo comment
     :param df:
     :param stimuli_text:
     :return:
@@ -209,7 +208,7 @@ def _add_sentence_column(df: pd.DataFrame, stimuli_text: str):
 
 
 def _modify_df(df: pd.DataFrame, word_list, stimuli_text, rejected_list):
-    # todo
+    # todo comment
 
     if word_list is not None:
 
@@ -229,7 +228,7 @@ def _modify_df(df: pd.DataFrame, word_list, stimuli_text, rejected_list):
 
 
 def _find_sentence(word_list, stimuli_text):
-    # todo
+    # todo comment
 
     stimuli_list = stimuli_text.splitlines()
     for stimulus in stimuli_list:
@@ -252,7 +251,7 @@ def _find_sentence(word_list, stimuli_text):
 
 
 def _add_ids(df: pd.DataFrame, position_to_id: dict):
-    # todo
+    # todo comment
 
     df["ID"] = ""
 
@@ -269,7 +268,7 @@ def _add_ids(df: pd.DataFrame, position_to_id: dict):
 
 
 def format_event_data(events_path, stimuli_path):
-    # todo
+    # todo comment
 
     events_df = pd.read_csv(events_path, sep="\t")
     with open(stimuli_path, "r") as f:
@@ -299,8 +298,8 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
     :param dictionary_path: path to .csv file containing POS information
     :param simplify_mode: whether to use token IDs (`index`) or noun (0) vs. verb (1) comparison (`binary`) for event
         values
-    :param strict: todo
-    :param threshold: todo
+    :param strict: todo whats strict
+    :param threshold: todo whats threshold
     :return: validated events array
     """
 
@@ -362,7 +361,7 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
 
 def _check_difference(o_event, df, threshold):
     """
-    todo:
+    todo: comment
     :param o_event:
     :param df:
     :param threshold:

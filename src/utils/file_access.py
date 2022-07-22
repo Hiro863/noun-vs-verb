@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pickle
 import re
@@ -17,14 +18,13 @@ from src.utils.logger import get_logger
 
 # todo: tidy this file
 
-
 logger = get_logger(file_name="artifact")
 logger.setLevel(logging.INFO)
 
 
 def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None, Raw]:
     """
-
+    todo
     :param src_dir:
     :param dst_dir:
     :param file_reader:
@@ -239,7 +239,7 @@ def read_data(data_dir: Path):
         if x_path.exists():
             json_data = load_json(data_dir / "x_shape.json")
             print(tuple(json_data["shape"]))
-            x = np.memmap(x_path, dtype="float64", mode="r+", shape=tuple(json_data["shape"]))
+            x = np.memmap(str(x_path), dtype="float64", mode="r+", shape=tuple(json_data["shape"]))
             return x
         else:
             raise FileNotFoundError(f"'x.dat' file was not found in {data_dir}")
@@ -247,7 +247,7 @@ def read_data(data_dir: Path):
         x_path = data_dir / "x.npy"
 
         if x_path.exists():
-            x = np.load(x_path)
+            x = np.load(str(x_path))
             return x
         else:
             raise FileNotFoundError(f"Neither JSON file nor 'x.npy' file was found in {data_dir}")

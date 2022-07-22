@@ -21,6 +21,10 @@ from src.utils.file_access import read_mous_subject, get_mous_meg_channels, read
 
 log_path = Path("/data/home/hiroyoshi/mous_wd/logs")
 
+# todo logging
+
+# todo big comment at the top
+
 ########################################################################################################################
 # DOWNSAMPLING                                                                                                         #
 ########################################################################################################################
@@ -41,7 +45,7 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     sfreq = params["sfreq"]
     logging.info(f"Downsampling to {sfreq} Hz")
 
-    # Find events (needed whether or not downsampled)
+    # Find events (needed whether it is downsampled or not)
     try:
         events = find_events(raw, stim_channel=["UPPT001", "UPPT002"])
     except ValueError as e:
@@ -249,7 +253,7 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
 
 def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n_jobs=1) -> None:
     """
-
+    todo commet
     :param dst_dir:
     :param subject:
     :param epochs:
@@ -262,7 +266,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
     # Make inverse model
     logging.info(f"Making an inverse model for the subject {subject} ")
-    inv = get_inv(epochs, fwd_path=Path(params["fwd_path"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
+    inv = get_inv(epochs, fwd_path=str(Path(params["fwd_path"]) / f"{subject}-fwd.fif"), n_jobs=n_jobs)
 
     # Common source space
     logging.info(f"Setting up morph to FS average")
@@ -296,7 +300,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     logging.debug(f"{len(parallel_funcs)} time steps processed")
 
 
-def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, params, morph):  # todo
+def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, params, morph):  # todo data type
     """
     Perform source localization on a particular cortical area.
     :param dst_dir: directory to store the results in
@@ -323,11 +327,11 @@ def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, para
     _write_array(dst_dir=dst_dir, label=label, data_array=data)
 
 
-def _morph_to_common(stcs: list, morph):
+def _morph_to_common(stcs: list, morph): #todo data type
     """
     Morph the source localization into a common (fsaverge) space
     :param stcs: list of source localizations (per epoch)
-    :param morph: todo
+    :param morph: todo what’s morph
     :return:
     """
 
@@ -370,7 +374,7 @@ def _inverse_evoked(evoked: Evoked, fwd_path: str, method="dSPM", snr=3., return
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
     """
-    todo
+    todo comment
     :param evoked: evoked object
     :param fwd_path: path to precomputed forward object
     :param method:
@@ -380,11 +384,11 @@ def _inverse_evoked(evoked: Evoked, fwd_path: str, method="dSPM", snr=3., return
     :param inv: inverse operator object
     :param epochs: epochs object
     :param n_jobs: number of jobs
-    :param tmax: todo
+    :param tmax: todo tmax
     :param inv_method: source estimation method
-    :param rank: todo
-    :param loose: todo
-    :param depth: todo
+    :param rank: todo rank
+    :param loose: todo loose
+    :param depth: todo depth
     :param verbose: verbose
     :return:
         source estimation
@@ -405,20 +409,20 @@ def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
     """
-    todo
+    todo comment
     :param epochs: epochs object
     :param label: labels (cortical area)
     :param method: source estimation method
     :param snr: signal to noise ratio
-    :param pick_ori: todo
+    :param pick_ori: todo pick ori
     :param inv: inverse operator
     :param n_jobs: number of jobs
-    :param tmax: todo
+    :param tmax: todo tmax
     :param fwd_path: path to precomputed forward operator
-    :param inv_method: todo
-    :param rank: todo
-    :param loose: todo
-    :param depth: todo
+    :param inv_method: todo inv_method
+    :param rank: todo rank
+    :param loose: todo loose
+    :param depth: todo depth
     :param verbose: verbosity
     :return:
         source estiamtion
@@ -438,15 +442,15 @@ def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=
 def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
             rank=None, loose=0.2, depth=0.8, verbose=False):
     """
-    todo
+    todo comment
     :param epochs: epochs object
     :param fwd_path: path to precomputed forward operator
-    :param tmax: todo
+    :param tmax: todo tmax
     :param n_jobs: number of jobs for parallelism
-    :param method: todo
-    :param rank: todo
-    :param loose: todo
-    :param depth: todo
+    :param method: todo method
+    :param rank: todo rank
+    :param loose: todo loose
+    :param depth: todo depth
     :param verbose: verbosity
     :return:
         inverse operator
@@ -461,11 +465,10 @@ def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", 
 
 def get_labels_names(params: dict):
     """
-
-    :param params:
-    :return:
+    todo comment
+    :param params: todo params
+    :return: todo return
     """
-    # todo
 
     # Generate set of labels
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
@@ -493,6 +496,21 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
                            stc_params: dict,
                            stc: bool,
                            n_cores: int) -> None:
+    """
+    todo comment all
+    :param src_dir:
+    :param dst_dir:
+    :param events_dir:
+    :param subject_name:
+    :param downsample_params:
+    :param filter_params:
+    :param artifact_params:
+    :param epoch_params:
+    :param stc_params:
+    :param stc:
+    :param n_cores:
+    :return:
+    """
 
     logging.debug(f"Processing subject data from {src_dir}")
 

@@ -18,6 +18,7 @@ from src.utils.logger import get_logger
 logger = get_logger(file_name="downsample")
 logger.setLevel(logging.INFO)
 
+# todo big comment at the top
 
 ########################################################################################################################
 # DOWNSAMPLING                                                                                                         #
@@ -38,7 +39,7 @@ def downsample(raw: Raw, sfreq: int, n_jobs) -> Tuple[Raw, np.array, np.array]:
 
     logging.info(f"Downsampling to {sfreq} Hz")
 
-    # Find events (needed whether or not downsampled)
+    # Find events (needed whether it is downsampled or not)
     try:
         events = find_events(raw, stim_channel=["UPPT001", "UPPT002"], min_duration=2 / raw.info["sfreq"])  # todo: check
     except ValueError as e:
@@ -77,7 +78,7 @@ def get_args():
     # Either from JSON or one by one
     if args.json_path:
         params = load_json(args.json_path)
-        raw_path, format, sfreq = params["raw-path"], params["format"], params["sfreq"]
+        raw_path, format, sfreq = params["raw-path"], params["format"], params["sfreq"]  # todo: name format
         n_jobs, dst_dir, name = params["n-jobs"], params["dst-dir"], params["name"]
     else:
         raw_path, format, sfreq, n_jobs, dst_dir, name = \
@@ -98,7 +99,7 @@ if __name__ == "__main__":
 
     try:
         # Read parameters
-        raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()
+        raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()  # todo name format
 
         # Read raw
         raw = read_raw_format(raw_path, format)

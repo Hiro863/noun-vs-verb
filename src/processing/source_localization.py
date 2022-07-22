@@ -21,6 +21,8 @@ from src.utils.logger import get_logger
 logger = get_logger(file_name="source-localization")
 logger.setLevel(logging.INFO)
 
+# todo logging
+
 
 ########################################################################################################################
 # SOURCE LOCALIZATION                                                                                                  #
@@ -41,7 +43,7 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
 
     # Make inverse model
     logging.info(f"Making an inverse model for the subject {subject} ")
-    inv = get_inv(epochs, fwd_path=Path(params["fwd-dir"]) / f"{subject}-fwd.fif", n_jobs=n_jobs)
+    inv = get_inv(epochs, fwd_path=str(Path(params["fwd-dir"]) / f"{subject}-fwd.fif"), n_jobs=n_jobs)
 
     # Common source space
     logging.info(f"Setting up morph to FS average")
@@ -83,7 +85,7 @@ def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, para
     :param label: cortical area of interest
     :param inv: inverse operator
     :param params: should contain `method` and `pick ori`
-    :param morph: todo
+    :param morph: todo morph
     """
 
     logging.info(f"Processing single subject for {label.name} ")
@@ -105,8 +107,8 @@ def _morph_to_common(stcs: list, morph):
     """
     Morph the source localization into a common (fsaverge) space
     :param stcs: list of source localizations (per epoch)
-    :param morph: todo
-    :return:
+    :param morph: todo morph
+    :return: todo return
     """
 
     logging.info(f"Morphing to fsaverage")
@@ -148,7 +150,7 @@ def _inverse_evoked(evoked: Evoked, fwd_path: str, method="dSPM", snr=3., return
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
     """
-    todo
+    todo comment
     :param evoked: evoked object
     :param fwd_path: path to precomputed forward object
     :param method:
@@ -158,9 +160,9 @@ def _inverse_evoked(evoked: Evoked, fwd_path: str, method="dSPM", snr=3., return
     :param inv: inverse operator object
     :param epochs: epochs object
     :param n_jobs: number of jobs
-    :param tmax: todo
+    :param tmax: todo tmax
     :param inv_method: source estimation method
-    :param rank: todo
+    :param rank: todo rank
     :param loose: todo
     :param depth: todo
     :param verbose: verbose
@@ -183,23 +185,23 @@ def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=
                     inv_method=("shrunk", "empirical"), rank=None,
                     loose=0.2, depth=0.8, verbose=False):
     """
-    todo
+    todo comment
     :param epochs: epochs object
     :param label: labels (cortical area)
     :param method: source estimation method
     :param snr: signal to noise ratio
-    :param pick_ori: todo
+    :param pick_ori: todo pick ori
     :param inv: inverse operator
     :param n_jobs: number of jobs
-    :param tmax: todo
+    :param tmax: todo tmax
     :param fwd_path: path to precomputed forward operator
-    :param inv_method: todo
-    :param rank: todo
-    :param loose: todo
-    :param depth: todo
+    :param inv_method: todo inv_method
+    :param rank: todo rank
+    :param loose: todo loose
+    :param depth: todo depth
     :param verbose: verbosity
     :return:
-        source estiamtion
+        source estimation
     """
 
     logging.info(f"Inverting epochs")
@@ -216,15 +218,15 @@ def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=
 def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", "empirical"),
             rank=None, loose=0.2, depth=0.8, verbose=False):
     """
-    todo
+    todo comment
     :param epochs: epochs object
     :param fwd_path: path to precomputed forward operator
-    :param tmax: todo
+    :param tmax: todo tmax
     :param n_jobs: number of jobs for parallelism
-    :param method: todo
-    :param rank: todo
-    :param loose: todo
-    :param depth: todo
+    :param method: todo method
+    :param rank: todo rank
+    :param loose: todo loose
+    :param depth: todo depth
     :param verbose: verbosity
     :return:
         inverse operator
@@ -239,11 +241,10 @@ def get_inv(epochs: Epochs, fwd_path: str, tmax=0., n_jobs=1, method=("shrunk", 
 
 def get_labels_names(params: dict):
     """
-
-    :param params:
-    :return:
+    todo comment
+    :param params: todo params
+    :return: todo return
     """
-    # todo
 
     # Generate set of labels
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],

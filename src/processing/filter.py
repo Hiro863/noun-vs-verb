@@ -14,6 +14,7 @@ from src.utils.logger import get_logger
 logger = get_logger(file_name="filter")
 logger.setLevel(logging.INFO)
 
+# todo big comment at the top
 
 ########################################################################################################################
 # FILTERING                                                                                                            #
@@ -65,7 +66,7 @@ def get_args():
     if args.json_path:
 
         params = load_json(args.json_path)
-
+        # todo name format
         raw_path, format, l_freq, h_freq = params["raw-path"], params["format"], params["l-freq"], params["h-freq"]
         notch, dst_dir, name, n_jobs = params["notch"], params["dst-dir"], params["name"], params["n-jobs"]
     else:
@@ -90,13 +91,13 @@ if __name__ == "__main__":
         raw_path, format, l_freq, h_freq, notch, dst_dir, name, n_jobs = get_args()
 
         # Read raw
-        raw = read_raw_format(path=raw_path, format=format).load_data()
+        raw = read_raw_format(path=raw_path, format=format).load_data()  # todo warning format
 
         # Filter
         raw = apply_filter(raw=raw, l_freq=l_freq, h_freq=h_freq, notch=notch, n_jobs=n_jobs)
 
         # Save to file
-        raw.save(dst_dir / f"{name}-filtered-raw.fif", overwrite=True)
+        raw.save(str(dst_dir / f"{name}-filtered-raw.fif"), overwrite=True)
 
     except FileNotFoundError as e:
         logger.exception(e.strerror)

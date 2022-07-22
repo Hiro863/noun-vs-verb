@@ -2,9 +2,11 @@ from pathlib import Path
 from mne.coreg import Coregistration
 from mne import Info, setup_source_space, make_bem_model, make_bem_solution, make_forward_solution
 
+# todo: big comment at the top
+
 
 def get_trans(subject: str, subjects_dir: Path, info: Info):
-    # todo
+    # todo comment
 
     coreg = Coregistration(info, subject=subject, subjects_dir=subjects_dir, fiducials="auto")
     coreg.fit_icp(n_iterations=6, nasion_weight=2.)
@@ -14,7 +16,7 @@ def get_trans(subject: str, subjects_dir: Path, info: Info):
 
 
 def get_forward(info: Info, trans: str, subject: str, subjects_dir: Path, layers):
-    # todo
+    # todo comment
 
     src = setup_source_space(subject, spacing="ico5", add_dist="patch", subjects_dir=subjects_dir)
 

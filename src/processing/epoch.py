@@ -20,6 +20,8 @@ from src.utils.logger import get_logger
 logger = get_logger(file_name="epoch")
 logger.setLevel(logging.INFO)
 
+# todo big comment at the top
+
 
 ########################################################################################################################
 # EPOCHING                                                                                                             #

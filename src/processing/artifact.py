@@ -131,7 +131,7 @@ if __name__ == "__main__":
         raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
 
         # Read raw
-        raw = read_raw_format(path=raw_path, format=format).load_data()
+        raw = read_raw_format(path=raw_path, format=format).load_data()  # todo fix warning
 
         # ICA
         raw = remove_artifacts(raw=raw, n_components=n_components,

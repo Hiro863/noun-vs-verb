@@ -3,13 +3,15 @@ import os
 
 from pathlib import Path
 
+# todo big comment at the top
+
 
 def get_logger(file_name, log_path=None):
     """
     todo: comment
-    :param file_name:
-    :param log_path:
-    :return:
+    :param file_name: todo file_name
+    :param log_path: todo log_path
+    :return:todo return
     """
 
     fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \

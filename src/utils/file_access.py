@@ -24,11 +24,11 @@ logger.setLevel(logging.INFO)
 
 def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None, Raw]:
     """
-    todo
-    :param src_dir:
-    :param dst_dir:
-    :param file_reader:
-    :return:
+    todo comment
+    :param src_dir: todo src_dir
+    :param dst_dir: todo dst_dir
+    :param file_reader: todo file_reader
+    :return: todo return
     """
 
     logger.debug(f"Reading raw file")
@@ -101,9 +101,9 @@ def write_json(dir_path: Path, file_name: str, data):
 
 def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
     """
-    todo
-    :param data_dir:
-    :return:
+    todo comment
+    :param data_dir: todo data_dir
+    :return: todo return
     """
 
     logger.debug(f"Reading MOUS dataset paths from {data_dir}")
@@ -129,6 +129,13 @@ def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
 
 
 def read_mous_subject(subject_dir: Path, preload=True):
+    """
+    todo comment
+    :param subject_dir: todo subject_dir
+    :param preload:  todo preload
+    :return: todo return
+    """
+
     # later comment
     logger.debug(f"Parsing {subject_dir}")
 
@@ -154,9 +161,9 @@ def read_mous_subject(subject_dir: Path, preload=True):
 
 def get_mous_meg_channels(channels: list):
     """
-    todo
-    :param channels: List of channels to incluce (string)
-    :return: todo
+    todo: comment
+    :param channels: List of channels to include (string)
+    :return: todo return
     """
 
     picks = []
@@ -183,6 +190,11 @@ def read_raw_format(path, file_format):
 
 
 def _get_file_names(results_dir: Path):
+    """
+    todo comment
+    :param results_dir: todo results_dir
+    :return: todo return
+    """
 
     name_to_file = {}
     for file in os.listdir(results_dir):
@@ -192,17 +204,31 @@ def _get_file_names(results_dir: Path):
         name = re.sub(r"\.pickle", "", file)
         name_to_file[name] = file
 
-    name_to_file = OrderedDict(sorted(name_to_file.items()))
+    name_to_file = OrderedDict(sorted(name_to_file.items()))  # todo warning wrong type
     return name_to_file
 
 
 def read_dict(path):
+    """
+    todo comment
+    :param path: todo path
+    :return: todo return
+    """
     with open(path, "rb") as handle:
         data = pickle.load(handle)
     return data
 
 
 def read_labels(parc, subject, hemi, subjects_dir):
+    """
+    todo comment
+    :param parc: todo parc
+    :param subject: todo subject
+    :param hemi: todo hemi
+    :param subjects_dir: todo subjects_dir
+    :return: todo return
+    """
+
     labels = read_labels_from_annot("fsaverage", parc=parc, hemi=hemi, subjects_dir=subjects_dir)
 
     if subject is not "fsaverage":
@@ -212,6 +238,12 @@ def read_labels(parc, subject, hemi, subjects_dir):
 
 
 def read_scores(results_dir: Path):
+    """
+    todo comment
+    :param results_dir: todo results_dir
+    :return: todo return
+    """
+
     name_to_file = _get_file_names(results_dir)  # ordered dict to load in correct order
 
     meta, data = None, []
@@ -230,6 +262,11 @@ def read_scores(results_dir: Path):
 
 
 def read_data(data_dir: Path):
+    """
+    todo comment
+    :param data_dir: todo data_dir
+    :return: todo return
+    """
 
     json_path = data_dir / "x_shape.json"
     if json_path.exists():

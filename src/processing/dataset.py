@@ -6,6 +6,9 @@ from typing import List
 import numpy as np
 from src.utils.file_access import write_json
 
+# todo big comment at the top
+# todo logger
+
 ########################################################################################################################
 # DATASET GENERATION                                                                                                   #
 ########################################################################################################################
@@ -15,7 +18,7 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
     """
     Collect list of available events arrays
     :param epoch_dir: directory containing all epochs
-    :param reject_list: todo
+    :param reject_list: todo comment reject_list
     :return:
         list of paths to events array
     """
@@ -46,7 +49,7 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
     ollect list of available source localizations
     :param epoch_dir: directory containing all epochs
     :param area_name: name of the area
-    :param reject_list: todo
+    :param reject_list: todo reject_list
     :return:
         list of source localization
     """
@@ -145,7 +148,7 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
 
 
 def _get_array_size(paths):
-    # todo
+    # todo comment
 
     dim_0 = 0
     dim_rest = None
@@ -167,7 +170,7 @@ def _get_array_size(paths):
 
 
 def _get_reject_list(reject_path: Path):
-    # todo
+    # todo comment
 
     with open(reject_path, "r") as file:
         reject_text = file.read()

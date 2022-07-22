@@ -15,10 +15,12 @@ from src.utils.file_access import load_json
 logger = get_logger(file_name="condition")
 logger.setLevel(logging.INFO)
 
+# todo big comment at the top
 
 ########################################################################################################################
 # Convert generic y to specific y based on conditions given                                                            #
 ########################################################################################################################
+
 
 def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: bool, params: dict):
     """
@@ -137,7 +139,7 @@ def _balance_classes(y: np.array):
         y: modified y
         idx: index used to modify (needed for cropping `included`)
     """
-    print(y)
+
     classes = list(set(y[0].tolist()))
 
     # Get the least frequent class

@@ -13,6 +13,8 @@ from sklearn.svm import LinearSVC
 
 from mne.stats import bootstrap_confidence_interval
 
+# todo: logging
+
 name_to_func = {"balanced": balanced_accuracy_score, "roc-auc": roc_auc_score}
 
 
@@ -46,14 +48,13 @@ def _get_t_steps(window_size: int, sfreq: float) -> int:
 
 def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
     """
-
+    todo comment
     :param x:
     :param t_idx:
     :param window_size:
     :param sfreq:
     :return:
     """
-    # todo
 
     if window_size < 0:
         return x[..., t_idx]
@@ -63,7 +64,7 @@ def get_slice(x: np.array, t_idx, window_size=-1., sfreq=-1):
 
 
 def classify(x: np.array, y: np.array, cv: int, clf: Pipeline, scoring):
-    # todo
+    # todo comment
 
     kf = StratifiedKFold(cv, shuffle=True)
     scores = np.zeros((cv,))
@@ -97,7 +98,7 @@ def classify(x: np.array, y: np.array, cv: int, clf: Pipeline, scoring):
 
 
 def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
-    # todo
+    # todo comment
 
     name_to_obj = {"LinearSVC": LinearSVC(max_iter=params["max-iter"])}
 
@@ -131,12 +132,12 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
 
 def format_results(data, params):
     """
-
+    todo comment
     :param data:
     :param params:
     :return:
     """
-    # todo
+    # todo tidy
 
     scores, lowers, uppers = [], [], []
     d_scores, d_lowers, d_uppers = [], [], []

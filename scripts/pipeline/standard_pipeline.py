@@ -4,9 +4,9 @@ from time import sleep
 from datetime import datetime
 from pathlib import Path
 
-from utils.file_access import load_json
-from utils.logger import get_logger
-from utils.slurm_tools import init_status, get_subject_id_list, get_area_id_list
+from src.utils.file_access import load_json
+from src.utils.logger import get_logger
+from src.utils.slurm_tools import init_status, get_subject_id_list, get_area_id_list
 from scripts.pipeline.downsample_pipeline import submit_downsample
 
 SLEEP = 10  # in seconds

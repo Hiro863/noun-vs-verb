@@ -7,10 +7,10 @@ import traceback
 from pathlib import Path
 from subprocess import call
 
-from utils.file_access import load_json
-from utils.slurm_tools import check_status, save_status, update_status, init_status, make_job_file, get_subject_list
+from src.utils.file_access import load_json
+from src.utils.slurm_tools import check_status, save_status, update_status, init_status, make_job_file, get_subject_list
 
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="downsample-slurm")
 logger.setLevel(logging.INFO)

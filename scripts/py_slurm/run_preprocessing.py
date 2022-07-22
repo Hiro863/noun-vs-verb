@@ -1,9 +1,9 @@
 import os
 import sys
-from utils.file_access import read_json, write_json
+from src.utils.file_access import read_json, write_json
 from pathlib import Path
-from processing.preprocessing import process_single_subject
-from utils.logger import get_logger
+from src.processing.preprocessing import process_single_subject
+from src.utils.logger import get_logger
 
 
 if __name__ == "__main__":

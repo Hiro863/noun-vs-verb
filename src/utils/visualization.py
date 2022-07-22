@@ -5,7 +5,7 @@ from mne import read_source_spaces, SourceEstimate
 from matplotlib import pyplot as plt
 from matplotlib import gridspec
 
-from utils.file_access import read_labels
+from src.utils.file_access import read_labels
 
 
 def _get_times(meta):

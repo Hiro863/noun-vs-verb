@@ -4,9 +4,9 @@ import sys
 import traceback
 
 
-from utils.slurm_tools import submit_subject_jobs
-from utils.file_access import get_params
-from utils.logger import get_logger
+from src.utils.slurm_tools import submit_subject_jobs
+from src.utils.file_access import get_params
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="subject-slurm")
 logger.setLevel(logging.INFO)

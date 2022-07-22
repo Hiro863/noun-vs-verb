@@ -1,9 +1,8 @@
 import sys
 from mne import read_labels_from_annot
-from utils.file_access import read_json
+from src.utils.file_access import read_json
 from pathlib import Path
-from processing.dataset import generate_dataset
-from processing.preprocessing import process_single_subject
+from src.processing import generate_dataset
 
 if __name__ == "__main__":
 

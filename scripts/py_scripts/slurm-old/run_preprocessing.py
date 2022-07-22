@@ -1,8 +1,8 @@
 import argparse
 import logging
 from pathlib import Path
-from utils.file_access import read_json
-from processing.preprocessing import process_single_subject
+from src.utils.file_access import read_json
+from src.processing.preprocessing import process_single_subject
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"

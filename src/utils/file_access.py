@@ -13,7 +13,7 @@ from pathlib import Path
 from mne.io import read_raw_ctf, Raw
 from mne import read_labels_from_annot, morph_labels
 
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 # todo: tidy this file
 

@@ -4,8 +4,8 @@ import os
 
 from joblib import Parallel, delayed, cpu_count
 from pathlib import Path
-from processing.preprocessing import process_single_subject
-from utils.file_access import read_json, get_mous_raw_paths, get_project_root
+from src.processing.preprocessing import process_single_subject
+from src.utils.file_access import read_json, get_mous_raw_paths, get_project_root
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \

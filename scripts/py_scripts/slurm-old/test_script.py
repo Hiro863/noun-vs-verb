@@ -1,6 +1,6 @@
-from utils.file_access import read_json
+from src.utils.file_access import read_json
 from pathlib import Path
-from processing.preprocessing import process_single_subject
+from src.processing.preprocessing import process_single_subject
 
 if __name__ == "__main__":
     src_dir = "/data/home/hiroyoshi/test-dir/test-src/sub-V1001"

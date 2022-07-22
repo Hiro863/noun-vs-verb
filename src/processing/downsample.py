@@ -11,9 +11,9 @@ import numpy as np
 from mne import find_events
 from mne.io import Raw
 
-from utils.exceptions import SubjectNotProcessedError
-from utils.file_access import read_raw_format, load_json
-from utils.logger import get_logger
+from src.utils.exceptions import SubjectNotProcessedError
+from src.utils.file_access import read_raw_format, load_json
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="downsample")
 logger.setLevel(logging.INFO)

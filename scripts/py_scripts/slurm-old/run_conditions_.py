@@ -1,7 +1,7 @@
 from pathlib import Path
 import numpy as np
-from utils.file_access import read_json
-from events.conditions import convert_to_nv
+from src.utils.file_access import read_json
+from src.events.conditions import convert_to_nv
 
 
 def convert_y(params):

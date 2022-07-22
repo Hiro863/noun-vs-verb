@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import List
 import numpy as np
-from utils.file_access import write_json
+from src.utils.file_access import write_json
 
 ########################################################################################################################
 # DATASET GENERATION                                                                                                   #

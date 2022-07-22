@@ -14,9 +14,9 @@ from joblib import Parallel, delayed
 from mne.io import Raw
 from mne.preprocessing import ICA
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
-from events.formatting import get_event_array, select_conditions
-from utils.exceptions import SubjectNotProcessedError
-from utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw
+from src.events.formatting import get_event_array, select_conditions
+from src.utils.exceptions import SubjectNotProcessedError
+from src.utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw
 
 
 log_path = Path("/data/home/hiroyoshi/mous_wd/logs")

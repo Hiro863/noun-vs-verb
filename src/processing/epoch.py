@@ -12,10 +12,10 @@ from mne import Epochs
 
 from mne.io import Raw
 
-from events.formatting import get_event_array, select_conditions
-from utils.exceptions import SubjectNotProcessedError
-from utils.file_access import get_mous_meg_channels, read_raw_format, load_json
-from utils.logger import get_logger
+from src.events.formatting import get_event_array, select_conditions
+from src.utils.exceptions import SubjectNotProcessedError
+from src.utils.file_access import get_mous_meg_channels, read_raw_format, load_json
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="epoch")
 logger.setLevel(logging.INFO)

@@ -6,9 +6,9 @@ import sys
 import numpy as np
 from pathlib import Path
 
-from mvpa.classification import classify_temporal
-from utils.file_access import read_json, read_data
-from utils.logger import get_logger
+from src.mvpa.classification import classify_temporal
+from src.utils.file_access import read_json, read_data
+from src.utils.logger import get_logger
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \

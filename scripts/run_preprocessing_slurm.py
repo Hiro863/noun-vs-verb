@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from utils.file_access import read_json
 
 no_subject = [14, 15, 18, 21, 23, 41, 43, 47, 51, 56, 60, 67, 82, 91, 112]
 prob_subject = [3, 4, 5, 6, 9, 10, 11, 14, 17, 26, 30, 33, 44, 90, 97, 107, 109]

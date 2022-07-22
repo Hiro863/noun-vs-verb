@@ -1,8 +1,8 @@
 import sys
 from pathlib import Path
 from mne import write_forward_solution
-from utils.file_access import read_mous_subject
-from processing.coregistration import get_trans, get_forward
+from src.utils.file_access import read_mous_subject
+from src.processing import get_trans, get_forward
 
 
 def main(raw_dir, subjects_dir, fwd_dir, subject):

@@ -1,8 +1,8 @@
 import os
 import sys
-from utils.file_access import read_json
+from src.utils.file_access import read_json
 from pathlib import Path
-from processing.preprocessing import process_single_subject
+from src.processing.preprocessing import process_single_subject
 
 if __name__ == "__main__":
 

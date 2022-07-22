@@ -8,8 +8,8 @@ from pathlib import Path
 
 from mne.io import Raw
 
-from utils.file_access import read_raw_format, load_json
-from utils.logger import get_logger
+from src.utils.file_access import read_raw_format, load_json
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="filter")
 logger.setLevel(logging.INFO)

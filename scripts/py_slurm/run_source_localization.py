@@ -1,9 +1,9 @@
 import logging
 import sys
-from utils.file_access import read_json, write_json
+from src.utils.file_access import read_json, write_json
 from pathlib import Path
 from mne import read_epochs
-from processing.preprocessing import source_localize
+from src.processing.preprocessing import source_localize
 
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \

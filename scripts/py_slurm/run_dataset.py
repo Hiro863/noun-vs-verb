@@ -1,12 +1,11 @@
-import logging
 import os
 import pickle
 import sys
-from utils.file_access import read_json
+from src.utils.file_access import read_json
 from pathlib import Path
 from mne import read_labels_from_annot
-from processing.dataset import generate_dataset
-from utils.logger import get_logger
+from src.processing import generate_dataset
+from src.utils.logger import get_logger
 
 
 

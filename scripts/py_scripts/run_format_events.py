@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 import re
 
-from events.formatting import format_event_data
+from src.events.formatting import format_event_data
 
 SRC_DIR = Path("/Users/yamazakihiroyoshi/Desktop/events-src")
 DST_DIR = Path("/Users/yamazakihiroyoshi/Desktop/events-dst")

@@ -9,8 +9,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from utils.logger import get_logger
-from utils.file_access import load_json
+from src.utils.logger import get_logger
+from src.utils.file_access import load_json
 
 logger = get_logger(file_name="condition")
 logger.setLevel(logging.INFO)

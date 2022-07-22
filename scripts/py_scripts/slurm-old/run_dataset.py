@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from processing.dataset import generate_dataset
+from src.processing import generate_dataset
 
 fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
       "%(funcName)s() :: Line %(lineno)d :: %(message)s"

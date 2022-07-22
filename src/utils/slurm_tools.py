@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 from subprocess import call
 
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="slurm-tools")
 logger.setLevel(logging.INFO)

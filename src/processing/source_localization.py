@@ -14,9 +14,9 @@ from mne import (compute_covariance, read_labels_from_annot, Epochs, Evoked, Lab
                  read_source_spaces, compute_source_morph, read_epochs)
 from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse_epochs
 
-from utils.exceptions import SubjectNotProcessedError
-from utils.file_access import load_json
-from utils.logger import get_logger
+from src.utils.exceptions import SubjectNotProcessedError
+from src.utils.file_access import load_json
+from src.utils.logger import get_logger
 
 logger = get_logger(file_name="source-localization")
 logger.setLevel(logging.INFO)

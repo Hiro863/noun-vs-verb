@@ -1,6 +1,14 @@
+import logging
+
 from pathlib import Path
+
 import pandas as pd
 import numpy as np
+
+from src.utils.logger import get_logger
+
+logger = get_logger(file_name="conditions")
+logger.setLevel(logging.INFO)
 
 
 ########################################################################################################################
@@ -13,6 +21,7 @@ import numpy as np
 ########################################################################################################################
 # Convert generic y to specific y based on conditions given                                                            #
 ########################################################################################################################
+
 
 def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: bool, params: dict):
     """
@@ -36,6 +45,8 @@ def convert_y(y: np.array, mode: str, df_dir: Path, to_index: bool, balance: boo
         y: converted y, (2, n_events) first row corresponds to the class, second to indices
         included: array of indices corresponding to included events. For indexing corresponding x
     """
+
+    logger.info(f"Converting the event labels using the mode {mode}")
 
     if mode == "nv":
         id_to_cond = _to_nv(df_dir=df_dir, to_index=to_index, params=params)

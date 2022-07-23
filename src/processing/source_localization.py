@@ -324,7 +324,7 @@ if __name__ == "__main__":
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception during source localization. \n {traceback.format_exc()}")
+        logger.error(f"Unexpected exception during source localization. \n {traceback.format_exc()}")
         sys.exit(-1)
 
-    logging.info(f"Source localization has finished.")
+    logger.info(f"Source localization has finished.")

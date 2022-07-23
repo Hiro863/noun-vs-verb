@@ -105,11 +105,11 @@ def get_args():
 
         params = load_json(args.json_path)
 
-        raw_path, format, n_components = params["raw-path"], params["format"], params["n-components"]
+        raw_path, file_format, n_components = params["raw-path"], params["format"], params["n-components"]
         eog_channels, ecg_channel = params["eog-channels"], params["ecg-channel"]
         save_ica, apply, n_jobs, dst_dir = params["save-ica"], params["apply"], params["n-jobs"], params["dst-dir"]
     else:
-        raw_path, format, n_components = args.raw_path, args.format, args.n_components
+        raw_path, file_format, n_components = args.raw_path, args.format, args.n_components
         eog_channels, ecg_channel = args.eog_channels, args.ecg_channel
         save_ica, apply, n_jobs, dst_dir = args.save_ica, args.apply, args.n_jobs, args.dst_dir
 
@@ -121,17 +121,17 @@ def get_args():
     if not dst_dir.exists():
         os.makedirs(dst_dir)
 
-    return raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir
+    return raw_path, file_format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir
 
 
 if __name__ == "__main__":
 
     try:
         # Read parameters
-        raw_path, format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
+        raw_path, file_format, n_components, eog_channels, ecg_channel, save_ica, apply, n_jobs, dst_dir = get_args()
 
         # Read raw
-        raw = read_raw_format(path=raw_path, format=format).load_data()  # todo fix warning
+        raw = read_raw_format(path=raw_path, file_format=file_format).load_data()
 
         # ICA
         raw = remove_artifacts(raw=raw, n_components=n_components,

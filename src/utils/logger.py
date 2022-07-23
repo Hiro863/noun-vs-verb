@@ -6,12 +6,13 @@ from pathlib import Path
 # todo big comment at the top
 
 
-def get_logger(file_name, log_path=None):
+def get_logger(file_name, log_path=None) -> logging.Logger:
     """
-    todo: comment
-    :param file_name: todo file_name
-    :param log_path: todo log_path
-    :return:todo return
+    Get a logger with particular formatting
+    :param file_name: log file name
+    :param log_path: path to log directory (if None, make one at the root level)
+    :return:
+        logger object
     """
 
     fmt = "%(levelname)s :: %(asctime)s :: Process ID %(process)s :: %(module)s :: " + \
@@ -40,5 +41,3 @@ def get_logger(file_name, log_path=None):
     root_logger.addHandler(console_handler)
 
     return root_logger
-
-

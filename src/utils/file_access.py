@@ -7,7 +7,7 @@ import re
 import mne
 import numpy as np
 
-from typing import Union, Callable
+from typing import Union, Callable, Tuple, List
 from collections import OrderedDict
 from pathlib import Path
 
@@ -24,11 +24,11 @@ logger.setLevel(logging.INFO)
 
 def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None, Raw]:
     """
-    todo comment
-    :param src_dir: todo src_dir
-    :param dst_dir: todo dst_dir
-    :param file_reader: todo file_reader
-    :return: todo return
+    Reading the raw file for subjects from the path
+    :param src_dir: directory containing all data
+    :param dst_dir: directory in which results of processing will be stored
+    :param file_reader: function specific to the particular data type
+    :return: raw object for the subject
     """
 
     logger.debug(f"Reading raw file")
@@ -50,6 +50,11 @@ def read_raw(src_dir: Path, dst_dir: Path, file_reader: Callable) -> Union[None,
     return raw
 
 
+########################################################################################################################
+# JSON file processes                                                                                                  #
+########################################################################################################################
+
+
 def load_json(json_path: Path):
     """
     For reading the JSON files from path
@@ -68,8 +73,6 @@ def read_json(dir_path: Path, file_name: str):
     :param file_name: name of the JSON file
     :return: content of the JSON file in dictionary format
     """
-
-    # later: comment
 
     json_dir = dir_path / file_name
 
@@ -99,11 +102,12 @@ def write_json(dir_path: Path, file_name: str, data):
 ########################################################################################################################
 
 
-def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
+def get_mous_raw_paths(data_dir: Path) -> List[Tuple[Path, str]]:
     """
-    todo comment
-    :param data_dir: todo data_dir
-    :return: todo return
+    Find all paths to raw data in the MOUS dataset
+    :param data_dir: path to directory containing all the data
+    :return:
+        list of tuples (path to data, name of the file)
     """
 
     logger.debug(f"Reading MOUS dataset paths from {data_dir}")
@@ -128,15 +132,14 @@ def get_mous_raw_paths(data_dir: Path) -> list:  # later list of tuples
     return path_list
 
 
-def read_mous_subject(subject_dir: Path, preload=True):
+def read_mous_subject(subject_dir: Path, preload=True) -> Raw:
     """
-    todo comment
-    :param subject_dir: todo subject_dir
-    :param preload:  todo preload
-    :return: todo return
+    Read single subject raw file in MOUS dataset
+    :param subject_dir: path to the directory of the subject
+    :param preload:  if true, preload data into memory
+    :return: raw object
     """
 
-    # later comment
     logger.debug(f"Parsing {subject_dir}")
 
     meg_dir = subject_dir / "meg"
@@ -159,11 +162,12 @@ def read_mous_subject(subject_dir: Path, preload=True):
     return raw
 
 
-def get_mous_meg_channels(channels: list):
+def get_mous_meg_channels(channels: list) -> List[str]:
     """
-    todo: comment
+    Get list of MEG channel names in MOUS dataset
     :param channels: List of channels to include (string)
-    :return: todo return
+    :return:
+        picks: list of names of MEG channels
     """
 
     picks = []
@@ -191,9 +195,10 @@ def read_raw_format(path, file_format):
 
 def _get_file_names(results_dir: Path):
     """
-    todo comment
-    :param results_dir: todo results_dir
-    :return: todo return
+    Get a list of file names of pickle files containing decoding score results
+    :param results_dir: path to directory containing results
+    :return:
+        Ordered dictionary: {name of the file: path}
     """
 
     name_to_file = {}
@@ -208,11 +213,12 @@ def _get_file_names(results_dir: Path):
     return name_to_file
 
 
-def read_dict(path):
+def read_dict(path: Path) -> dict:
     """
-    todo comment
-    :param path: todo path
-    :return: todo return
+    Read pickle object containing a python dictionary
+    :param path: path to the file
+    :return:
+        dictionary
     """
     with open(path, "rb") as handle:
         data = pickle.load(handle)

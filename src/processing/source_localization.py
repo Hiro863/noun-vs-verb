@@ -126,11 +126,11 @@ def _write_array(dst_dir: Path, label: Label, data_array) -> None:
     :param data_array: data array to be saved
     """
 
-    logging.info(f"Writing the data for {label.name} to file")
+    logger.info(f"Writing the data for {label.name} to file")
 
     stc_fname = f"{label.name}.npy"
 
-    logging.info(f"Saving {stc_fname} to file in {dst_dir}")
+    logger.info(f"Saving {stc_fname} to file in {dst_dir}")
 
     stc_dir = dst_dir / "stc"
 
@@ -141,7 +141,7 @@ def _write_array(dst_dir: Path, label: Label, data_array) -> None:
         np.save(str(stc_dir / stc_fname), data_array)
 
     except OSError as e:
-        logging.exception(f"Failed to write {dst_dir / stc_fname} to file. {e.strerror}")
+        logger.exception(f"Failed to write {dst_dir / stc_fname} to file. {e.strerror}")
         raise SubjectNotProcessedError(e)
 
 

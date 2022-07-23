@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        logger.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
         sys.exit(-1)
 
-    logging.info(f"ICA artifact removal finished.")
+    logger.info(f"ICA artifact removal finished.")

@@ -18,7 +18,7 @@ from src.utils.logger import get_logger
 
 # todo: tidy this file
 
-logger = get_logger(file_name="artifact")
+logger = get_logger(file_name="file_access")
 logger.setLevel(logging.INFO)
 
 

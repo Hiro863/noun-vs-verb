@@ -36,14 +36,14 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
     :return: raw: repaired raw
     """
 
-    logging.info("Removing artifacts")
+    logger.info("Removing artifacts")
 
     if eog_channels is None and ecg_channel is None:
-        logging.debug("Skipping artifact repair")
+        logger.debug("Skipping artifact repair")
         return raw
 
     # Perform ICA
-    logging.info(f"Starting ICA with {n_components} components")
+    logger.info(f"Starting ICA with {n_components} components")
 
     # Needs to be high-pass filtered first
     filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
@@ -56,17 +56,17 @@ def remove_artifacts(raw: Raw, n_components: float, eog_channels=None, ecg_chann
     if apply:
         # Remove ocular artifacts
         if eog_channels is not None:
-            logging.info("Repairing ocular artifacts")
+            logger.debug("Repairing ocular artifacts")
             eog_indices, _ = ica.find_bads_eog(raw, ch_name=eog_channels, verbose=True)
             ica.exclude = eog_indices
 
         # Remove heartbeat artifacts
         if ecg_channel is not None:
-            logging.debug("Repairing heartbeat artifacts")
+            logger.debug("Repairing heartbeat artifacts")
             ecg_indices, _ = ica.find_bads_eog(raw, ch_name=ecg_channel, verbose=True)
             ica.exclude = ecg_indices
 
-        logging.info(f"Total of {len(ica.exclude)} components removed")
+        logger.info(f"Total of {len(ica.exclude)} components removed")
 
         ica.apply(raw)
         raw.save(dst_dir / f"ica-raw.fif", overwrite=True)

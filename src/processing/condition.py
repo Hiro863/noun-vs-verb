@@ -578,7 +578,7 @@ if __name__ == "__main__":
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception during condition conversion. \n {traceback.format_exc()}")
+        logger.error(f"Unexpected exception during condition conversion. \n {traceback.format_exc()}")
         sys.exit(-1)
 
-    logging.info(f"Condition conversion has finished.")
+    logger.info(f"Condition conversion has finished.")

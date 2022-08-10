@@ -2,7 +2,6 @@ from pathlib import Path
 from mne.coreg import Coregistration
 from mne import Info, setup_source_space, make_bem_model, make_bem_solution, make_forward_solution, Transform, Forward
 
-# todo: big comment at the top
 ########################################################################################################################
 # COREGISTRATION                                                                                                       #
 ########################################################################################################################

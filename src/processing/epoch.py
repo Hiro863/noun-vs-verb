@@ -20,11 +20,12 @@ from src.utils.logger import get_logger
 logger = get_logger(file_name="epoch")
 logger.setLevel(logging.INFO)
 
-# todo big comment at the top
-
 
 ########################################################################################################################
 # EPOCHING                                                                                                             #
+########################################################################################################################
+# From the events data provided in the CSV segment the continuous data into epochs.                                    #
+# Details at https://mne.tools/stable/auto_tutorials/epochs/index.html                                                 #
 ########################################################################################################################
 
 
@@ -214,7 +215,7 @@ if __name__ == "__main__":
     try:
         # Read parameter
         dst_dir, raw_path, file_format, events_dir, subject, events_arr_dir, mode, tmin, tmax, reject, channel_reader, \
-        dictionary_path, simplify_mode, strict, threshold = get_args()
+            dictionary_path, simplify_mode, strict, threshold = get_args()
 
         # Read data
         raw = read_raw_format(path=raw_path, file_format=format)

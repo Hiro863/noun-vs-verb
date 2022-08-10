@@ -18,10 +18,12 @@ from src.utils.logger import get_logger
 logger = get_logger(file_name="downsample")
 logger.setLevel(logging.INFO)
 
-# todo big comment at the top
 
 ########################################################################################################################
 # DOWNSAMPLING                                                                                                         #
+########################################################################################################################
+# Downsample to speedup the processes.                                                                                 #
+# Details in: https://mne.tools/stable/auto_tutorials/preprocessing/30_filtering_resampling.html                       #
 ########################################################################################################################
 
 
@@ -41,7 +43,7 @@ def downsample(raw: Raw, sfreq: int, n_jobs) -> Tuple[Raw, np.array, np.array]:
 
     # Find events (needed whether it is downsampled or not)
     try:
-        events = find_events(raw, stim_channel=["UPPT001", "UPPT002"], min_duration=2 / raw.info["sfreq"])  # todo: check
+        events = find_events(raw, stim_channel=["UPPT001", "UPPT002"], min_duration=2 / raw.info["sfreq"])
     except ValueError as e:
         logging.exception(f"Issue with shortest event. Needs manual inspection {e}")
         raise SubjectNotProcessedError(e)
@@ -78,7 +80,7 @@ def get_args():
     # Either from JSON or one by one
     if args.json_path:
         params = load_json(args.json_path)
-        raw_path, format, sfreq = params["raw-path"], params["format"], params["sfreq"]  # todo: name format
+        raw_path, format, sfreq = params["raw-path"], params["format"], params["sfreq"]
         n_jobs, dst_dir, name = params["n-jobs"], params["dst-dir"], params["name"]
     else:
         raw_path, format, sfreq, n_jobs, dst_dir, name = \
@@ -99,7 +101,7 @@ if __name__ == "__main__":
 
     try:
         # Read parameters
-        raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()  # todo name format
+        raw_path, format, sfreq, n_jobs, dst_dir, name = get_args()
 
         # Read raw
         raw = read_raw_format(raw_path, format)

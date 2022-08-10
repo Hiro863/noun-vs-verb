@@ -39,18 +39,18 @@ def downsample(raw: Raw, sfreq: int, n_jobs) -> Tuple[Raw, np.array, np.array]:
         new_events: events with new sampling frequency
     """
 
-    logging.info(f"Downsampling to {sfreq} Hz")
+    logger.info(f"Downsampling to {sfreq} Hz")
 
     # Find events (needed whether it is downsampled or not)
     try:
         events = find_events(raw, stim_channel=["UPPT001", "UPPT002"], min_duration=2 / raw.info["sfreq"])
     except ValueError as e:
-        logging.exception(f"Issue with shortest event. Needs manual inspection {e}")
+        logger.exception(f"Issue with shortest event. Needs manual inspection {e}")
         raise SubjectNotProcessedError(e)
 
     # If sampling frequency is specified, downsample
     if sfreq > 0 and not None:
-        logging.info(f"Resampling at {sfreq} Hz")
+        logger.debug(f"Resampling at {sfreq} Hz")
 
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
 
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        logger.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
         sys.exit(-1)
 
-    logging.info(f"Downsampling finished.")
+    logger.info(f"Downsampling finished.")

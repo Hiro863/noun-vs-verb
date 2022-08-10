@@ -122,14 +122,14 @@ def classify_temporal(x: np.array, y: np.array, params: dict, n_jobs=1):
                                  clf=clf, scoring=roc_auc_score)
         parallel_funcs.append(func)
 
-    logging.info(f"Total of {len(parallel_funcs)} parallel functions added")
-    logging.info(f"Executing {n_jobs} jobs in parallel")
+    logger.debug(f"Total of {len(parallel_funcs)} parallel functions added")
+    logger.debug(f"Executing {n_jobs} jobs in parallel")
 
     parallel_pool = Parallel(n_jobs=n_jobs)
     results = parallel_pool(parallel_funcs)
     results = format_results(data=results, params=params)
 
-    logging.info(f"{len(parallel_funcs)} time steps processed")
+    logger.debug(f"{len(parallel_funcs)} time steps processed")
     return results
 
 

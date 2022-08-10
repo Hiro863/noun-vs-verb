@@ -43,8 +43,8 @@ def _get_events_paths(epoch_dir: Path, reject_list: List[str]):
             if events_path.exists():
                 events_path_list.append(events_path)
             else:
-                logging.info(f"events file not found in {subject_dir}. Skipping...")
-    logging.info(f"Found {len(events_path_list)}  events found")
+                logger.debug(f"events file not found in {subject_dir}. Skipping...")
+    logger.info(f"Found {len(events_path_list)}  events found")
     return events_path_list
 
 
@@ -77,9 +77,9 @@ def _get_stc_paths(epoch_dir: Path, area_name: str, reject_list: List[str]):
                     if area_file.startswith(area_name):             # e.g. "fusiform_1-h.npy"
                         stc_path_list.append(stc_dir / area_file)   # e.g. "epochs/sub-V1001/stc/fusiform_1-h.npy"
             else:
-                logging.info(f"No source reconstruction data for {subject_dir} available. Skipping...")
+                logger.info(f"No source reconstruction data for {subject_dir} available. Skipping...")
 
-    logging.info(f"Found {len(stc_path_list)} source reconstruction files found")
+    logger.info(f"Found {len(stc_path_list)} source reconstruction files found")
     return stc_path_list
 
 
@@ -91,7 +91,7 @@ def _validate_paths(stc_paths: list, events_paths: list):
     :return: validated lists of paths
     """
 
-    logging.info(f"Validating the paths")
+    logger.info(f"Validating the paths")
 
     valid_stcs, valid_events = [], []
     for stc_path in stc_paths:
@@ -104,7 +104,7 @@ def _validate_paths(stc_paths: list, events_paths: list):
                 valid_events.append(event_path)
                 break
 
-    logging.info(f"{len(valid_stcs)} valid subject data found")
+    logger.info(f"{len(valid_stcs)} valid subject data found")
     return valid_stcs, valid_events
 
 
@@ -122,8 +122,8 @@ def _generate_mmap(dst_dir: Path, data_paths: List[Path], event_paths):
     # Use memory map for x
     curr_idx = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
-        logging.info(f"{idx} / {len(data_paths)}")
-        logging.info(f"Appending {data_path}")
+        logger.debug(f"{idx} / {len(data_paths)}")
+        logger.debug(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))
@@ -195,8 +195,8 @@ def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
 
     added = 0
     for idx, (data_path, event_path) in enumerate(zip(data_paths, event_paths)):
-        logging.debug(f"{idx} / {len(data_paths)}")
-        logging.debug(f"Appending {data_path}")
+        logger.debug(f"{idx} / {len(data_paths)}")
+        logger.debug(f"Appending {data_path}")
 
         # Read x
         x = np.load(str(data_path))
@@ -211,7 +211,7 @@ def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
             y_list.append(y)
             added += 1
         else:
-            logging.debug(f"Number of events don’t match, skipping")
+            logger.debug(f"Number of events don’t match, skipping")
 
     # todo: add exception
     x = np.vstack(x_list)
@@ -220,7 +220,7 @@ def _generate_data(dst_dir: Path, data_paths: list, event_paths: list):
     fname_y = "y.npy"
     np.save(str(dst_dir / fname_x), x)
     np.save(str(dst_dir / fname_y), y)
-    logging.debug(f"{added} subject data added")
+    logger.debug(f"{added} subject data added")
 
 
 def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subjects=-1,
@@ -235,7 +235,7 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     :return:
     """
 
-    logging.debug(f"Generating dataset for {area_name}")
+    logger.debug(f"Generating dataset for {area_name}")
 
     # Get list of subjects to ignore
     if reject is not None:
@@ -251,12 +251,12 @@ def generate_dataset(epoch_dir: Path, dst_dir: Path, area_name: str, max_subject
     if 0 < max_subjects < len(events_paths):
         events_paths = events_paths[:max_subjects]
         stc_paths = stc_paths[:max_subjects]
-        logging.info(f"Using {max_subjects} subject data")
+        logger.info(f"Using {max_subjects} subject data")
 
     # Generate x array
     if memmap:
         _generate_mmap(dst_dir, stc_paths, events_paths)
     else:
         _generate_data(dst_dir, stc_paths, events_paths)
-    logging.info("Process terminated")
+    logger.info("Process terminated")
 

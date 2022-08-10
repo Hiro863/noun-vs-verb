@@ -34,7 +34,7 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
     :return: filtered raw
     """
 
-    logging.info(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
+    logger.info(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
 
     raw = raw.filter(l_freq=l_freq, h_freq=h_freq)
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
+        logger.error(f"Unexpected exception during filtering. \n {traceback.format_exc()}")
         sys.exit(-1)
 
-    logging.info(f"Filtering finished.")
+    logger.info(f"Filtering finished.")

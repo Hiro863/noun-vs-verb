@@ -66,7 +66,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
 
     except ValueError as e:
         # Not all events are present for all subjects
-        logging.exception(f"Missing event ids. Continuing {e}")
+        logger.exception(f"Missing event ids. Continuing {e}")
 
     # Save epochs to file
     _save_epochs(epochs, subject, dst_dir)
@@ -105,7 +105,7 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str, mode,
 
     if events_file is None:
         msg = f"Events info for {subject} was not found"
-        logging.exception(msg)
+        logger.exception(msg)
         raise SubjectNotProcessedError(FileNotFoundError, msg)
 
     # Validate events by comparing against .csv file
@@ -130,13 +130,13 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
     if epochs is not None:
 
         epoch_fname = f"{subject}-epo.fif"
-        logging.info(f"Writing {epoch_fname} epochs to file")
+        logger.debug(f"Writing {epoch_fname} epochs to file")
 
         try:
             epochs.save(str(dst_dir / epoch_fname), overwrite=True)
         except OSError as e:
             msg = f"Failed to write the file {dst_dir / epoch_fname}. {e}"
-            logging.exception(msg)
+            logger.exception(msg)
             SubjectNotProcessedError(e, msg)
 
 
@@ -234,7 +234,7 @@ if __name__ == "__main__":
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception during epoching. \n {traceback.format_exc()}")
+        logger.error(f"Unexpected exception during epoching. \n {traceback.format_exc()}")
         sys.exit(-1)
 
-    logging.info("Epoching as finished.")
+    logger.info("Epoching as finished.")

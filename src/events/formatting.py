@@ -241,7 +241,7 @@ def _modify_df(df: pd.DataFrame, word_list, stimuli_text, rejected_list):
             words = [y for x, y in word_list]  # word_list is a list of tuples
             rejected = " ".join(words)
             rejected_list.append(rejected)
-            logging.debug(f"The sentence '{rejected}' was rejected")
+            logger.debug(f"The sentence '{rejected}' was rejected")
 
         # Modify the DataFrame
         for s_idx, (w_idx, word) in enumerate(word_list):
@@ -311,7 +311,7 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
     :return: validated events array
     """
 
-    logging.info("Verifying the event array against dataframe data")
+    logger.info("Verifying the event array against dataframe data")
 
     original_events = events[0]  # at original sfreq
     new_events = events[1]       # downsampled
@@ -359,8 +359,8 @@ def get_event_array(events: np.array, event_path: Path, dictionary_path: Path, s
         else:
             invalid_events.append(o_event)
 
-    logging.info(f"{len(valid_events) / (len(valid_events) + len(invalid_events)) * 100}% valid")
-    logging.info(f"Total of {len(valid_events)} events added")
+    logger.info(f"{len(valid_events) / (len(valid_events) + len(invalid_events)) * 100}% valid")
+    logger.info(f"Total of {len(valid_events)} events added")
 
     events = np.array(valid_events)
     events = _simplify(events, dictionary_path, mode=simplify_mode)
@@ -412,7 +412,7 @@ def select_conditions(events: np.array, mode="both") -> np.array:
     :return: events with only selected event type
     """
 
-    logging.info(f"Selecting {mode}")
+    logger.debug(f"Selecting {mode}")
 
     if mode == "sentence":
         events = events[np.where(events[:, 2] < 4598)]  # 4597 = largest sentence token ID

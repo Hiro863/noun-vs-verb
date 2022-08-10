@@ -15,7 +15,12 @@ from src.utils.file_access import load_json
 logger = get_logger(file_name="condition")
 logger.setLevel(logging.INFO)
 
-# todo big comment at the top
+########################################################################################################################
+# CONDITION                                                                                                            #
+########################################################################################################################
+# Filter various events based on particular conditions (e.g. number, gender etc.). The resulting data are labels       #
+# can be used as sklearn labels (i.e. target classes)                                                                  #
+########################################################################################################################
 
 ########################################################################################################################
 # Convert generic y to specific y based on conditions given                                                            #

@@ -13,7 +13,10 @@ from sklearn.svm import LinearSVC
 
 from mne.stats import bootstrap_confidence_interval
 
-# todo: logging
+from src.utils.logger import get_logger
+
+logger = get_logger(file_name="classification")
+logger.setLevel(logging.INFO)
 
 name_to_func = {"balanced": balanced_accuracy_score, "roc-auc": roc_auc_score}
 

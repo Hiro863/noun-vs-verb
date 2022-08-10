@@ -17,7 +17,9 @@ from mne.minimum_norm import make_inverse_operator, apply_inverse, apply_inverse
 from src.events.formatting import get_event_array, select_conditions
 from src.utils.exceptions import SubjectNotProcessedError
 from src.utils.file_access import read_mous_subject, get_mous_meg_channels, read_raw
+from src.utils.logger import get_logger
 
+logger = get_logger(file_name="filter")
 
 log_path = Path("/data/home/hiroyoshi/mous_wd/logs")
 
@@ -43,18 +45,18 @@ def downsample(raw: Raw, params: dict, n_jobs) -> Tuple[Raw, np.array, np.array]
     """
 
     sfreq = params["sfreq"]
-    logging.info(f"Downsampling to {sfreq} Hz")
+    logger.info(f"Downsampling to {sfreq} Hz")
 
     # Find events (needed whether it is downsampled or not)
     try:
         events = find_events(raw, stim_channel=["UPPT001", "UPPT002"])
     except ValueError as e:
-        logging.exception(f"Issue with shortest event. Needs manual inspection {e}")
+        logger.exception(f"Issue with shortest event. Needs manual inspection {e}")
         raise SubjectNotProcessedError(e)
 
     # If sampling frequency is specified, downsample
     if sfreq > 0 and not None:
-        logging.debug(f"Resampling at {sfreq} Hz")
+        logger.debug(f"Resampling at {sfreq} Hz")
 
         # n_jobs = min(5, n_jobs)  # to avoid running out of memory
         raw, new_events = raw.resample(sfreq=sfreq, events=events, n_jobs=n_jobs)
@@ -80,14 +82,14 @@ def remove_artifacts(raw: Raw, n_components: int,
     :return: raw: repaired raw
     """
 
-    logging.info("Removing artifacts")
+    logger.info("Removing artifacts")
 
     if eog_channels is None and ecg_channel is None:
-        logging.debug("Skipping artifact repair")
+        logger.debug("Skipping artifact repair")
         return raw
 
     # Perform ICA
-    logging.info(f"Starting ICA with {n_components} components")
+    logger.info(f"Starting ICA with {n_components} components")
 
     n_jobs = min(5, n_jobs)  # to avoid running out of memory
     filtered_raw = raw.copy().filter(l_freq=1., h_freq=None, n_jobs=n_jobs)
@@ -99,17 +101,17 @@ def remove_artifacts(raw: Raw, n_components: int,
 
     # Remove ocular artifacts
     if eog_channels is not None:
-        logging.debug("Repairing ocular artifacts")
+        logger.debug("Repairing ocular artifacts")
         eog_indices, _ = ica.find_bads_eog(raw, ch_name=eog_channels, verbose=True)
         ica.exclude = eog_indices
 
     # Remove heartbeat artifacts
     if ecg_channel is not None:
-        logging.debug("Repairing heartbeat artifacts")
+        logger.debug("Repairing heartbeat artifacts")
         ecg_indices, _ = ica.find_bads_eog(raw, ch_name=ecg_channel, verbose=True)
         ica.exclude = ecg_indices
 
-    logging.info(f"Total of {len(ica.exclude)} components removed")
+    logger.info(f"Total of {len(ica.exclude)} components removed")
 
     ica.apply(raw)
     return raw
@@ -131,7 +133,7 @@ def apply_filter(raw: Raw, l_freq: int, h_freq: int, notch: list, n_jobs=1) -> R
     :return: filtered raw
     """
 
-    logging.info(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
+    logger.info(f"Filtering at high pass {l_freq} Hz, low pass {h_freq} and notches {notch}. n_jobs = {n_jobs}")
 
     raw = raw.filter(l_freq=l_freq, h_freq=h_freq)
 
@@ -181,7 +183,7 @@ def epoch(dst_dir: Path, events_dir: Path, subject: str,
 
     except ValueError as e:
         # Not all events are present for all subjects
-        logging.exception(f"Missing event ids. Continuing {e}")
+        logger.exception(f"Missing event ids. Continuing {e}")
 
     # Save epochs to file
     _save_epochs(epochs, subject, dst_dir)
@@ -216,7 +218,7 @@ def _read_events_file(events_dir: Path, events: np.array, subject: str, mode,
 
     if events_file is None:
         msg = f"Events info for {subject} was not found"
-        logging.exception(msg)
+        logger.exception(msg)
         raise SubjectNotProcessedError(FileNotFoundError, msg)
 
     event_path = events_dir / events_file
@@ -238,12 +240,12 @@ def _save_epochs(epochs: Epochs, subject: str, dst_dir: Path) -> None:
     if epochs is not None:
 
         epoch_fname = f"{subject}-epo.fif"
-        logging.debug(f"Writing {epoch_fname} epochs to file")
+        logger.debug(f"Writing {epoch_fname} epochs to file")
         try:
             epochs.save(str(dst_dir / epoch_fname), overwrite=True)
         except OSError as e:
             msg = f"Failed to write the file {dst_dir / epoch_fname}. {e}"
-            logging.exception(msg)
+            logger.exception(msg)
             SubjectNotProcessedError(e, msg)
 
 ########################################################################################################################
@@ -262,21 +264,21 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
     :return:
     """
 
-    logging.info(f"Source localizing {subject} files")
+    logger.info(f"Source localizing {subject} files")
 
     # Make inverse model
-    logging.info(f"Making an inverse model for the subject {subject} ")
+    logger.info(f"Making an inverse model for the subject {subject} ")
     inv = get_inv(epochs, fwd_path=str(Path(params["fwd_path"]) / f"{subject}-fwd.fif"), n_jobs=n_jobs)
 
     # Common source space
-    logging.info(f"Setting up morph to FS average")
+    logger.info(f"Setting up morph to FS average")
     fsaverage_src_path = Path(params["subjects dir"]) / "fsaverage" / "bem" / "fsaverage-ico-5-src.fif"
     fs_src = read_source_spaces(str(fsaverage_src_path))
     morph = compute_source_morph(src=inv["src"], subject_from=subject, subject_to="fsaverage", src_to=fs_src,
                                  subjects_dir=params["subjects dir"], verbose=False)
 
     # Generate set of labels
-    logging.info(f"Reading labels")
+    logger.info(f"Reading labels")
     labels = read_labels_from_annot("fsaverage", params["parcellation"], params["hemi"],
                                     subjects_dir=params["subjects dir"], verbose=False)
 
@@ -292,12 +294,12 @@ def source_localize(dst_dir: Path, subject: str, epochs: Epochs, params: dict, n
                                               params=params, morph=morph)
         parallel_funcs.append(func)
 
-    logging.info(f"Total of {len(parallel_funcs)} parallel functions added")
-    logging.info(f"Executing {n_jobs} jobs in parallel")
+    logger.info(f"Total of {len(parallel_funcs)} parallel functions added")
+    logger.info(f"Executing {n_jobs} jobs in parallel")
     parallel_pool = Parallel(n_jobs=n_jobs)
     parallel_pool(parallel_funcs)
 
-    logging.debug(f"{len(parallel_funcs)} time steps processed")
+    logger.debug(f"{len(parallel_funcs)} time steps processed")
 
 
 def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, params, morph):  # todo data type
@@ -312,7 +314,7 @@ def _process_single_label(dst_dir: Path, epochs: Epochs, label: Label, inv, para
     :return:
     """
 
-    logging.info(f"Processing single subject for {label.name} ")
+    logger.info(f"Processing single subject for {label.name} ")
 
     stcs = _inverse_epochs(epochs, inv=inv, method=params["method"], pick_ori=params["pick ori"])
     stcs = _morph_to_common(stcs, morph)
@@ -335,7 +337,7 @@ def _morph_to_common(stcs: list, morph): #todo data type
     :return:
     """
 
-    logging.info(f"Morphing to fsaverage")
+    logger.info(f"Morphing to fsaverage")
 
     for stc in stcs:
         fs_stc = morph.apply(stc)
@@ -350,11 +352,11 @@ def _write_array(dst_dir: Path, label: Label, data_array):
     :param data_array: data array to be saved
     """
 
-    logging.info(f"Writing the data for {label.name} to file")
+    logger.info(f"Writing the data for {label.name} to file")
 
     stc_fname = f"{label.name}.npy"
 
-    logging.info(f"Saving {stc_fname} to file in {dst_dir}")
+    logger.info(f"Saving {stc_fname} to file in {dst_dir}")
 
     stc_dir = dst_dir / "stc"
 
@@ -365,7 +367,7 @@ def _write_array(dst_dir: Path, label: Label, data_array):
         np.save(str(stc_dir / stc_fname), data_array)
 
     except OSError as e:
-        logging.exception(f"Failed to write {dst_dir / stc_fname} to file. {e.strerror}")
+        logger.exception(f"Failed to write {dst_dir / stc_fname} to file. {e.strerror}")
         raise SubjectNotProcessedError(e)
 
 
@@ -428,7 +430,7 @@ def _inverse_epochs(epochs: Epochs, label=None, method="dSPM", snr=3., pick_ori=
         source estiamtion
     """
 
-    logging.info(f"Inverting epochs")
+    logger.info(f"Inverting epochs")
 
     if not inv:
         inv = get_inv(epochs, fwd_path=fwd_path, n_jobs=n_jobs, tmax=tmax, method=inv_method, rank=rank,
@@ -512,7 +514,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
     :return:
     """
 
-    logging.debug(f"Processing subject data from {src_dir}")
+    logger.debug(f"Processing subject data from {src_dir}")
 
     rejected_path = log_path / "rejected_log.txt"
 
@@ -549,7 +551,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
             source_localize(dst_dir=dst_dir, subject=subject_name, epochs=epochs, params=stc_params, n_jobs=n_cores)
 
     except SubjectNotProcessedError as e:
-        logging.error(f"Subject {subject_name} was not processed correctly. \n {e} \n {traceback.format_exc()}")
+        logger.error(f"Subject {subject_name} was not processed correctly. \n {e} \n {traceback.format_exc()}")
 
         with open(str(rejected_path), "a") as file:
             file.write(f"{subject_name}\n")
@@ -557,7 +559,7 @@ def process_single_subject(src_dir: Path, dst_dir: Path, events_dir: Path,
 
     except Exception as e:  # noqa
 
-        logging.error(f"Unexpected exception with the subject {subject_name}. {traceback.format_exc()}")
+        logger.error(f"Unexpected exception with the subject {subject_name}. {traceback.format_exc()}")
 
         with open(str(rejected_path), "a") as file:
             file.write(f"{subject_name}\n")

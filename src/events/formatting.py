@@ -69,7 +69,7 @@ def assign_ids(text: str):
 def format_event_data(events_path, stimuli_path) -> [pd.DataFrame, list]:
     """
     Clean up events data by removing the unnecessary components and reformatting the data.
-    :param events_path: path to the CSV file #todo more detail
+    :param events_path: path to the CSV file provided by the original dataset
     :param stimuli_path: path to the stimuli.txt file
     :return:
         events_df: pd.DataFrame, cleaned dataframe object
@@ -84,7 +84,7 @@ def format_event_data(events_path, stimuli_path) -> [pd.DataFrame, list]:
 
     events_df = _clean_df(events_df)
     events_df, rejected_list = _add_sentence_column(events_df, stimuli_text)
-    events_df.dropna(axis=0, inplace=True)  # todo, workaround
+    events_df.dropna(axis=0, inplace=True)
     events_df = _add_ids(events_df, position_to_id)
     return events_df, rejected_list
 
@@ -384,7 +384,7 @@ def _check_difference(o_event, df, threshold):
 
 def _simplify(events: np.array, df_path: Path, mode="index"):
     """
-    Drop any events not noun or verb.
+    Drop any events not noun or verb
     :param events: events array
     :param df_path: path to .csv file containing POS information
     :param mode: `index` uses the token ID, `binary` uses `0` (noun) vs `1` (verb)
@@ -404,9 +404,9 @@ def _simplify(events: np.array, df_path: Path, mode="index"):
     return events
 
 
-def select_conditions(events: np.array, mode="both"):
+def select_conditions(events: np.array, mode="both") -> np.array:
     """
-    Selects events based on the condition. There are sentence and word list conditions.
+    Selects events based on the condition. There are sentence and word list conditions
     :param events: events array
     :param mode: Options. Valid are `both`, `sentence` and `list`
     :return: events with only selected event type
@@ -419,4 +419,3 @@ def select_conditions(events: np.array, mode="both"):
     elif mode == "list":
         events = events[np.where(events[:2] >= 4598)]
     return events
-
